@@ -33,26 +33,27 @@ type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 
 export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isValidToken, setIsValidToken] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Check token validity on mount
+  const code = searchParams.get("code");
+  const accessToken = searchParams.get("access_token");
+  const isValidToken = !!(code || accessToken);
+
   useEffect(() => {
-    // Check if we have access_token or code in URL
-    const code = searchParams.get("code");
-    const accessToken = searchParams.get("access_token");
-    
-    if (code || accessToken) {
-      setIsValidToken(true);
-    } else {
+    if (!isValidToken) {
       toast.error("Invalid reset link", {
         description: "Please request a new password reset link.",
       });
-      setTimeout(() => {
+      
+      const timer = setTimeout(() => {
         router.push("/forgot-password");
       }, 2000);
+
+      return () => clearTimeout(timer);
     }
-  }, [searchParams, router]);
+  }, [isValidToken, router]);
 
   const {
     register,
@@ -72,6 +73,7 @@ export default function ResetPasswordPage() {
         toast.error("Failed to reset password", {
           description: result.error,
         });
+        setIsLoading(false);
       } else {
         toast.success("Password updated!", {
           description: "You can now sign in with your new password.",
@@ -82,18 +84,18 @@ export default function ResetPasswordPage() {
           router.push("/login");
         }, 2000);
       }
-    } catch (error) {
+    } catch (err) {
+      console.error("Password reset error:", err);
       toast.error("Something went wrong", {
         description: "Please try again later.",
       });
-    } finally {
       setIsLoading(false);
     }
   };
 
   if (!isValidToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
             <p className="text-slate-600 dark:text-slate-400">
@@ -106,7 +108,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold tracking-tight">

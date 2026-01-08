@@ -25,6 +25,12 @@ const navigation = [
     description: "Learning modules",
   },
   {
+    name: "Converter",
+    href: "/converter",
+    icon: FileText,
+    description: "Text ↔ Braille",
+  },
+  {
     name: "Practice",
     href: "/practice",
     icon: FileText,
@@ -109,7 +115,7 @@ export default function DashboardSidebar() {
           </div>
         </div>
         <Link
-          href="/learn/braille-reference"
+          href="/braille-reference"
           className="mt-3 block text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline"
         >
           View full reference →

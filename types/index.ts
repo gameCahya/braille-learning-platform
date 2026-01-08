@@ -1,163 +1,93 @@
-// User related types
+// Database Models
 export interface User {
-  id: string
-  email: string
-  fullName?: string
-  avatarUrl?: string
-  createdAt: string
-  updatedAt?: string
+  id: string;
+  email: string;
+  created_at: string;
 }
 
-// Lesson structure untuk Braille learning
-export interface Lesson {
-  id: string
-  letter?: string
-  braille?: string
-  dots?: string
-  description: string
-  example?: string
-  audioUrl?: string
+export interface Profile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
-// Exercise structure
-export interface Exercise {
-  id: string
-  type: 'multiple-choice' | 'text-to-braille' | 'braille-to-text' | 'fill-blank'
-  question: string
-  options?: string[]
-  correctAnswer: string
-  points: number
-  explanation?: string
-}
-
-// Module content structure
-export interface ModuleContent {
-  lessons: Lesson[]
-  exercises?: Exercise[]
-  summary?: string
-  resources?: {
-    title: string
-    url: string
-    type: 'pdf' | 'video' | 'article'
-  }[]
-}
-
-// Main Module interface
 export interface Module {
-  id: string
-  title: string
-  description: string
-  difficulty: 'beginner' | 'intermediate' | 'advanced'
-  orderNumber: number
-  content: ModuleContent
-  brailleContent?: string
-  createdAt: string
+  id: string;
+  title: string;
+  description: string;
+  content: ModuleContent;
+  braille_content: string | null;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  orderNumber: number;
+  created_at: string;
 }
 
-// User progress tracking
+export interface ModuleContent {
+  lessons: Lesson[];
+  exercises?: Exercise[];
+  summary?: string;
+}
+
+export interface Lesson {
+  id: string;
+  title: string;
+  content: string;
+  description?: string; // Made optional
+  braille?: string;
+  example?: string;
+  audioUrl?: string;
+  image?: string;
+}
+
+export interface Exercise {
+  id: string;
+  type: "multiple-choice" | "text-to-braille" | "braille-to-text" | "fill-blank";
+  question: string;
+  options?: string[];
+  correctAnswer: string;
+  hint?: string;
+  points: number;
+}
+
 export interface UserProgress {
-  id: string
-  userId: string
-  moduleId: string
-  completed: boolean
-  score?: number
-  completedAt?: string
-  createdAt: string
-}
-
-// Quiz types
-export interface Quiz {
-  id: string
-  moduleId: string
-  title: string
-  questions: Exercise[]
-  totalPoints: number
+  id: string;
+  user_id: string;
+  module_id: string;
+  completed: boolean;
+  score?: number | null; // Made optional and nullable
+  completed_at: string | null;
+  created_at: string;
 }
 
 export interface QuizResult {
-  id: string
-  userId: string
-  moduleId: string
-  quizId?: string
-  score: number
-  totalPoints: number
-  correctAnswers: number
-  totalQuestions: number
-  answers: Record<string, string>
-  details?: {
-    questionId: string
-    correct: boolean
-    userAnswer: string
-    correctAnswer: string
-    points: number
-  }[]
-  feedback?: string
-  createdAt: string
+  id: string;
+  user_id: string;
+  module_id: string;
+  score: number;
+  answers: Record<string, string>;
+  created_at: string;
 }
 
-// Chat history for AI tutor
 export interface ChatMessage {
-  id: string
-  userId: string
-  message: string
-  response: string
-  createdAt: string
+  id: string;
+  user_id: string;
+  message: string;
+  response: string;
+  created_at: string;
 }
 
-export interface ConversationHistory {
-  role: 'user' | 'assistant'
-  content: string
-}
-
-// Braille conversion types
 export interface BrailleConversion {
-  input: string
-  output: string
-  direction: 'text-to-braille' | 'braille-to-text'
+  input: string;
+  output: string;
+  direction: "text-to-braille" | "braille-to-text";
 }
 
-export interface BrailleCharacter {
-  char: string
-  braille: string
-  dots: string
-  unicode?: string
-}
-
-// API Response types
+// API Response Types
 export interface ApiResponse<T> {
-  success: boolean
-  data?: T
-  error?: string
-  message?: string
-}
-
-// Statistics for progress dashboard
-export interface LearningStatistics {
-  totalModules: number
-  completedModules: number
-  averageScore: number
-  totalTimeSpent?: number
-  currentStreak?: number
-  bestScore?: number
-}
-
-// Auth types
-export interface LoginCredentials {
-  email: string
-  password: string
-}
-
-export interface RegisterCredentials {
-  email: string
-  password: string
-  fullName: string
-}
-
-// Database table names (for type safety)
-export enum Tables {
-  PROFILES = 'profiles',
-  MODULES = 'modules',
-  USER_PROGRESS = 'user_progress',
-  QUIZ_RESULTS = 'quiz_results',
-  CHAT_HISTORY = 'chat_history'
+  data?: T;
+  error?: string;
+  message?: string;
 }

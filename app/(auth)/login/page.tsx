@@ -33,16 +33,20 @@ export default function LoginPage() {
         toast.error("Login failed", {
           description: result.error,
         });
-      } else {
-        toast.success("Welcome back!", {
-          description: "You have successfully logged in.",
-        });
+        setIsLoading(false);
       }
+      // If no error, redirect() is called in action (no need for success toast)
     } catch (error) {
+      // redirect() throws NEXT_REDIRECT error - this is expected behavior
+      // Check if it's a redirect, if not show error
+      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+        // Redirect successful, do nothing
+        return;
+      }
+      
       toast.error("Something went wrong", {
         description: "Please try again later.",
       });
-    } finally {
       setIsLoading(false);
     }
   };

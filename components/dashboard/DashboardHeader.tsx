@@ -27,8 +27,14 @@ export default function DashboardHeader({ user, profile }: DashboardHeaderProps)
   const handleSignOut = async () => {
     try {
       await signOut();
-      toast.success("Signed out successfully");
+      // redirect() is called in action, no need for success toast
     } catch (error) {
+      // redirect() throws NEXT_REDIRECT error - this is expected behavior
+      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+        // Redirect successful, do nothing
+        return;
+      }
+      
       toast.error("Failed to sign out");
     }
   };

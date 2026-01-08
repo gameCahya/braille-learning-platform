@@ -40,23 +40,26 @@ export default function RegisterPage() {
             description: result.error,
           });
         }
-      } else {
-        toast.success("Account created!", {
-          description: "Welcome to Braille Learning Platform.",
-        });
+        setIsLoading(false);
       }
+      // If no error, redirect() is called in action
     } catch (error) {
+      // redirect() throws NEXT_REDIRECT error - this is expected behavior
+      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+        // Redirect successful, do nothing
+        return;
+      }
+      
       console.error("Registration error:", error);
       toast.error("Something went wrong", {
         description: "Please try again later.",
       });
-    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold tracking-tight">
