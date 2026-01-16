@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -25,14 +25,12 @@ const resetPasswordSchema = z.object({
 
 type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 
-function ResetForm() {
+// ✅ KOMPONEN TERPISAH UNTUK FORM (di dalam Suspense)
+function ResetPasswordForm() {
   const router = useRouter();
-  const searchParams = useSearchParams(); // ✅ Dipanggil di dalam Suspense boundary
-  const code = searchParams.get("code");
-  const accessToken = searchParams.get("access_token");
-  const isValidToken = !!(code || accessToken);
-
+  const searchParams = useSearchParams(); // ✅ Sekarang aman karena ada di dalam Suspense
   const [isLoading, setIsLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -40,16 +38,6 @@ function ResetForm() {
   } = useForm<ResetPasswordInput>({
     resolver: zodResolver(resetPasswordSchema),
   });
-
-  useEffect(() => {
-    if (!isValidToken) {
-      toast.error("Invalid reset link", {
-        description: "Please request a new password reset link.",
-      });
-      const timer = setTimeout(() => router.push("/forgot-password"), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isValidToken, router]);
 
   const onSubmit = async (data: ResetPasswordInput) => {
     setIsLoading(true);
@@ -69,18 +57,6 @@ function ResetForm() {
     }
   };
 
-  if (!isValidToken) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6 text-center">
-            <p className="text-slate-600 dark:text-slate-400">Validating reset link...</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
       <Card className="w-full max-w-md">
@@ -92,13 +68,35 @@ function ResetForm() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="password">New Password</Label>
-              <Input id="password" type="password" disabled={isLoading} {...register("password")} />
-              {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+              <Input 
+                id="password" 
+                type="password" 
+                disabled={isLoading} 
+                {...register("password")}
+                aria-invalid={errors.password ? "true" : "false"}
+                aria-describedby={errors.password ? "password-error" : undefined}
+              />
+              {errors.password && (
+                <p id="password-error" className="text-sm text-red-600" role="alert">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <Input id="confirmPassword" type="password" disabled={isLoading} {...register("confirmPassword")} />
-              {errors.confirmPassword && <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>}
+              <Input 
+                id="confirmPassword" 
+                type="password" 
+                disabled={isLoading} 
+                {...register("confirmPassword")}
+                aria-invalid={errors.confirmPassword ? "true" : "false"}
+                aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+              />
+              {errors.confirmPassword && (
+                <p id="confirmPassword-error" className="text-sm text-red-600" role="alert">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Updating..." : "Update password"}
@@ -110,11 +108,21 @@ function ResetForm() {
   );
 }
 
-// ✅ Halaman utama: bungkus ResetForm dengan Suspense
+// ✅ KOMPONEN UTAMA: Bungkus dengan Suspense
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-      <ResetForm />
+    <Suspense 
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+          <Card className="w-full max-w-md">
+            <CardContent className="pt-6 text-center">
+              <p className="text-slate-600 dark:text-slate-400">Loading...</p>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <ResetPasswordForm />
     </Suspense>
   );
 }
