@@ -1,46 +1,72 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ===================================================================
+# .gitignore - Prevent secrets from being committed
+# ===================================================================
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+catatan/
 
-# testing
-/coverage
+# Testing
+coverage/
+*.lcov
+.nyc_output
 
-# next.js
-/.next/
-/out/
+# Next.js
+.next/
+out/
+build
+dist/
+.vercel
 
-# production
-/build
+# Production
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# misc
-.DS_Store
+# ⚠️ CRITICAL: Never commit these files!
+.env
+.env.production
 *.pem
+*.key
+secrets.*
 
-# debug
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env
-.env.local
+# OS
+.DS_Store
+*.pem
+Thumbs.db
 
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# vercel
-.vercel
+# Wrangler (Cloudflare)
+.wrangler/
+wrangler.toml.backup
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Misc
+*.log
+.cache/
 
-#catatan
-catatan
+# ===================================================================
+# ✅ Safe to commit:
+# - .env.example (template without real values)
+# - .env.schema (variable names only)
+# 
+# ❌ NEVER commit:
+# - .env.local (contains real API keys)
+# - .env (contains real secrets)
+# - Any file with actual credentials
+# ===================================================================

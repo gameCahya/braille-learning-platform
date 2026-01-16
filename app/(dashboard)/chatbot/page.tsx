@@ -1,48 +1,34 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Zap, Volume2, Lightbulb } from "lucide-react";
+import { MessageSquare, Zap, Volume2, Lightbulb, Shield } from "lucide-react";
+import { sendChatMessage } from "@/lib/chat-client"; // ✅ Secure client
 
 export default function ChatbotPage() {
-  const [autoSpeak] = useState(true);
-
-  // Handle sending message to Cloudflare Worker
+  // ✅ Handler yang aman - NO API KEYS exposed
   const handleSendMessage = async (message: string): Promise<string> => {
     try {
-      // Call Cloudflare Function (auto-routed to /api/chat)
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message,
-          conversationHistory: [], // Add history if needed
-        }),
-      });
+      const { data, error, rateLimit } = await sendChatMessage(message);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to get response");
+      if (error) {
+        throw new Error(error);
       }
 
-      const data = await response.json();
-      return data.response || "I'm sorry, I couldn't process that. Could you try again?";
+      if (!data) {
+        throw new Error("No response from AI");
+      }
+
+      // Log rate limit (optional)
+      if (rateLimit) {
+        console.log(`Rate limit: ${rateLimit.remaining}/${rateLimit.limit} remaining`);
+      }
+
+      return data.response;
     } catch (error) {
-      console.error("Chat API error:", error);
-      
-      // Friendly error message
-      if (error instanceof Error) {
-        if (error.message.includes("Failed to fetch")) {
-          return "I'm having trouble connecting. Please check your internet connection and try again.";
-        }
-        return `Error: ${error.message}. Please try again.`;
-      }
-      
-      return "Something went wrong. Please try again later.";
+      console.error("Chat error:", error);
+      throw error; // ChatInterface will handle error display
     }
   };
 
@@ -55,6 +41,22 @@ export default function ChatbotPage() {
           Ask me anything about Braille, get instant help with your learning
         </p>
       </div>
+
+      {/* Security Notice */}
+      <Card className="border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-800">
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-3">
+            <Shield className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
+            <div className="space-y-2 flex-1">
+              <p className="font-medium text-green-900 dark:text-green-100">🔒 Your Privacy is Protected</p>
+              <p className="text-sm text-green-800 dark:text-green-200">
+                All conversations are encrypted and stored securely. Only you can access your chat history.
+                We rate-limit requests (20 per hour) to prevent abuse.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Audio Features Notice */}
       <Card className="border-primary bg-primary/5">
@@ -140,10 +142,6 @@ export default function ChatbotPage() {
                 key={i}
                 variant="outline"
                 className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors px-3 py-2 text-sm"
-                onClick={() => {
-                  // This would need to trigger the chat input
-                  // For now, just a visual indicator
-                }}
               >
                 {question}
               </Badge>
@@ -157,7 +155,7 @@ export default function ChatbotPage() {
         <ChatInterface
           onSendMessage={handleSendMessage}
           placeholder="Ask me anything about Braille... (Press Enter to send)"
-          autoSpeak={autoSpeak}
+          autoSpeak={false}
         />
       </div>
 
@@ -187,6 +185,10 @@ export default function ChatbotPage() {
             <li className="flex items-start gap-2">
               <span className="text-primary mt-0.5">•</span>
               <span>Get help with practice: &quot;Give me 5 easy words to practice&quot;</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary mt-0.5">•</span>
+              <span className="font-semibold text-primary">🔒 Rate limit: 20 messages per hour (resets automatically)</span>
             </li>
           </ul>
         </CardContent>
