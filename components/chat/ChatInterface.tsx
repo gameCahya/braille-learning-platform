@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { speak, stopSpeaking, getTTS } from "@/lib/speech";
 import { Send, Volume2, VolumeX, Loader2, Settings, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -44,13 +43,13 @@ export function ChatInterface({
   const [currentPlayingId, setCurrentPlayingId] = useState<string | null>(null);
   const [speechRate, setSpeechRate] = useState(0.85);
   const [showSettings, setShowSettings] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom when new message
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -122,9 +121,8 @@ export function ChatInterface({
     return `I understand you're asking about: "${userInput}". Let me help you with that! Braille is read by touch, using raised dots. Would you like to learn more about specific letters or words?`;
   };
 
-  // Handle speak message
+  // Handle speak message with better voice quality
   const handleSpeak = async (messageId: string, text: string) => {
-    // If this message is already playing, stop it
     if (currentPlayingId === messageId) {
       stopSpeaking();
       setCurrentPlayingId(null);
@@ -132,24 +130,25 @@ export function ChatInterface({
       return;
     }
 
-    // Stop any currently playing message
     if (currentPlayingId) {
       stopSpeaking();
       updateMessagePlayingState(currentPlayingId, false);
     }
 
-    // Start speaking new message
     try {
       setCurrentPlayingId(messageId);
       updateMessagePlayingState(messageId, true);
+
+      const tts = getTTS();
+      const bestVoice = tts.getBestVoice();
 
       await speak(text, {
         rate: speechRate,
         pitch: 1.0,
         volume: 1.0,
+        voiceName: bestVoice?.name
       });
 
-      // Clear playing state when done
       setCurrentPlayingId(null);
       updateMessagePlayingState(messageId, false);
     } catch (error) {
@@ -160,7 +159,6 @@ export function ChatInterface({
     }
   };
 
-  // Update message playing state
   const updateMessagePlayingState = (messageId: string, isPlaying: boolean) => {
     setMessages((prev) =>
       prev.map((msg) =>
@@ -169,7 +167,6 @@ export function ChatInterface({
     );
   };
 
-  // Stop all audio
   const handleStopAll = () => {
     stopSpeaking();
     if (currentPlayingId) {
@@ -178,7 +175,6 @@ export function ChatInterface({
     }
   };
 
-  // Clear chat
   const handleClearChat = () => {
     handleStopAll();
     setMessages([
@@ -192,7 +188,6 @@ export function ChatInterface({
     toast.success("Chat cleared");
   };
 
-  // Handle Enter key
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -201,9 +196,12 @@ export function ChatInterface({
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[600px] border rounded-lg bg-background">
+    <div 
+      className="flex flex-col border rounded-lg bg-background overflow-hidden"
+      style={{ height: '600px' }} // Inline style untuk ensure fixed height
+    >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-muted/50">
+      <div className="flex items-center justify-between p-4 border-b bg-muted/50 shrink-0">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10 bg-primary">
             <AvatarFallback>AI</AvatarFallback>
@@ -215,14 +213,12 @@ export function ChatInterface({
         </div>
         
         <div className="flex items-center gap-2">
-          {/* Speech Rate Badge */}
           {showSettings && (
             <Badge variant="outline" className="text-xs">
               Speed: {speechRate}x
             </Badge>
           )}
           
-          {/* Settings Button */}
           <Button
             variant="ghost"
             size="icon"
@@ -232,7 +228,6 @@ export function ChatInterface({
             <Settings className="h-4 w-4" />
           </Button>
 
-          {/* Stop All Button */}
           {currentPlayingId && (
             <Button
               variant="ghost"
@@ -245,7 +240,6 @@ export function ChatInterface({
             </Button>
           )}
 
-          {/* Clear Chat Button */}
           <Button
             variant="ghost"
             size="icon"
@@ -259,7 +253,7 @@ export function ChatInterface({
 
       {/* Settings Panel */}
       {showSettings && (
-        <Card className="m-4 p-4 space-y-3 bg-muted/50">
+        <div className="m-4 p-4 space-y-3 bg-muted/50 border rounded-lg shrink-0">
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center justify-between">
               Speech Speed
@@ -288,7 +282,6 @@ export function ChatInterface({
               id="auto-speak"
               checked={autoSpeak}
               onChange={(e) => {
-                // This would need to be lifted to parent component
                 toast.info(e.target.checked ? "Auto-speak enabled" : "Auto-speak disabled");
               }}
               className="rounded"
@@ -297,108 +290,105 @@ export function ChatInterface({
               Auto-play AI responses
             </label>
           </div>
-        </Card>
+        </div>
       )}
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-        <div className="space-y-4">
-          {messages.map((message) => (
+      {/* Messages - Native Scroll */}
+      <div 
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+        style={{ minHeight: 0 }} // Critical for flexbox
+      >
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={cn(
+              "flex gap-3 items-start",
+              message.role === "user" ? "flex-row-reverse" : "flex-row"
+            )}
+          >
+            <Avatar className={cn(
+              "h-8 w-8 shrink-0",
+              message.role === "user" ? "bg-primary" : "bg-muted"
+            )}>
+              <AvatarFallback>
+                {message.role === "user" ? "You" : "AI"}
+              </AvatarFallback>
+            </Avatar>
+
             <div
-              key={message.id}
               className={cn(
-                "flex gap-3 items-start",
-                message.role === "user" ? "flex-row-reverse" : "flex-row"
+                "flex flex-col gap-2 max-w-[80%]",
+                message.role === "user" ? "items-end" : "items-start"
               )}
             >
-              {/* Avatar */}
-              <Avatar className={cn(
-                "h-8 w-8 flex-shrink-0",
-                message.role === "user" ? "bg-primary" : "bg-muted"
-              )}>
-                <AvatarFallback>
-                  {message.role === "user" ? "You" : "AI"}
-                </AvatarFallback>
-              </Avatar>
-
-              {/* Message Content */}
-              <div
+              <Card
                 className={cn(
-                  "flex flex-col gap-2 max-w-[80%]",
-                  message.role === "user" ? "items-end" : "items-start"
+                  "p-3",
+                  message.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted",
+                  message.isPlaying && "ring-2 ring-primary"
                 )}
               >
-                <Card
-                  className={cn(
-                    "p-3",
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted",
-                    message.isPlaying && "ring-2 ring-primary"
-                  )}
-                >
-                  <p className="text-sm whitespace-pre-wrap break-words">
-                    {message.content}
-                  </p>
-                </Card>
+                <p className="text-sm whitespace-pre-wrap break-words">
+                  {message.content}
+                </p>
+              </Card>
 
-                {/* Message Actions */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">
-                    {message.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">
+                  {message.timestamp.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
 
-                  {/* Speak Button (only for assistant) */}
-                  {message.role === "assistant" && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 px-2"
-                      onClick={() => handleSpeak(message.id, message.content)}
-                      aria-label={message.isPlaying ? "Stop reading" : "Read message"}
-                    >
-                      {message.isPlaying ? (
-                        <>
-                          <VolumeX className="h-3 w-3 mr-1" />
-                          <span className="text-xs">Stop</span>
-                        </>
-                      ) : (
-                        <>
-                          <Volume2 className="h-3 w-3 mr-1" />
-                          <span className="text-xs">Listen</span>
-                        </>
-                      )}
-                    </Button>
-                  )}
-                </div>
+                {message.role === "assistant" && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2"
+                    onClick={() => handleSpeak(message.id, message.content)}
+                    aria-label={message.isPlaying ? "Stop reading" : "Read message"}
+                  >
+                    {message.isPlaying ? (
+                      <>
+                        <VolumeX className="h-3 w-3 mr-1" />
+                        <span className="text-xs">Stop</span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="h-3 w-3 mr-1" />
+                        <span className="text-xs">Listen</span>
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
-          ))}
+          </div>
+        ))}
 
-          {/* Loading Indicator */}
-          {isLoading && (
-            <div className="flex gap-3 items-start">
-              <Avatar className="h-8 w-8 bg-muted">
-                <AvatarFallback>AI</AvatarFallback>
-              </Avatar>
-              <Card className="p-3 bg-muted">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-sm text-muted-foreground">
-                    Thinking...
-                  </span>
-                </div>
-              </Card>
-            </div>
-          )}
-        </div>
-      </ScrollArea>
+        {isLoading && (
+          <div className="flex gap-3 items-start">
+            <Avatar className="h-8 w-8 bg-muted">
+              <AvatarFallback>AI</AvatarFallback>
+            </Avatar>
+            <Card className="p-3 bg-muted">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm text-muted-foreground">
+                  Thinking...
+                </span>
+              </div>
+            </Card>
+          </div>
+        )}
+      </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t bg-muted/50">
+      <div className="p-4 border-t bg-muted/50 shrink-0">
         <div className="flex gap-2">
           <Input
             ref={inputRef}

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Zap, Volume2, Lightbulb } from "lucide-react";
 
 export default function ChatbotPage() {
-  const [autoSpeak, setAutoSpeak] = useState(true);
+  const [autoSpeak] = useState(true);
 
   // Handle sending message to AI API
   const handleSendMessage = async (message: string): Promise<string> => {
@@ -49,11 +49,11 @@ export default function ChatbotPage() {
       <Card className="border-primary bg-primary/5">
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
-            <Volume2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+            <Volume2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
             <div className="space-y-2 flex-1">
               <p className="font-medium">♿ Audio-Enhanced Chat</p>
               <p className="text-sm text-muted-foreground">
-                All AI responses can be read aloud. Click the <strong>"Listen"</strong> button 
+                All AI responses can be read aloud. Click the <strong>&quot;Listen&quot;</strong> button 
                 on any message, or enable <strong>auto-play</strong> in settings to hear responses 
                 automatically. Perfect for screen reader users and audio learners!
               </p>
@@ -87,7 +87,7 @@ export default function ChatbotPage() {
           </CardHeader>
           <CardContent>
             <CardDescription className="text-sm">
-              Ask for examples and I'll show you Braille with clear explanations
+              Ask for examples and I&apos;ll show you Braille with clear explanations
             </CardDescription>
           </CardContent>
         </Card>
@@ -141,16 +141,14 @@ export default function ChatbotPage() {
         </CardContent>
       </Card>
 
-      {/* Chat Interface */}
-      <Card>
-        <CardContent className="p-0">
-          <ChatInterface
-            onSendMessage={handleSendMessage}
-            placeholder="Ask me anything about Braille... (Press Enter to send)"
-            autoSpeak={autoSpeak}
-          />
-        </CardContent>
-      </Card>
+      {/* Chat Interface - Contained */}
+      <div className="w-full">
+        <ChatInterface
+          onSendMessage={handleSendMessage}
+          placeholder="Ask me anything about Braille... (Press Enter to send)"
+          autoSpeak={autoSpeak}
+        />
+      </div>
 
       {/* Tips Section */}
       <Card className="bg-muted/50">
@@ -169,15 +167,15 @@ export default function ChatbotPage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary mt-0.5">•</span>
-              <span>Ask for specific examples: "Show me cat in Braille"</span>
+              <span>Ask for specific examples: &quot;Show me cat in Braille&quot;</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary mt-0.5">•</span>
-              <span>Request explanations: "Explain how Braille numbers work"</span>
+              <span>Request explanations: &quot;Explain how Braille numbers work&quot;</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary mt-0.5">•</span>
-              <span>Get help with practice: "Give me 5 easy words to practice"</span>
+              <span>Get help with practice: &quot;Give me 5 easy words to practice&quot;</span>
             </li>
           </ul>
         </CardContent>

@@ -226,7 +226,7 @@ export function AccessibleBrailleInput({
         {mode === "text" && (
           <div className="space-y-3" role="region" aria-label="Text input mode">
             <Label htmlFor="text-input">
-              Type the word "{targetWord}" in regular letters:
+              Type the word &ldquo;{targetWord}&rdquo; in regular letters:
             </Label>
             <input
               id="text-input"
@@ -240,7 +240,7 @@ export function AccessibleBrailleInput({
               autoFocus
             />
             <p id="text-mode-help" className="text-sm text-muted-foreground">
-              💡 Just type normally, we'll convert it to Braille automatically!
+              💡 Just type normally, we&apos;ll convert it to Braille automatically!
             </p>
           </div>
         )}
