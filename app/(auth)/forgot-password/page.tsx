@@ -1,7 +1,3 @@
-// app/(auth)/forgot-password/page.tsx
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 "use client";
 
 import { useState } from "react";
