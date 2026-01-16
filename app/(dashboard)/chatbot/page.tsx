@@ -9,9 +9,10 @@ import { MessageSquare, Zap, Volume2, Lightbulb } from "lucide-react";
 export default function ChatbotPage() {
   const [autoSpeak] = useState(true);
 
-  // Handle sending message to AI API
+  // Handle sending message to Cloudflare Worker
   const handleSendMessage = async (message: string): Promise<string> => {
     try {
+      // Call Cloudflare Function (auto-routed to /api/chat)
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -19,19 +20,29 @@ export default function ChatbotPage() {
         },
         body: JSON.stringify({
           message,
-          conversationHistory: [], // You can add history here if needed
+          conversationHistory: [], // Add history if needed
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get response");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to get response");
       }
 
       const data = await response.json();
       return data.response || "I'm sorry, I couldn't process that. Could you try again?";
     } catch (error) {
       console.error("Chat API error:", error);
-      throw error;
+      
+      // Friendly error message
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch")) {
+          return "I'm having trouble connecting. Please check your internet connection and try again.";
+        }
+        return `Error: ${error.message}. Please try again.`;
+      }
+      
+      return "Something went wrong. Please try again later.";
     }
   };
 
@@ -141,7 +152,7 @@ export default function ChatbotPage() {
         </CardContent>
       </Card>
 
-      {/* Chat Interface - Contained */}
+      {/* Chat Interface */}
       <div className="w-full">
         <ChatInterface
           onSendMessage={handleSendMessage}

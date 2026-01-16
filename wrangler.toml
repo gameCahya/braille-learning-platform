@@ -1,0 +1,5 @@
+name = "braille-learning-platform"
+compatibility_date = "2026-01-16"
+
+[env.production]
+# Variables will be set in Cloudflare dashboard
