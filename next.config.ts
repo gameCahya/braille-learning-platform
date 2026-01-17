@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-/* config options here */  
+  // ✅ Gunakan default (tidak perlu static export)
+  // Netlify akan handle Next.js runtime secara otomatis
+  
   // Disable image optimization
   images: {
     unoptimized: true,
@@ -12,4 +14,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-

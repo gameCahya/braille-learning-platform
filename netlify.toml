@@ -1,0 +1,31 @@
+# Netlify configuration for Next.js with Server Components
+[build]
+  command = "pnpm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  PNPM_VERSION = "10.11.1"
+
+# ✅ Install Next.js Runtime Plugin
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Function settings untuk API routes
+[functions]
+  node_bundler = "esbuild"
+  included_files = [".next/**"]
+
+# Headers untuk security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Environment variables (set via Netlify dashboard):
+# NEXT_PUBLIC_SUPABASE_URL
+# NEXT_PUBLIC_SUPABASE_ANON_KEY  
+# GROQ_API_KEY
+# NEXT_PUBLIC_APP_URL
