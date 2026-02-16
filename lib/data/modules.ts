@@ -1,6 +1,7 @@
 import type { Module } from "@/types";
 
 export const MODULES: Module[] = [
+  // ========== MODUL LAMA (TIDAK DIUBAH) ==========
   {
     id: "module-1",
     title: "Braille Alphabet (A-Z)",
@@ -188,12 +189,298 @@ export const MODULES: Module[] = [
       ],
     },
   },
+
+  // ========== MODUL BARU (BAHASA INGGRIS) ==========
+
+  // Module 10: Animals (sekarang order 4)
+  {
+    id: "module-10",
+    title: "Animals",
+    description: "Learn the names of common animals in Braille.",
+    difficulty: "beginner",
+    orderNumber: 4,
+    created_at: new Date().toISOString(),
+    braille_content: null,
+    content: {
+      summary: "Learn animal names such as cat, dog, rabbit, cow, chicken, goat, tiger, elephant, and monkey. Memorize their Braille representations.",
+      lessons: [
+        {
+          id: "lesson-10-1",
+          title: "Pets",
+          content: "Cat: ⠉⠁⠞ (cat). Dog: ⠙⠕⠛ (dog). Rabbit: ⠗⠁⠃⠃⠊⠞ (rabbit).",
+          braille: "⠉⠁⠞ ⠙⠕⠛ ⠗⠁⠃⠃⠊⠞",
+          example: "Cats and dogs are common pets.",
+        },
+        {
+          id: "lesson-10-2",
+          title: "Farm Animals",
+          content: "Cow: ⠉⠕⠺ (cow). Chicken: ⠉⠓⠊⠉⠅⠑⠝ (chicken). Goat: ⠛⠕⠁⠞ (goat).",
+          braille: "⠉⠕⠺ ⠉⠓⠊⠉⠅⠑⠝ ⠛⠕⠁⠞",
+          example: "Cows give milk, chickens lay eggs.",
+        },
+        {
+          id: "lesson-10-3",
+          title: "Wild Animals",
+          content: "Tiger: ⠞⠊⠛⠑⠗ (tiger). Elephant: ⠑⠇⠑⠏⠓⠁⠝⠞ (elephant). Monkey: ⠍⠕⠝⠅⠑⠽ (monkey).",
+          braille: "⠞⠊⠛⠑⠗ ⠑⠇⠑⠏⠓⠁⠝⠞ ⠍⠕⠝⠅⠑⠽",
+          example: "Tigers are wild, elephants have trunks, monkeys love to climb.",
+        },
+      ],
+      exercises: [
+        {
+          id: "ex-10-1",
+          type: "multiple-choice",
+          question: "What is the Braille for 'cat'?",
+          options: ["⠙⠕⠛", "⠉⠁⠞", "⠗⠁⠃⠃⠊⠞", "⠉⠕⠺"],
+          correctAnswer: "⠉⠁⠞",
+          points: 10,
+        },
+        {
+          id: "ex-10-2",
+          type: "multiple-choice",
+          question: "Which animal has the Braille ⠑⠇⠑⠏⠓⠁⠝⠞?",
+          options: ["Tiger", "Elephant", "Monkey", "Cow"],
+          correctAnswer: "Elephant",
+          points: 10,
+        },
+      ],
+    },
+  },
+
+  // Module 9: Bathroom Objects (sekarang order 5)
+  {
+    id: "module-9",
+    title: "Bathroom Objects",
+    description: "Learn the names of items commonly found in the bathroom.",
+    difficulty: "beginner",
+    orderNumber: 5,
+    created_at: new Date().toISOString(),
+    braille_content: null,
+    content: {
+      summary: "Bathroom items include soap, toothbrush, toothpaste, towel, toilet, sink, mirror, and shampoo. Memorize their Braille.",
+      lessons: [
+        {
+          id: "lesson-9-1",
+          title: "Bath Supplies",
+          content: "Soap: ⠎⠕⠁⠏ (soap). Toothbrush: ⠞⠕⠕⠞⠓⠃⠗⠥⠎⠓ (toothbrush). Toothpaste: ⠞⠕⠕⠞⠓⠏⠁⠎⠞⠑ (toothpaste).",
+          braille: "⠎⠕⠁⠏ ⠞⠕⠕⠞⠓⠃⠗⠥⠎⠓ ⠞⠕⠕⠞⠓⠏⠁⠎⠞⠑",
+          example: "Use soap for washing, toothbrush and toothpaste for cleaning teeth.",
+        },
+        {
+          id: "lesson-9-2",
+          title: "Toilet Items",
+          content: "Towel: ⠞⠕⠺⠑⠇ (towel). Toilet: ⠞⠕⠊⠇⠑⠞ (toilet). Sink: ⠎⠊⠝⠅ (sink).",
+          braille: "⠞⠕⠺⠑⠇ ⠞⠕⠊⠇⠑⠞ ⠎⠊⠝⠅",
+          example: "Dry yourself with a towel after shower.",
+        },
+        {
+          id: "lesson-9-3",
+          title: "Other Items",
+          content: "Mirror: ⠍⠊⠗⠗⠕⠗ (mirror). Shampoo: ⠎⠓⠁⠍⠏⠕⠕ (shampoo).",
+          braille: "⠍⠊⠗⠗⠕⠗ ⠎⠓⠁⠍⠏⠕⠕",
+          example: "Look in the mirror after washing, use shampoo for hair.",
+        },
+      ],
+      exercises: [
+        {
+          id: "ex-9-1",
+          type: "multiple-choice",
+          question: "What is the Braille for 'soap'?",
+          options: ["⠎⠓⠁⠍⠏⠕⠕", "⠎⠕⠁⠏", "⠞⠕⠺⠑⠇", "⠞⠕⠕⠞⠓⠃⠗⠥⠎⠓"],
+          correctAnswer: "⠎⠕⠁⠏",
+          points: 10,
+        },
+        {
+          id: "ex-9-2",
+          type: "multiple-choice",
+          question: "Which word is spelled ⠞⠕⠺⠑⠇?",
+          options: ["Toilet", "Sink", "Towel", "Mirror"],
+          correctAnswer: "Towel",
+          points: 10,
+        },
+      ],
+    },
+  },
+
+  // Module 6: Classroom Objects (order 6)
+  {
+    id: "module-6",
+    title: "Classroom Objects",
+    description: "Learn the names of objects commonly found in a classroom, along with their Braille.",
+    difficulty: "beginner",
+    orderNumber: 6,
+    created_at: new Date().toISOString(),
+    braille_content: null,
+    content: {
+      summary: "Classroom objects include table, chair, blackboard, book, pencil, pen, eraser, and ruler. Memorize their Braille.",
+      lessons: [
+        {
+          id: "lesson-6-1",
+          title: "Table and Chair",
+          content: "Table: ⠞⠁⠃⠇⠑ (table). Chair: ⠉⠓⠁⠊⠗ (chair).",
+          braille: "⠞⠁⠃⠇⠑ ⠉⠓⠁⠊⠗",
+          example: "I sit on a chair and write at the table.",
+        },
+        {
+          id: "lesson-6-2",
+          title: "Blackboard and Book",
+          content: "Blackboard: ⠃⠇⠁⠉⠅⠃⠕⠁⠗⠙ (blackboard). Book: ⠃⠕⠕⠅ (book).",
+          braille: "⠃⠇⠁⠉⠅⠃⠕⠁⠗⠙ ⠃⠕⠕⠅",
+          example: "The teacher writes on the blackboard, students read books.",
+        },
+        {
+          id: "lesson-6-3",
+          title: "Pencil and Pen",
+          content: "Pencil: ⠏⠑⠝⠉⠊⠇ (pencil). Pen: ⠏⠑⠝ (pen).",
+          braille: "⠏⠑⠝⠉⠊⠇ ⠏⠑⠝",
+          example: "I write with a pencil, then trace with a pen.",
+        },
+        {
+          id: "lesson-6-4",
+          title: "Eraser and Ruler",
+          content: "Eraser: ⠑⠗⠁⠎⠑⠗ (eraser). Ruler: ⠗⠥⠇⠑⠗ (ruler).",
+          braille: "⠑⠗⠁⠎⠑⠗ ⠗⠥⠇⠑⠗",
+          example: "Use a ruler to draw straight lines, and an eraser to correct mistakes.",
+        },
+      ],
+      exercises: [
+        {
+          id: "ex-6-1",
+          type: "multiple-choice",
+          question: "What is the Braille for 'table'?",
+          options: ["⠞⠁⠃⠇⠑", "⠉⠓⠁⠊⠗", "⠃⠕⠕⠅", "⠏⠑⠝"],
+          correctAnswer: "⠞⠁⠃⠇⠑",
+          points: 10,
+        },
+        {
+          id: "ex-6-2",
+          type: "multiple-choice",
+          question: "Which word is ⠏⠑⠝⠉⠊⠇?",
+          options: ["Pen", "Pencil", "Eraser", "Ruler"],
+          correctAnswer: "Pencil",
+          points: 10,
+        },
+      ],
+    },
+  },
+
+  // Module 7: Colors (order 7)
+  {
+    id: "module-7",
+    title: "Colors",
+    description: "Learn the basic colors in Braille.",
+    difficulty: "beginner",
+    orderNumber: 7,
+    created_at: new Date().toISOString(),
+    braille_content: null,
+    content: {
+      summary: "Colors help us describe objects. Memorize Braille for primary colors: red, blue, yellow, green, black, white, orange, purple, brown.",
+      lessons: [
+        {
+          id: "lesson-7-1",
+          title: "Primary Colors",
+          content: "Red: ⠗⠑⠙ (red). Blue: ⠃⠇⠥⠑ (blue). Yellow: ⠽⠑⠇⠇⠕⠺ (yellow).",
+          braille: "⠗⠑⠙ ⠃⠇⠥⠑ ⠽⠑⠇⠇⠕⠺",
+          example: "The Indonesian flag is red and white.",
+        },
+        {
+          id: "lesson-7-2",
+          title: "More Colors",
+          content: "Green: ⠛⠗⠑⠑⠝ (green). Black: ⠃⠇⠁⠉⠅ (black). White: ⠺⠓⠊⠞⠑ (white).",
+          braille: "⠛⠗⠑⠑⠝ ⠃⠇⠁⠉⠅ ⠺⠓⠊⠞⠑",
+          example: "Leaves are green, night sky is black, clouds are white.",
+        },
+        {
+          id: "lesson-7-3",
+          title: "Secondary Colors",
+          content: "Orange: ⠕⠗⠁⠝⠛⠑ (orange). Purple: ⠏⠥⠗⠏⠇⠑ (purple). Brown: ⠃⠗⠕⠺⠝ (brown).",
+          braille: "⠕⠗⠁⠝⠛⠑ ⠏⠥⠗⠏⠇⠑ ⠃⠗⠕⠺⠝",
+          example: "Oranges are orange, eggplants are purple, soil is brown.",
+        },
+      ],
+      exercises: [
+        {
+          id: "ex-7-1",
+          type: "multiple-choice",
+          question: "What is the Braille for 'red'?",
+          options: ["⠃⠇⠥⠑", "⠛⠗⠑⠑⠝", "⠗⠑⠙", "⠽⠑⠇⠇⠕⠺"],
+          correctAnswer: "⠗⠑⠙",
+          points: 10,
+        },
+        {
+          id: "ex-7-2",
+          type: "multiple-choice",
+          question: "Which color is ⠃⠇⠁⠉⠅?",
+          options: ["White", "Black", "Brown", "Blue"],
+          correctAnswer: "Black",
+          points: 10,
+        },
+      ],
+    },
+  },
+
+  // Module 8: Body Parts (order 8)
+  {
+    id: "module-8",
+    title: "Body Parts",
+    description: "Learn the names of human body parts in Braille.",
+    difficulty: "beginner",
+    orderNumber: 8,
+    created_at: new Date().toISOString(),
+    braille_content: null,
+    content: {
+      summary: "Body parts include head, hair, eye, nose, mouth, hand, finger, foot, arm, back, stomach. Memorize their Braille.",
+      lessons: [
+        {
+          id: "lesson-8-1",
+          title: "Head and Face",
+          content: "Head: ⠓⠑⠁⠙ (head). Hair: ⠓⠁⠊⠗ (hair). Eye: ⠑⠽⠑ (eye). Nose: ⠝⠕⠎⠑ (nose). Mouth: ⠍⠕⠥⠞⠓ (mouth).",
+          braille: "⠓⠑⠁⠙ ⠓⠁⠊⠗ ⠑⠽⠑ ⠝⠕⠎⠑ ⠍⠕⠥⠞⠓",
+          example: "We see with our eyes, smell with our nose, and speak with our mouth.",
+        },
+        {
+          id: "lesson-8-2",
+          title: "Hands and Feet",
+          content: "Hand: ⠓⠁⠝⠙ (hand). Finger: ⠋⠊⠝⠛⠑⠗ (finger). Foot: ⠋⠕⠕⠞ (foot).",
+          braille: "⠓⠁⠝⠙ ⠋⠊⠝⠛⠑⠗ ⠋⠕⠕⠞",
+          example: "Hands are for holding, feet for walking.",
+        },
+        {
+          id: "lesson-8-3",
+          title: "Torso",
+          content: "Arm: ⠁⠗⠍ (arm). Back: ⠃⠁⠉⠅ (back). Stomach: ⠎⠞⠕⠍⠁⠉⠓ (stomach).",
+          braille: "⠁⠗⠍ ⠃⠁⠉⠅ ⠎⠞⠕⠍⠁⠉⠓",
+          example: "Arms swing while walking, back supports the body, stomach digests food.",
+        },
+      ],
+      exercises: [
+        {
+          id: "ex-8-1",
+          type: "multiple-choice",
+          question: "What is the Braille for 'eye'?",
+          options: ["⠓⠁⠝⠙", "⠑⠽⠑", "⠝⠕⠎⠑", "⠍⠕⠥⠞⠓"],
+          correctAnswer: "⠑⠽⠑",
+          points: 10,
+        },
+        {
+          id: "ex-8-2",
+          type: "multiple-choice",
+          question: "Which word is ⠓⠁⠝⠙?",
+          options: ["Foot", "Hand", "Arm", "Back"],
+          correctAnswer: "Hand",
+          points: 10,
+        },
+      ],
+    },
+  },
+
+  // ========== MODUL LAMA YANG DIPINDAH URUTANNYA ==========
   {
     id: "module-4",
     title: "Simple Sentences",
     description: "Learn to construct basic sentences in Braille",
     difficulty: "intermediate",
-    orderNumber: 4,
+    orderNumber: 9, // diubah dari sebelumnya
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -245,7 +532,7 @@ export const MODULES: Module[] = [
     title: "Reading Practice",
     description: "Practice reading complete paragraphs in Braille",
     difficulty: "intermediate",
-    orderNumber: 5,
+    orderNumber: 10, // diubah dari sebelumnya
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {

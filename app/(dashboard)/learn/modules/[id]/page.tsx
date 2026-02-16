@@ -1,5 +1,3 @@
-// app/(dashboard)/learn/modules/[id]/page.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, CheckCircle2, Volume2, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Volume2, BookOpen, XCircle, RefreshCw } from "lucide-react";
 import { getModuleById } from "@/lib/data/modules";
 import { getModuleUUID } from "@/lib/data/moduleMapping";
 import BrailleDisplay from "@/components/braille/BrailleDisplay";
@@ -16,17 +14,21 @@ import QuizComponent from "@/components/learning/QuizComponent";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
+// PASSING GRADE CONSTANT
+const PASSING_GRADE = 70; // 70% minimum untuk lulus
+
 export default function ModuleDetailPage() {
   const params = useParams();
   const router = useRouter();
   const moduleId = params.id as string;
-  const moduleUUID = getModuleUUID(moduleId); // Convert to UUID for database
+  const moduleUUID = getModuleUUID(moduleId);
   
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizScore, setQuizScore] = useState(0);
+  const [quizPassed, setQuizPassed] = useState(false); // NEW: Track if passed
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isModuleCompleted, setIsModuleCompleted] = useState(false);
@@ -44,7 +46,7 @@ export default function ModuleDetailPage() {
           .select("*")
           .eq("user_id", user.id)
           .eq("module_id", moduleUUID)
-          .maybeSingle(); // Use maybeSingle instead of single to avoid error if no rows
+          .maybeSingle();
         
         if (error) {
           console.error("Error loading progress:", error);
@@ -116,11 +118,31 @@ export default function ModuleDetailPage() {
     }
   };
 
+  // NEW: Retry Quiz Function
+  const handleRetryQuiz = () => {
+    setQuizCompleted(false);
+    setQuizScore(0);
+    setQuizPassed(false);
+    setShowQuiz(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    toast.info("Quiz reset. Try again!", {
+      description: `You need ${PASSING_GRADE}% to pass.`,
+    });
+  };
+
   const handleCompleteModule = async () => {
     // Check if module has exercises and quiz not completed
     if (learningModule.content.exercises && learningModule.content.exercises.length > 0 && !quizCompleted) {
       setShowQuiz(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    // NEW: Check if quiz passed
+    if (quizCompleted && !quizPassed) {
+      toast.error("Quiz not passed!", {
+        description: `You need at least ${PASSING_GRADE}% to complete this module. Please retry the quiz.`,
+      });
       return;
     }
 
@@ -135,20 +157,19 @@ export default function ModuleDetailPage() {
     }
 
     try {
-      // Use upsert with onConflict to handle existing records
       const { data, error } = await supabase
         .from("user_progress")
         .upsert(
           {
             user_id: user.id,
-            module_id: moduleUUID, // Use UUID here
+            module_id: moduleUUID,
             completed: true,
             score: quizScore || 100,
             completed_at: new Date().toISOString(),
           },
           {
-            onConflict: "user_id,module_id", // Specify conflict columns
-            ignoreDuplicates: false, // Update on conflict
+            onConflict: "user_id,module_id",
+            ignoreDuplicates: false,
           }
         )
         .select()
@@ -163,7 +184,6 @@ export default function ModuleDetailPage() {
         description: "You've finished this module. Great work!",
       });
 
-      // Update local state
       if (data) {
         setIsModuleCompleted(true);
       }
@@ -174,7 +194,6 @@ export default function ModuleDetailPage() {
     } catch (error) {
       console.error("Failed to save progress:", error);
       
-      // More detailed error message with proper typing
       const err = error as { code?: string; message?: string };
       
       if (err.code === "23503") {
@@ -199,15 +218,18 @@ export default function ModuleDetailPage() {
     setQuizScore(score);
     setQuizCompleted(true);
     
+    // NEW: Check if passed
+    const passed = score >= PASSING_GRADE;
+    setQuizPassed(passed);
+    
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (user) {
       try {
-        // Save quiz result with UUID
         const { error } = await supabase.from("quiz_results").insert({
           user_id: user.id,
-          module_id: moduleUUID, // Use UUID here
+          module_id: moduleUUID,
           score,
           total_points: 100,
           correct_answers: Object.values(answers).filter((a) => a === "correct").length,
@@ -218,9 +240,16 @@ export default function ModuleDetailPage() {
         if (error) {
           console.error("Error saving quiz result:", error);
         } else {
-          toast.success("Quiz completed!", {
-            description: `You scored ${score}%`,
-          });
+          // NEW: Different toast based on pass/fail
+          if (passed) {
+            toast.success("Quiz passed! 🎉", {
+              description: `You scored ${score}%. Excellent!`,
+            });
+          } else {
+            toast.error("Quiz failed 😞", {
+              description: `You scored ${score}%. You need ${PASSING_GRADE}% to pass. Please try again.`,
+            });
+          }
         }
       } catch (error) {
         console.error("Failed to save quiz result:", error);
@@ -285,7 +314,7 @@ export default function ModuleDetailPage() {
           <CardTitle>Your Progress</CardTitle>
           <CardDescription>
             {showQuiz 
-              ? "Complete the quiz to finish this module"
+              ? `Complete the quiz (minimum ${PASSING_GRADE}% to pass)`
               : `Lesson ${currentLessonIndex + 1} of ${totalLessons}`
             }
           </CardDescription>
@@ -305,28 +334,75 @@ export default function ModuleDetailPage() {
             <CardHeader>
               <CardTitle>Module Quiz</CardTitle>
               <CardDescription>
-                Test your knowledge of what you&apos;ve learned
+                Test your knowledge. Passing grade: {PASSING_GRADE}%
               </CardDescription>
             </CardHeader>
           </Card>
           
-          <QuizComponent
-            exercises={learningModule.content.exercises}
-            onComplete={handleQuizComplete}
-          />
+          {!quizCompleted ? (
+            <QuizComponent
+              exercises={learningModule.content.exercises}
+              onComplete={handleQuizComplete}
+            />
+          ) : (
+            <>
+              {/* Quiz Result Card */}
+              <Card className={quizPassed ? "border-green-500" : "border-red-500"}>
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    {quizPassed ? (
+                      <CheckCircle2 className="h-8 w-8 text-green-600" />
+                    ) : (
+                      <XCircle className="h-8 w-8 text-red-600" />
+                    )}
+                    <div>
+                      <CardTitle className={quizPassed ? "text-green-700" : "text-red-700"}>
+                        {quizPassed ? "Quiz Passed! 🎉" : "Quiz Failed 😞"}
+                      </CardTitle>
+                      <CardDescription>
+                        Your score: {quizScore}% (Passing grade: {PASSING_GRADE}%)
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {quizPassed ? (
+                    <p className="text-green-700 dark:text-green-300">
+                      Excellent work! You can now complete this module.
+                    </p>
+                  ) : (
+                    <p className="text-red-700 dark:text-red-300">
+                      You need at least {PASSING_GRADE}% to pass. Review the lessons and try again!
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
 
-          {quizCompleted && (
-            <Card>
-              <CardContent className="pt-6">
-                <Button 
-                  onClick={handleCompleteModule} 
-                  className="w-full"
-                  disabled={saving}
-                >
-                  {saving ? "Saving..." : "Complete Module"}
-                </Button>
-              </CardContent>
-            </Card>
+              {/* Action Buttons */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex gap-3">
+                    {!quizPassed && (
+                      <Button 
+                        onClick={handleRetryQuiz}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Retry Quiz
+                      </Button>
+                    )}
+                    <Button 
+                      onClick={handleCompleteModule} 
+                      className="flex-1"
+                      disabled={saving || !quizPassed}
+                    >
+                      {saving ? "Saving..." : "Complete Module"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
           )}
         </div>
       ) : (
@@ -353,12 +429,10 @@ export default function ModuleDetailPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Lesson Content */}
               <div className="prose dark:prose-invert max-w-none">
                 <p className="text-lg">{currentLesson.content}</p>
               </div>
 
-              {/* Braille Display */}
               {currentLesson.braille && (
                 <BrailleDisplay
                   text=""
@@ -368,7 +442,6 @@ export default function ModuleDetailPage() {
                 />
               )}
 
-              {/* Example */}
               {currentLesson.example && (
                 <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
                   <CardHeader>
@@ -380,7 +453,6 @@ export default function ModuleDetailPage() {
                 </Card>
               )}
 
-              {/* Audio Button */}
               <div className="flex gap-2">
                 <Button
                   variant="outline"
