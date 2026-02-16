@@ -1,3 +1,4 @@
+// app/(dashboard)/learn/modules/page.tsx
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen, CheckCircle2, Lock, Clock } from "lucide-react";
 import Link from "next/link";
 import { MODULES } from "@/lib/data/modules";
+import { getModuleUUID } from "@/lib/data/moduleMapping";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { UserProgress } from "@/types";
@@ -20,12 +22,14 @@ export default function ModulesPage() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("user_progress")
           .select("*")
           .eq("user_id", user.id);
         
-        if (data) {
+        if (error) {
+          console.error("Error loading progress:", error);
+        } else if (data) {
           const progressMap: Record<string, UserProgress> = {};
           data.forEach((p) => {
             progressMap[p.module_id] = p;
@@ -58,7 +62,14 @@ export default function ModulesPage() {
     const previousModule = MODULES.find((m) => m.orderNumber === orderNumber - 1);
     if (!previousModule) return false;
     
-    return progress[previousModule.id]?.completed || false;
+    // Get UUID for previous module
+    const previousModuleUUID = getModuleUUID(previousModule.id);
+    return progress[previousModuleUUID]?.completed || false;
+  };
+
+  const getModuleProgress = (moduleId: string) => {
+    const moduleUUID = getModuleUUID(moduleId);
+    return progress[moduleUUID];
   };
 
   return (
@@ -103,7 +114,7 @@ export default function ModulesPage() {
       {/* Modules List */}
       <div className="grid gap-6">
         {MODULES.map((module) => {
-          const moduleProgress = progress[module.id];
+          const moduleProgress = getModuleProgress(module.id);
           const isUnlocked = isModuleUnlocked(module.orderNumber);
           const isCompleted = moduleProgress?.completed || false;
 

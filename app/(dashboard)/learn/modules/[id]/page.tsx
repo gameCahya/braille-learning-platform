@@ -1,3 +1,5 @@
+// app/(dashboard)/learn/modules/[id]/page.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,24 +10,26 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, CheckCircle2, Volume2, BookOpen } from "lucide-react";
 import { getModuleById } from "@/lib/data/modules";
+import { getModuleUUID } from "@/lib/data/moduleMapping";
 import BrailleDisplay from "@/components/braille/BrailleDisplay";
 import QuizComponent from "@/components/learning/QuizComponent";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import type { UserProgress } from "@/types";
 
 export default function ModuleDetailPage() {
   const params = useParams();
   const router = useRouter();
   const moduleId = params.id as string;
+  const moduleUUID = getModuleUUID(moduleId); // Convert to UUID for database
   
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizScore, setQuizScore] = useState(0);
-  const [progress, setProgress] = useState<UserProgress | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [isModuleCompleted, setIsModuleCompleted] = useState(false);
 
   const learningModule = getModuleById(moduleId);
 
@@ -35,22 +39,24 @@ export default function ModuleDetailPage() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user && learningModule) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("user_progress")
           .select("*")
           .eq("user_id", user.id)
-          .eq("module_id", moduleId)
-          .single();
+          .eq("module_id", moduleUUID)
+          .maybeSingle(); // Use maybeSingle instead of single to avoid error if no rows
         
-        if (data) {
-          setProgress(data);
+        if (error) {
+          console.error("Error loading progress:", error);
+        } else if (data) {
+          setIsModuleCompleted(data.completed || false);
         }
       }
       setLoading(false);
     }
 
     loadProgress();
-  }, [moduleId, learningModule]);
+  }, [moduleId, moduleUUID, learningModule]);
 
   if (loading) {
     return (
@@ -118,37 +124,74 @@ export default function ModuleDetailPage() {
       return;
     }
 
+    setSaving(true);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
       toast.error("Please sign in to save progress");
+      setSaving(false);
       return;
     }
 
     try {
-      const { error } = await supabase
+      // Use upsert with onConflict to handle existing records
+      const { data, error } = await supabase
         .from("user_progress")
-        .upsert({
-          user_id: user.id,
-          module_id: moduleId,
-          completed: true,
-          score: quizScore || 100,
-          completed_at: new Date().toISOString(),
-        });
+        .upsert(
+          {
+            user_id: user.id,
+            module_id: moduleUUID, // Use UUID here
+            completed: true,
+            score: quizScore || 100,
+            completed_at: new Date().toISOString(),
+          },
+          {
+            onConflict: "user_id,module_id", // Specify conflict columns
+            ignoreDuplicates: false, // Update on conflict
+          }
+        )
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
 
       toast.success("Module completed!", {
         description: "You've finished this module. Great work!",
       });
+
+      // Update local state
+      if (data) {
+        setIsModuleCompleted(true);
+      }
 
       setTimeout(() => {
         router.push("/learn/modules");
       }, 2000);
     } catch (error) {
       console.error("Failed to save progress:", error);
-      toast.error("Failed to save progress");
+      
+      // More detailed error message with proper typing
+      const err = error as { code?: string; message?: string };
+      
+      if (err.code === "23503") {
+        toast.error("Module not found in database", {
+          description: "Please contact support if this persists.",
+        });
+      } else if (err.code === "23505") {
+        toast.error("Progress already saved", {
+          description: "Your progress has been recorded.",
+        });
+      } else {
+        toast.error("Failed to save progress", {
+          description: err.message || "Please try again.",
+        });
+      }
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -161,17 +204,24 @@ export default function ModuleDetailPage() {
     
     if (user) {
       try {
-        // Save quiz result
-        await supabase.from("quiz_results").insert({
+        // Save quiz result with UUID
+        const { error } = await supabase.from("quiz_results").insert({
           user_id: user.id,
-          module_id: moduleId,
+          module_id: moduleUUID, // Use UUID here
           score,
+          total_points: 100,
+          correct_answers: Object.values(answers).filter((a) => a === "correct").length,
+          total_questions: Object.keys(answers).length,
           answers,
         });
 
-        toast.success("Quiz completed!", {
-          description: `You scored ${score}%`,
-        });
+        if (error) {
+          console.error("Error saving quiz result:", error);
+        } else {
+          toast.success("Quiz completed!", {
+            description: `You scored ${score}%`,
+          });
+        }
       } catch (error) {
         console.error("Failed to save quiz result:", error);
       }
@@ -209,15 +259,23 @@ export default function ModuleDetailPage() {
               {learningModule.description}
             </p>
           </div>
-          <Badge className={
-            learningModule.difficulty === "beginner"
-              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-              : learningModule.difficulty === "intermediate"
-              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-              : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-          }>
-            {learningModule.difficulty}
-          </Badge>
+          <div className="flex flex-col gap-2">
+            <Badge className={
+              learningModule.difficulty === "beginner"
+                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                : learningModule.difficulty === "intermediate"
+                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+            }>
+              {learningModule.difficulty}
+            </Badge>
+            {isModuleCompleted && (
+              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                <CheckCircle2 className="w-3 h-3 mr-1" />
+                Completed
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
@@ -260,8 +318,12 @@ export default function ModuleDetailPage() {
           {quizCompleted && (
             <Card>
               <CardContent className="pt-6">
-                <Button onClick={handleCompleteModule} className="w-full">
-                  Complete Module
+                <Button 
+                  onClick={handleCompleteModule} 
+                  className="w-full"
+                  disabled={saving}
+                >
+                  {saving ? "Saving..." : "Complete Module"}
                 </Button>
               </CardContent>
             </Card>
@@ -271,107 +333,112 @@ export default function ModuleDetailPage() {
         <>
           {/* Current Lesson */}
           <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                {currentLesson.title}
-              </CardTitle>
-              <CardDescription>
-                Lesson {currentLessonIndex + 1}
-              </CardDescription>
-            </div>
-            {completedLessons.has(currentLessonIndex) && (
-              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                <CheckCircle2 className="h-3 w-3 mr-1" />
-                Completed
-              </Badge>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Lesson Content */}
-          <div className="prose dark:prose-invert max-w-none">
-            <p className="text-lg">{currentLesson.content}</p>
-          </div>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    {currentLesson.title}
+                  </CardTitle>
+                  <CardDescription>
+                    Lesson {currentLessonIndex + 1}
+                  </CardDescription>
+                </div>
+                {completedLessons.has(currentLessonIndex) && (
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    Completed
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Lesson Content */}
+              <div className="prose dark:prose-invert max-w-none">
+                <p className="text-lg">{currentLesson.content}</p>
+              </div>
 
-          {/* Braille Display */}
-          {currentLesson.braille && (
-            <BrailleDisplay
-              text=""
-              braille={currentLesson.braille}
-              showText={false}
-              onSpeak={() => handleSpeak(currentLesson.content)}
-            />
-          )}
-
-          {/* Example */}
-          {currentLesson.example && (
-            <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
-              <CardHeader>
-                <CardTitle className="text-base">Example</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{currentLesson.example}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Audio Button */}
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => handleSpeak(currentLesson.content)}
-            >
-              <Volume2 className="h-4 w-4 mr-2" />
-              Read Aloud
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Navigation & Actions */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={handlePreviousLesson}
-              disabled={currentLessonIndex === 0}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Previous
-            </Button>
-
-            <div className="flex gap-2">
-              {!completedLessons.has(currentLessonIndex) && (
-                <Button variant="outline" onClick={handleLessonComplete}>
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                  Mark Complete
-                </Button>
+              {/* Braille Display */}
+              {currentLesson.braille && (
+                <BrailleDisplay
+                  text=""
+                  braille={currentLesson.braille}
+                  showText={false}
+                  onSpeak={() => handleSpeak(currentLesson.content)}
+                />
               )}
 
-              {currentLessonIndex === totalLessons - 1 &&
-                completedLessons.size === totalLessons ? (
-                <Button onClick={handleCompleteModule}>
-                  {learningModule.content.exercises && learningModule.content.exercises.length > 0
-                    ? "Take Quiz"
-                    : "Complete Module"}
-                </Button>
-              ) : (
+              {/* Example */}
+              {currentLesson.example && (
+                <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+                  <CardHeader>
+                    <CardTitle className="text-base">Example</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm">{currentLesson.example}</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Audio Button */}
+              <div className="flex gap-2">
                 <Button
-                  onClick={handleNextLesson}
-                  disabled={currentLessonIndex === totalLessons - 1}
+                  variant="outline"
+                  onClick={() => handleSpeak(currentLesson.content)}
                 >
-                  Next
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  <Volume2 className="h-4 w-4 mr-2" />
+                  Read Aloud
                 </Button>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Navigation & Actions */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="outline"
+                  onClick={handlePreviousLesson}
+                  disabled={currentLessonIndex === 0}
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Previous
+                </Button>
+
+                <div className="flex gap-2">
+                  {!completedLessons.has(currentLessonIndex) && (
+                    <Button variant="outline" onClick={handleLessonComplete}>
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      Mark Complete
+                    </Button>
+                  )}
+
+                  {currentLessonIndex === totalLessons - 1 &&
+                    completedLessons.size === totalLessons ? (
+                    <Button 
+                      onClick={handleCompleteModule}
+                      disabled={saving}
+                    >
+                      {saving ? "Saving..." : (
+                        learningModule.content.exercises && learningModule.content.exercises.length > 0
+                          ? "Take Quiz"
+                          : "Complete Module"
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleNextLesson}
+                      disabled={currentLessonIndex === totalLessons - 1}
+                    >
+                      Next
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </>
       )}
 
