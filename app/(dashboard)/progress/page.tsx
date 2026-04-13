@@ -95,7 +95,7 @@ export default function ProgressPage() {
   const moduleData = MODULES.map((module) => {
     const moduleProgress = progress.find((p) => p.module_id === module.id);
     return {
-      name: `Module ${module.orderNumber}`,
+      name: `Module ${module.order_number}`,
       score: moduleProgress?.score || 0,
       completed: moduleProgress?.completed ? 1 : 0,
     };
@@ -376,7 +376,7 @@ export default function ProgressPage() {
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-bold">
-                      {module.orderNumber}
+                      {module.order_number}
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold">{module.title}</h3>

@@ -78,7 +78,7 @@ export default function DashboardHeader({ user, profile }: DashboardHeaderProps)
 
         {/* User Menu */}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger id="user-menu" asChild>
             <Button
               variant="ghost"
               className="relative h-10 w-10 rounded-full"

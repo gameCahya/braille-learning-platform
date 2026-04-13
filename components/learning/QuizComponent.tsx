@@ -183,6 +183,19 @@ export default function QuizComponent({ exercises, onComplete }: QuizComponentPr
           )}
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* NEW: Question Image */}
+          {currentQuestion.questionImage && (
+            <div className="relative w-full h-48 rounded-lg overflow-hidden mb-4 border-2 border-slate-200">
+              <img
+              src={currentQuestion.questionImage}
+
+              alt="Question image"
+              className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
+
           {/* Multiple Choice */}
           {currentQuestion.type === "multiple-choice" && currentQuestion.options && (
             <div className="space-y-2">

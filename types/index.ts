@@ -21,7 +21,7 @@ export interface Module {
   content: ModuleContent;
   braille_content: string | null;
   difficulty: "beginner" | "intermediate" | "advanced";
-  orderNumber: number;
+  order_number: number; // FIXED: Changed from orderNumber to match database
   created_at: string;
 }
 
@@ -35,21 +35,25 @@ export interface Lesson {
   id: string;
   title: string;
   content: string;
-  description?: string; // Made optional
+  description?: string;
   braille?: string;
   example?: string;
   audioUrl?: string;
-  image?: string;
+  image?: string; // URL gambar untuk lesson
+  imageAlt?: string; // Alt text untuk accessibility
 }
 
 export interface Exercise {
   id: string;
-  type: "multiple-choice" | "text-to-braille" | "braille-to-text" | "fill-blank";
+  type: "multiple-choice" | "text-to-braille" | "braille-to-text";
   question: string;
+  questionImage?: string; // Gambar untuk soal
   options?: string[];
+  optionImages?: string[]; // Gambar untuk opsi jawaban
   correctAnswer: string;
   hint?: string;
   points: number;
+  explanation?: string; // Penjelasan jawaban
 }
 
 export interface UserProgress {
@@ -57,7 +61,7 @@ export interface UserProgress {
   user_id: string;
   module_id: string;
   completed: boolean;
-  score?: number | null; // Made optional and nullable
+  score?: number | null;
   completed_at: string | null;
   created_at: string;
 }
@@ -67,7 +71,12 @@ export interface QuizResult {
   user_id: string;
   module_id: string;
   score: number;
+  total_points: number; // NEW: Added to match database
+  correct_answers: number; // NEW: Added to match database
+  total_questions: number; // NEW: Added to match database
   answers: Record<string, string>;
+  details?: Record<string, unknown>; // NEW: Added to match database (JSONB)
+  feedback?: string; // NEW: Added to match database
   created_at: string;
 }
 

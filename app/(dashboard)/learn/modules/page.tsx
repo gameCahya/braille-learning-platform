@@ -11,6 +11,8 @@ import { getModuleUUID } from "@/lib/data/moduleMapping";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { UserProgress } from "@/types";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { modulesTutorialSteps } from "@/lib/tutorial/steps";
 
 export default function ModulesPage() {
   const [progress, setProgress] = useState<Record<string, UserProgress>>({});
@@ -56,10 +58,10 @@ export default function ModulesPage() {
     }
   };
 
-  const isModuleUnlocked = (orderNumber: number) => {
-    if (orderNumber === 1) return true;
+  const isModuleUnlocked = (order_number: number) => {
+    if (order_number === 1) return true;
     
-    const previousModule = MODULES.find((m) => m.orderNumber === orderNumber - 1);
+    const previousModule = MODULES.find((m) => m.order_number === order_number - 1);
     if (!previousModule) return false;
     
     // Get UUID for previous module
@@ -74,6 +76,13 @@ export default function ModulesPage() {
 
   return (
     <div className="space-y-6">
+      <TutorialDriver
+        steps={modulesTutorialSteps}
+        storageKey="modules-tutorial-seen"
+        autoStart={false}
+        showButton={true}
+      />
+
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Learning Modules</h1>
@@ -115,7 +124,7 @@ export default function ModulesPage() {
       <div className="grid gap-6">
         {MODULES.map((module) => {
           const moduleProgress = getModuleProgress(module.id);
-          const isUnlocked = isModuleUnlocked(module.orderNumber);
+          const isUnlocked = isModuleUnlocked(module.order_number);
           const isCompleted = moduleProgress?.completed || false;
 
           return (
@@ -130,7 +139,7 @@ export default function ModulesPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-bold">
-                        {module.orderNumber}
+                        {module.order_number}
                       </div>
                       <div>
                         <CardTitle className="text-xl">{module.title}</CardTitle>

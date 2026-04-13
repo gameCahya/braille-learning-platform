@@ -7,7 +7,7 @@ export const MODULES: Module[] = [
     title: "Braille Alphabet (A-Z)",
     description: "Learn the complete Braille alphabet from A to Z",
     difficulty: "beginner",
-    orderNumber: 1,
+    order_number: 1,
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -74,7 +74,7 @@ export const MODULES: Module[] = [
     title: "Numbers in Braille",
     description: "Learn how to write and read numbers in Braille",
     difficulty: "beginner",
-    orderNumber: 2,
+    order_number: 2,
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -134,7 +134,7 @@ export const MODULES: Module[] = [
     title: "Common Words",
     description: "Practice reading and writing common English words in Braille",
     difficulty: "beginner",
-    orderNumber: 3,
+    order_number: 3,
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -198,7 +198,7 @@ export const MODULES: Module[] = [
     title: "Animals",
     description: "Learn the names of common animals in Braille.",
     difficulty: "beginner",
-    orderNumber: 4,
+    order_number: 4,
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -209,6 +209,7 @@ export const MODULES: Module[] = [
           title: "Pets",
           content: "Cat: ⠉⠁⠞ (cat). Dog: ⠙⠕⠛ (dog). Rabbit: ⠗⠁⠃⠃⠊⠞ (rabbit).",
           braille: "⠉⠁⠞ ⠙⠕⠛ ⠗⠁⠃⠃⠊⠞",
+          image:"/images/modules/animals/cat.png",
           example: "Cats and dogs are common pets.",
         },
         {
@@ -253,7 +254,7 @@ export const MODULES: Module[] = [
     title: "Bathroom Objects",
     description: "Learn the names of items commonly found in the bathroom.",
     difficulty: "beginner",
-    orderNumber: 5,
+    order_number: 5,
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -308,7 +309,7 @@ export const MODULES: Module[] = [
     title: "Classroom Objects",
     description: "Learn the names of objects commonly found in a classroom, along with their Braille.",
     difficulty: "beginner",
-    orderNumber: 6,
+    order_number: 6,
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -370,7 +371,7 @@ export const MODULES: Module[] = [
     title: "Colors",
     description: "Learn the basic colors in Braille.",
     difficulty: "beginner",
-    orderNumber: 7,
+    order_number: 7,
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -425,7 +426,7 @@ export const MODULES: Module[] = [
     title: "Body Parts",
     description: "Learn the names of human body parts in Braille.",
     difficulty: "beginner",
-    orderNumber: 8,
+    order_number: 8,
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -480,7 +481,7 @@ export const MODULES: Module[] = [
     title: "Simple Sentences",
     description: "Learn to construct basic sentences in Braille",
     difficulty: "intermediate",
-    orderNumber: 9, // diubah dari sebelumnya
+    order_number: 9, // diubah dari sebelumnya
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {
@@ -532,7 +533,7 @@ export const MODULES: Module[] = [
     title: "Reading Practice",
     description: "Practice reading complete paragraphs in Braille",
     difficulty: "intermediate",
-    orderNumber: 10, // diubah dari sebelumnya
+    order_number: 10, // diubah dari sebelumnya
     created_at: new Date().toISOString(),
     braille_content: null,
     content: {

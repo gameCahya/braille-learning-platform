@@ -58,7 +58,7 @@ export default function DashboardSidebar() {
       className="fixed left-0 top-16 z-30 hidden h-[calc(100vh-4rem)] w-64 border-r bg-white dark:bg-slate-950 md:block overflow-y-auto"
       aria-label="Sidebar navigation"
     >
-      <nav className="flex flex-col gap-1 p-4" role="navigation">
+      <nav id="sidebar-nav"  className="flex flex-col gap-1 p-4" role="navigation">
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;
@@ -98,7 +98,7 @@ export default function DashboardSidebar() {
       </nav>
 
       {/* Braille Quick Reference */}
-      <div className="mx-4 my-4 rounded-lg border bg-slate-50 dark:bg-slate-900 p-4">
+      <div id="braille-reference" className="mx-4 my-4 rounded-lg border bg-slate-50 dark:bg-slate-900 p-4">
         <h3 className="text-sm font-semibold mb-2">Quick Reference</h3>
         <div className="space-y-2 text-xs">
           <div className="flex items-center justify-between">
