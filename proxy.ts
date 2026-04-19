@@ -1,11 +1,17 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
+  const { pathname } = request.nextUrl;
+
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
   });
 
+  // Setup Supabase client
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -15,52 +21,54 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
+          response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            response.cookies.set(name, value, options)
           );
         },
       },
     }
   );
 
-  // Refresh session if expired
+  // Cek session user
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protected routes
-  const protectedPaths = ["/learn", "/practice", "/chatbot", "/progress"];
-  const isProtectedPath = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
+  // Route publik yang boleh diakses tanpa login
+  const publicRoutes = [
+    "/login",
+    "/register",
+    "/auth/callback",
+    "/confirm-email",
+    "/forgot-password",
+    "/reset-password",
+  ];
+  const isPublicRoute = publicRoutes.some((route) =>
+    pathname.startsWith(route)
   );
 
-  // Redirect to login if accessing protected route without auth
-  if (isProtectedPath && !user) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/login";
-    redirectUrl.searchParams.set("redirectedFrom", request.nextUrl.pathname);
-    return NextResponse.redirect(redirectUrl);
+  // "/" → redirect ke /login atau /learn
+  if (pathname === "/") {
+    return NextResponse.redirect(
+      new URL(user ? "/learn" : "/login", request.url)
+    );
   }
 
-  // Redirect to dashboard if accessing auth pages while authenticated
-  const authPaths = ["/login", "/register"];
-  const isAuthPath = authPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
-
-  if (isAuthPath && user) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/learn";
-    return NextResponse.redirect(redirectUrl);
+  // Belum login + akses route protected → redirect ke /login
+  if (!user && !isPublicRoute) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  return supabaseResponse;
+  // Sudah login + akses halaman auth → redirect ke /learn
+  if (user && isPublicRoute && pathname !== "/auth/callback") {
+    return NextResponse.redirect(new URL("/learn", request.url));
+  }
+
+  return response;
 }
 
 export const config = {

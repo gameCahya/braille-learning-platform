@@ -210,6 +210,7 @@ export const MODULES: Module[] = [
           content: "Cat: ⠉⠁⠞ (cat). Dog: ⠙⠕⠛ (dog). Rabbit: ⠗⠁⠃⠃⠊⠞ (rabbit).",
           braille: "⠉⠁⠞ ⠙⠕⠛ ⠗⠁⠃⠃⠊⠞",
           image:"/images/modules/animals/cat.png",
+          imageAlt: "A cat, dog, and rabbit as common pets",
           example: "Cats and dogs are common pets.",
         },
         {
@@ -229,13 +230,15 @@ export const MODULES: Module[] = [
       ],
       exercises: [
         {
-          id: "ex-10-1",
-          type: "multiple-choice",
-          question: "What is the Braille for 'cat'?",
-          options: ["⠙⠕⠛", "⠉⠁⠞", "⠗⠁⠃⠃⠊⠞", "⠉⠕⠺"],
-          correctAnswer: "⠉⠁⠞",
-          points: 10,
-        },
+    id: "ex-10-1",
+    type: "multiple-choice",
+    question: "What is the Braille for 'cat'?",
+    options: ["⠙⠕⠛", "⠉⠁⠞", "⠗⠁⠃⠃⠊⠞", "⠉⠕⠺"],
+    correctAnswer: "⠉⠁⠞",
+    points: 10,
+    questionImage: "/images/modules/animals/cat.png",
+    imageAlt: "A cat",
+  },
         {
           id: "ex-10-2",
           type: "multiple-choice",
