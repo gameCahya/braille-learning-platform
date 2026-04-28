@@ -14,18 +14,17 @@ export async function login(data: LoginInput) {
   });
 
   if (error) {
-    // Provide more user-friendly error messages
     if (error.message.includes("Email not confirmed")) {
-      return { 
-        error: "Please confirm your email address before signing in. Check your inbox for the confirmation link." 
+      return {
+        error: "Email belum dikonfirmasi. Cek inbox kamu untuk link konfirmasi.",
       };
     }
     if (error.message.includes("Invalid login credentials")) {
-      return { 
-        error: "Invalid email or password. Please try again." 
+      return {
+        error: "Email atau password salah. Silakan coba lagi.",
       };
     }
-    return { error: error.message };
+    return { error: "Terjadi kesalahan. Silakan coba lagi." };
   }
 
   revalidatePath("/", "layout");

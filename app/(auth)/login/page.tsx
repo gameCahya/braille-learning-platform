@@ -4,16 +4,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import { login } from "../actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -25,132 +23,123 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
-    
     try {
       const result = await login(data);
-      
       if (result?.error) {
-        toast.error("Login failed", {
-          description: result.error,
-        });
+        toast.error("Login gagal", { description: result.error });
         setIsLoading(false);
       }
-      // If no error, redirect() is called in action (no need for success toast)
     } catch (error) {
-      // redirect() throws NEXT_REDIRECT error - this is expected behavior
-      // Check if it's a redirect, if not show error
-      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
-        // Redirect successful, do nothing
-        return;
-      }
-      
-      toast.error("Something went wrong", {
-        description: "Please try again later.",
-      });
+      if (error instanceof Error && error.message === "NEXT_REDIRECT") return;
+      toast.error("Terjadi kesalahan", { description: "Coba lagi nanti." });
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold tracking-tight">
-            Welcome back
-          </CardTitle>
-          <CardDescription>
-            Enter your credentials to access your account
-          </CardDescription>
-        </CardHeader>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 md:p-8">
+      <main className="w-full max-w-sm flex flex-col items-center">
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="email">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                autoComplete="email"
-                disabled={isLoading}
-                aria-invalid={errors.email ? "true" : "false"}
-                aria-describedby={errors.email ? "email-error" : undefined}
-                {...register("email")}
-              />
-              {errors.email && (
-                <p 
-                  id="email-error" 
-                  className="text-sm text-red-600 dark:text-red-400"
-                  role="alert"
-                >
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
+        {/* Mascot / Logo */}
+        <div className="flex flex-col items-center mb-8 w-full">
+          <div className="w-28 h-28 mb-6 rounded-full bg-muted border-4 border-border shadow-sm flex items-center justify-center select-none">
+            <span className="text-5xl" role="img" aria-label="Maskot Bralingo">🦉</span>
+          </div>
+          <h1 className="text-3xl font-bold text-center text-foreground mb-2">
+            Selamat datang!
+          </h1>
+          <p className="text-base text-center text-muted-foreground px-4">
+            Siap belajar Braille hari ini? Ayo mulai!
+          </p>
+        </div>
 
-            {/* Password Field */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">
-                  Password
-                </Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline"
-                  tabIndex={isLoading ? -1 : 0}
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full flex flex-col gap-4 mb-8">
+
+          {/* Email */}
+          <div className="flex flex-col gap-1.5">
+            <input
+              type="email"
+              placeholder="Email"
+              autoComplete="email"
+              disabled={isLoading}
+              aria-invalid={errors.email ? "true" : "false"}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
+              {...register("email")}
+            />
+            {errors.email && (
+              <p id="email-error" className="text-sm text-destructive" role="alert">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="flex flex-col gap-1.5">
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
                 autoComplete="current-password"
                 disabled={isLoading}
                 aria-invalid={errors.password ? "true" : "false"}
                 aria-describedby={errors.password ? "password-error" : undefined}
+                className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 pr-12 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
                 {...register("password")}
               />
-              {errors.password && (
-                <p 
-                  id="password-error" 
-                  className="text-sm text-red-600 dark:text-red-400"
-                  role="alert"
-                >
-                  {errors.password.message}
-                </p>
-              )}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full"
+                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
+            {errors.password && (
+              <p id="password-error" className="text-sm text-destructive" role="alert">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
 
-            {/* Submit Button */}
-            <Button
+          {/* Forgot password */}
+          <div className="flex justify-end -mt-1">
+            <Link
+              href="/forgot-password"
+              className="text-sm font-bold text-primary hover:opacity-80 transition-opacity uppercase tracking-wider"
+              tabIndex={isLoading ? -1 : 0}
+            >
+              Lupa Password?
+            </Link>
+          </div>
+
+          {/* Tactile 3D Submit Button */}
+          <div className="tactile-wrapper w-full">
+            <button
               type="submit"
-              className="w-full"
               disabled={isLoading}
               aria-busy={isLoading}
+              className="w-full bg-primary text-primary-foreground font-bold text-base py-3 px-6 rounded-xl border-b-4 border-secondary hover:brightness-105 active:border-b-0 active:translate-y-1 transition-all uppercase tracking-wide cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:translate-y-0 disabled:active:border-b-4"
             >
-              {isLoading ? "Signing in..." : "Sign in"}
-            </Button>
-          </CardContent>
-
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="text-sm text-center text-slate-600 dark:text-slate-400">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/register"
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline"
-                tabIndex={isLoading ? -1 : 0}
-              >
-                Sign up
-              </Link>
-            </div>
-          </CardFooter>
+              {isLoading ? "Masuk..." : "Masuk"}
+            </button>
+          </div>
         </form>
-      </Card>
+
+        {/* Footer */}
+        <p className="text-base text-center text-muted-foreground pb-6">
+          Belum punya akun?{" "}
+          <Link
+            href="/register"
+            className="font-bold text-primary hover:opacity-80 transition-opacity uppercase ml-1"
+            tabIndex={isLoading ? -1 : 0}
+          >
+            Daftar
+          </Link>
+        </p>
+      </main>
     </div>
   );
 }

@@ -12,6 +12,8 @@ catatan/
 coverage/
 *.lcov
 .nyc_output
+/docs
+docs/
 
 # Next.js
 .next/
@@ -59,6 +61,9 @@ wrangler.toml.backup
 # Misc
 *.log
 .cache/
+
+# Claude Code memory (local only)
+MEMORY.md
 
 # ===================================================================
 # ✅ Safe to commit:

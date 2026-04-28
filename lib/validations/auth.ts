@@ -4,37 +4,37 @@ import { z } from "zod";
 export const loginSchema = z.object({
   email: z
     .string()
-    .min(1, "Email is required")
-    .email("Invalid email address"),
+    .min(1, "Email wajib diisi")
+    .email("Format email tidak valid"),
   password: z
     .string()
-    .min(1, "Password is required")
-    .min(6, "Password must be at least 6 characters"),
+    .min(1, "Password wajib diisi")
+    .min(6, "Password minimal 6 karakter"),
 });
 
 // Register schema
 export const registerSchema = z.object({
   email: z
     .string()
-    .min(1, "Email is required")
-    .email("Invalid email address"),
+    .min(1, "Email wajib diisi")
+    .email("Format email tidak valid"),
   password: z
     .string()
-    .min(1, "Password is required")
-    .min(8, "Password must be at least 8 characters")
+    .min(1, "Password wajib diisi")
+    .min(8, "Password minimal 8 karakter")
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      "Password harus mengandung huruf besar, huruf kecil, dan angka"
     ),
   confirmPassword: z
     .string()
-    .min(1, "Please confirm your password"),
+    .min(1, "Konfirmasi password wajib diisi"),
   fullName: z
     .string()
-    .min(1, "Full name is required")
-    .min(2, "Full name must be at least 2 characters"),
+    .min(1, "Nama lengkap wajib diisi")
+    .min(2, "Nama lengkap minimal 2 karakter"),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
+  message: "Password tidak cocok",
   path: ["confirmPassword"],
 });
 
