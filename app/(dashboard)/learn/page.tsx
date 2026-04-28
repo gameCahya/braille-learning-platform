@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, MessageSquare, FileText, TrendingUp } from "lucide-react";
+import { BookOpen, FileText, TrendingUp } from "lucide-react";
 import TutorialDriver from "@/components/tutorial/TutorialDriver";
 import { dashboardTutorialSteps } from "@/lib/tutorial/steps";
 import Link from "next/link";
@@ -109,20 +109,7 @@ export default async function LearnPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <MessageSquare className="h-8 w-8 text-purple-600 mb-2" />
-              <CardTitle className="text-lg">AI Tutor</CardTitle>
-              <CardDescription>Ask questions anytime</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/chatbot">Chat Now</Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
+<Card className="hover:shadow-md transition-shadow">
             <CardHeader>
               <TrendingUp className="h-8 w-8 text-orange-600 mb-2" />
               <CardTitle className="text-lg">Track Progress</CardTitle>

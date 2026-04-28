@@ -25,13 +25,11 @@ No test suite is configured.
 - Next.js 16 (App Router), React 19, TypeScript 5
 - Supabase (PostgreSQL + Auth) — no ORM, raw Supabase SDK calls
 - TailwindCSS 4, shadcn/ui (New York style), Radix UI
-- Groq SDK (`llama-3.1-8b-instant`) for the AI tutor, via `/api/chat`
 - React Hook Form + Zod for form validation
 
 **Route groups:**
 - `app/(auth)/` — login, register, forgot/reset-password (public)
-- `app/(dashboard)/` — protected pages: learn, chatbot, converter, braille-reference, practice, progress, settings, students, classrooms, reports
-- `app/api/chat` — only API route; calls Groq with a system prompt, limits history to 10 messages
+- `app/(dashboard)/` — protected pages: learn, converter, braille-reference, practice, progress, settings, students, classrooms, reports
 - `app/auth/callback` — Supabase OAuth callback handler
 
 **Auth flow:** `proxy.ts` (middleware) protects dashboard routes. Supabase email/password auth with required email confirmation. Server actions live in `app/(auth)/actions.ts`. Server-side Supabase client uses cookies (`lib/supabase/server.ts`); browser client is `lib/supabase/client.ts`.
@@ -41,7 +39,6 @@ No test suite is configured.
 **Key lib files:**
 - `lib/braille.ts` — text ↔ Braille conversion, dot patterns, alphabet/number/punctuation mappings
 - `lib/speech.ts` — `TextToSpeech` class wrapping Web Speech API (voice selection, spell-out mode)
-- `lib/chat-client.ts` — fetch wrapper for `/api/chat` with rate-limit tracking
 - `lib/data/modules.ts` — static learning module data (10 modules)
 - `lib/tutorial/` — Driver.js tutorial step definitions
 
@@ -51,7 +48,6 @@ No test suite is configured.
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 NEXT_PUBLIC_APP_URL          # e.g. http://localhost:3000
-GROQ_API_KEY                 # server-only, used in /api/chat
 ```
 
 ## Deployment
