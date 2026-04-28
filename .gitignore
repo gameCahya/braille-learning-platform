@@ -65,6 +65,9 @@ wrangler.toml.backup
 # Claude Code memory (local only)
 MEMORY.md
 
+# direnv — local environment loader
+.envrc
+
 # ===================================================================
 # ✅ Safe to commit:
 # - .env.example (template without real values)
