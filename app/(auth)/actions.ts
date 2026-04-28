@@ -52,9 +52,9 @@ export async function register(data: RegisterInput) {
 
   // Check if email confirmation is required
   if (authData.user && !authData.session) {
-    return { 
-      error: "Please check your email to confirm your account before signing in.",
-      requiresConfirmation: true 
+    return {
+      error: "Cek email kamu untuk konfirmasi akun sebelum masuk.",
+      requiresConfirmation: true,
     };
   }
 

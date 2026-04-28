@@ -4,16 +4,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { register as registerAction } from "../actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -25,208 +24,170 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterInput) => {
     setIsLoading(true);
-    
     try {
       const result = await registerAction(data);
-      
       if (result?.error) {
         if (result.requiresConfirmation) {
-          toast.info("Check your email", {
+          toast.info("Cek email kamu!", {
             description: result.error,
             duration: 6000,
           });
         } else {
-          toast.error("Registration failed", {
-            description: result.error,
-          });
+          toast.error("Registrasi gagal", { description: result.error });
         }
         setIsLoading(false);
       }
-      // If no error, redirect() is called in action
     } catch (error) {
-      // redirect() throws NEXT_REDIRECT error - this is expected behavior
-      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
-        // Redirect successful, do nothing
-        return;
-      }
-      
-      console.error("Registration error:", error);
-      toast.error("Something went wrong", {
-        description: "Please try again later.",
-      });
+      if (error instanceof Error && error.message === "NEXT_REDIRECT") return;
+      toast.error("Terjadi kesalahan", { description: "Coba lagi nanti." });
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold tracking-tight">
-            Create an account
-          </CardTitle>
-          <CardDescription>
-            Enter your information to get started with learning
-          </CardDescription>
-        </CardHeader>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 md:p-8">
+      <main className="w-full max-w-sm flex flex-col items-center">
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            {/* Full Name Field */}
-            <div className="space-y-2">
-              <Label htmlFor="fullName">
-                Full Name
-              </Label>
-              <Input
-                id="fullName"
-                type="text"
-                placeholder="John Doe"
-                autoComplete="name"
-                disabled={isLoading}
-                aria-invalid={errors.fullName ? "true" : "false"}
-                aria-describedby={errors.fullName ? "fullName-error" : undefined}
-                {...register("fullName")}
-              />
-              {errors.fullName && (
-                <p 
-                  id="fullName-error" 
-                  className="text-sm text-red-600 dark:text-red-400"
-                  role="alert"
-                >
-                  {errors.fullName.message}
-                </p>
-              )}
-            </div>
+        {/* Mascot / Logo */}
+        <div className="flex flex-col items-center mb-8 w-full">
+          <div className="w-28 h-28 mb-6 rounded-full bg-muted border-4 border-border shadow-sm flex items-center justify-center select-none">
+            <span className="text-5xl" role="img" aria-label="Maskot Bralingo">🦉</span>
+          </div>
+          <h1 className="text-3xl font-bold text-center text-foreground mb-2">
+            Buat Akun
+          </h1>
+          <p className="text-base text-center text-muted-foreground px-4">
+            Bergabung dan mulai perjalanan belajar Braille kamu!
+          </p>
+        </div>
 
-            {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="email">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                autoComplete="email"
-                disabled={isLoading}
-                aria-invalid={errors.email ? "true" : "false"}
-                aria-describedby={errors.email ? "email-error" : undefined}
-                {...register("email")}
-              />
-              {errors.email && (
-                <p 
-                  id="email-error" 
-                  className="text-sm text-red-600 dark:text-red-400"
-                  role="alert"
-                >
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full flex flex-col gap-4 mb-8">
 
-            {/* Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="password">
-                Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Create a strong password"
+          {/* Nama Lengkap */}
+          <div className="flex flex-col gap-1.5">
+            <input
+              type="text"
+              placeholder="Nama Lengkap"
+              autoComplete="name"
+              disabled={isLoading}
+              aria-invalid={errors.fullName ? "true" : "false"}
+              aria-describedby={errors.fullName ? "fullName-error" : undefined}
+              className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
+              {...register("fullName")}
+            />
+            {errors.fullName && (
+              <p id="fullName-error" className="text-sm text-destructive" role="alert">
+                {errors.fullName.message}
+              </p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="flex flex-col gap-1.5">
+            <input
+              type="email"
+              placeholder="Email"
+              autoComplete="email"
+              disabled={isLoading}
+              aria-invalid={errors.email ? "true" : "false"}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
+              {...register("email")}
+            />
+            {errors.email && (
+              <p id="email-error" className="text-sm text-destructive" role="alert">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="flex flex-col gap-1.5">
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
                 autoComplete="new-password"
                 disabled={isLoading}
                 aria-invalid={errors.password ? "true" : "false"}
-                aria-describedby={errors.password ? "password-error password-requirements" : "password-requirements"}
+                aria-describedby="password-requirements password-error"
+                className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 pr-12 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
                 {...register("password")}
               />
-              <p 
-                id="password-requirements" 
-                className="text-xs text-slate-600 dark:text-slate-400"
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full"
+                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
               >
-                Must be at least 8 characters with uppercase, lowercase, and number
-              </p>
-              {errors.password && (
-                <p 
-                  id="password-error" 
-                  className="text-sm text-red-600 dark:text-red-400"
-                  role="alert"
-                >
-                  {errors.password.message}
-                </p>
-              )}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
+            <p id="password-requirements" className="text-xs text-muted-foreground">
+              Minimal 8 karakter, mengandung huruf besar, huruf kecil, dan angka
+            </p>
+            {errors.password && (
+              <p id="password-error" className="text-sm text-destructive" role="alert">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
 
-            {/* Confirm Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">
-                Confirm Password
-              </Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Re-enter your password"
+          {/* Konfirmasi Password */}
+          <div className="flex flex-col gap-1.5">
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Konfirmasi Password"
                 autoComplete="new-password"
                 disabled={isLoading}
                 aria-invalid={errors.confirmPassword ? "true" : "false"}
                 aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+                className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 pr-12 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
                 {...register("confirmPassword")}
               />
-              {errors.confirmPassword && (
-                <p 
-                  id="confirmPassword-error" 
-                  className="text-sm text-red-600 dark:text-red-400"
-                  role="alert"
-                >
-                  {errors.confirmPassword.message}
-                </p>
-              )}
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full"
+                aria-label={showConfirmPassword ? "Sembunyikan password" : "Tampilkan password"}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
+            {errors.confirmPassword && (
+              <p id="confirmPassword-error" className="text-sm text-destructive" role="alert">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
 
-            {/* Submit Button */}
-            <Button
+          {/* Tactile 3D Submit Button */}
+          <div className="tactile-wrapper w-full mt-2">
+            <button
               type="submit"
-              className="w-full"
               disabled={isLoading}
               aria-busy={isLoading}
+              className="w-full bg-primary text-primary-foreground font-bold text-base py-3 px-6 rounded-xl border-b-4 border-secondary hover:brightness-105 active:border-b-0 active:translate-y-1 transition-all uppercase tracking-wide cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:translate-y-0 disabled:active:border-b-4"
             >
-              {isLoading ? "Creating account..." : "Create account"}
-            </Button>
-
-            {/* Terms & Privacy */}
-            <p className="text-xs text-center text-slate-600 dark:text-slate-400">
-              By creating an account, you agree to our{" "}
-              <Link
-                href="/terms"
-                className="underline hover:text-slate-900 dark:hover:text-slate-100"
-                tabIndex={isLoading ? -1 : 0}
-              >
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link
-                href="/privacy"
-                className="underline hover:text-slate-900 dark:hover:text-slate-100"
-                tabIndex={isLoading ? -1 : 0}
-              >
-                Privacy Policy
-              </Link>
-            </p>
-          </CardContent>
-
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="text-sm text-center text-slate-600 dark:text-slate-400">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline"
-                tabIndex={isLoading ? -1 : 0}
-              >
-                Sign in
-              </Link>
-            </div>
-          </CardFooter>
+              {isLoading ? "Mendaftar..." : "Daftar Sekarang"}
+            </button>
+          </div>
         </form>
-      </Card>
+
+        {/* Footer */}
+        <p className="text-base text-center text-muted-foreground pb-6">
+          Sudah punya akun?{" "}
+          <Link
+            href="/login"
+            className="font-bold text-primary hover:opacity-80 transition-opacity uppercase ml-1"
+            tabIndex={isLoading ? -1 : 0}
+          >
+            Masuk
+          </Link>
+        </p>
+      </main>
     </div>
   );
 }
