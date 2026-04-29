@@ -1,104 +1,125 @@
-// app/(dashboard)/page.tsx
-
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, School, BookOpen, TrendingUp } from "lucide-react";
+import { Users, School, BookOpen, TrendingUp, Plus, BarChart3 } from "lucide-react";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Hitung jumlah siswa
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user!.id)
+    .single();
+
   const { count: studentCount } = await supabase
     .from("students")
     .select("*", { count: "exact", head: true })
     .eq("teacher_id", user!.id);
 
-  // Hitung jumlah kelas
   const { count: classCount } = await supabase
     .from("classrooms")
     .select("*", { count: "exact", head: true })
     .eq("teacher_id", user!.id);
 
+  const firstName = profile?.full_name?.split(" ")[0] || "Guru";
+
   return (
     <div className="space-y-6">
+
+      {/* Heading */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back! Here&apos;s an overview of your classes.
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          Selamat datang, {firstName}! 👋
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Berikut ringkasan kelas dan siswa kamu.
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stat Cards */}
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Siswa</CardTitle>
+            <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{studentCount || 0}</div>
+            <div className="text-2xl font-bold text-foreground">{studentCount ?? 0}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Classes</CardTitle>
-            <School className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Kelas</CardTitle>
+            <School className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{classCount || 0}</div>
+            <div className="text-2xl font-bold text-foreground">{classCount ?? 0}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Modules</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Modul Tersedia</CardTitle>
+            <BookOpen className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">10</div>
-            <p className="text-xs text-muted-foreground">Available modules</p>
+            <div className="text-2xl font-bold text-foreground">10</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Progress</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Rata-rata Progress</CardTitle>
+            <TrendingUp className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">--%</div>
-            <p className="text-xs text-muted-foreground">Across all students</p>
+            <div className="text-2xl font-bold text-foreground">--%</div>
+            <p className="text-xs text-muted-foreground">Semua siswa</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions & Recent Activity */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="text-base">Aksi Cepat</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="text-sm text-muted-foreground">
-              • <a href="/classrooms/new" className="text-primary hover:underline">Create a new class</a>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              • <a href="/students/new" className="text-primary hover:underline">Add a new student</a>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              • <a href="/reports" className="text-primary hover:underline">View class reports</a>
-            </p>
+          <CardContent className="flex flex-col gap-2">
+            <Link
+              href="/classrooms/new"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Buat kelas baru
+            </Link>
+            <Link
+              href="/students/new"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah siswa baru
+            </Link>
+            <Link
+              href="/reports"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              <BarChart3 className="h-4 w-4" />
+              Lihat laporan kelas
+            </Link>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle className="text-base">Aktivitas Terbaru</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              No recent activity. Start by adding students or assigning modules.
+              Belum ada aktivitas. Mulai dengan menambahkan siswa atau membuat kelas.
             </p>
           </CardContent>
         </Card>

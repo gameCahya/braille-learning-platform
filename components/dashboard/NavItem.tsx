@@ -1,5 +1,4 @@
 "use client";
-// components/dashboard/NavItem.tsx
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,7 +13,9 @@ interface NavItemProps {
 
 export function NavItem({ href, icon: Icon, label }: NavItemProps) {
   const pathname = usePathname();
-  const isActive = pathname === href || pathname.startsWith(`${href}/`);
+  // Root "/" hanya aktif saat exact match
+  const isActive =
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <Link
@@ -23,10 +24,10 @@ export function NavItem({ href, icon: Icon, label }: NavItemProps) {
         "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
         isActive
           ? "bg-primary text-primary-foreground"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       )}
     >
-      <Icon className="h-5 w-5" />
+      <Icon className="h-4 w-4 shrink-0" />
       <span>{label}</span>
     </Link>
   );

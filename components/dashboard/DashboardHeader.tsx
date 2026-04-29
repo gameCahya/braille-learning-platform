@@ -1,7 +1,5 @@
 "use client";
 
-// components/dashboard/DashboardHeader.tsx
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Menu, User } from "lucide-react";
+import { LogOut, Menu, Settings } from "lucide-react";
+import { signOut } from "@/app/(auth)/actions";
 
 interface DashboardHeaderProps {
   user: {
@@ -28,13 +27,6 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
   const router = useRouter();
-  const supabase = createClient();
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  };
 
   const initials = profile?.full_name
     ? profile.full_name
@@ -43,7 +35,7 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
         .join("")
         .toUpperCase()
         .slice(0, 2)
-    : user.email?.slice(0, 2).toUpperCase() || "U";
+    : user.email?.slice(0, 2).toUpperCase() || "GU";
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-background px-6">
@@ -52,34 +44,40 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
         <Menu className="h-5 w-5" />
       </Button>
 
-      {/* Title (can be dynamic based on page) */}
+      {/* Title */}
       <div className="hidden md:block">
-        <h2 className="text-lg font-medium">Teacher Dashboard</h2>
+        <h2 className="text-base font-semibold text-foreground">Dashboard Guru</h2>
       </div>
 
       {/* User menu */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <span className="text-sm text-muted-foreground hidden sm:inline">
           {profile?.full_name || user.email}
         </span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
               <Avatar className="h-9 w-9">
-                <AvatarFallback>{initials}</AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground font-bold">
+                  {initials}
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => router.push("/settings")}>
-              <User className="mr-2 h-4 w-4" />
-              Profile Settings
+              <Settings className="mr-2 h-4 w-4" />
+              Pengaturan Profil
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSignOut}>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => signOut()}
+            >
               <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
+              Keluar
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
