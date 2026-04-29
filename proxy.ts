@@ -51,11 +51,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  // "/" → redirect ke /login atau /learn
-  if (pathname === "/") {
-    return NextResponse.redirect(
-      new URL(user ? "/learn" : "/login", request.url)
-    );
+  // "/" → redirect ke /login jika belum login
+  if (pathname === "/" && !user) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Belum login + akses route protected → redirect ke /login
@@ -63,9 +61,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Sudah login + akses halaman auth → redirect ke /learn
+  // Sudah login + akses halaman auth → redirect ke dashboard
   if (user && isPublicRoute && pathname !== "/auth/callback") {
-    return NextResponse.redirect(new URL("/learn", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return response;
