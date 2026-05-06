@@ -1,50 +1,65 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
+import { Volume2 } from "lucide-react";
 
 interface BrailleCharCardProps {
   char: string;
   braille: string;
   dots?: string;
-  description?: string;
+  speakText?: string;
+}
+
+function getBestVoice(): SpeechSynthesisVoice | null {
+  const voices = window.speechSynthesis.getVoices();
+  return (
+    voices.find((v) => v.lang.startsWith("en") && v.name.includes("Google")) ??
+    voices.find((v) => v.lang.startsWith("en") && v.name.includes("Microsoft")) ??
+    voices.find((v) => v.lang.startsWith("en") && !v.localService) ??
+    voices.find((v) => v.lang.startsWith("en")) ??
+    null
+  );
 }
 
 export default function BrailleCharCard({
   char,
   braille,
   dots,
-  description,
+  speakText,
 }: BrailleCharCardProps) {
+  const handleSpeak = () => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    // Chrome bug: needs a short delay after cancel before speaking
+    setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(speakText ?? char);
+      utterance.lang = "en-US";
+      utterance.rate = 0.8;
+      utterance.pitch = 1.0;
+      const voice = getBestVoice();
+      if (voice) utterance.voice = voice;
+      window.speechSynthesis.speak(utterance);
+    }, 100);
+  };
+
   return (
-    <Card className="p-4 hover:shadow-md transition-shadow">
-      <div className="flex flex-col items-center space-y-2">
-        {/* Character */}
-        <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-          {char}
-        </div>
-
-        {/* Braille */}
-        <div
-          className="text-5xl font-mono"
-          aria-label={`Braille for ${char}`}
-        >
-          {braille}
-        </div>
-
-        {/* Dots pattern */}
-        {dots && (
-          <div className="text-xs text-slate-600 dark:text-slate-400 font-mono">
-            Dots: {dots}
-          </div>
-        )}
-
-        {/* Description */}
-        {description && (
-          <div className="text-xs text-center text-slate-500 dark:text-slate-400">
-            {description}
-          </div>
-        )}
+    <div className="bg-card border rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-primary transition-colors group">
+      <div className="text-2xl font-bold text-foreground">{char}</div>
+      <div className="text-5xl font-mono text-foreground leading-none py-1">
+        {braille}
       </div>
-    </Card>
+      {dots && (
+        <div className="text-xs text-muted-foreground font-mono">
+          Titik: {dots}
+        </div>
+      )}
+      <button
+        onClick={handleSpeak}
+        aria-label={`Dengarkan ${char}`}
+        className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
+      >
+        <Volume2 className="h-3.5 w-3.5" />
+        Dengarkan
+      </button>
+    </div>
   );
 }

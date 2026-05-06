@@ -31,16 +31,13 @@ export async function createStudent(formData: FormData) {
     return { success: false, error: validated.error.message };
   }
 
-  const { error } = await supabase.from("students").insert(
-    {
-      teacher_id: user.id,
-      full_name: validated.data.full_name,
-      email: validated.data.email || null,
-      classroom_id: validated.data.classroom_id || null,
-      notes: validated.data.notes || null,
-    },
-    { returning: "minimal" }
-  );
+  const { error } = await supabase.from("students").insert({
+    teacher_id: user.id,
+    full_name: validated.data.full_name,
+    email: validated.data.email || null,
+    classroom_id: validated.data.classroom_id || null,
+    notes: validated.data.notes || null,
+  });
 
   if (error) {
     console.error("Create student error:", error);
@@ -72,16 +69,13 @@ export async function updateStudent(id: string, formData: FormData) {
 
   const { error } = await supabase
     .from("students")
-    .update(
-      {
-        full_name: validated.data.full_name,
-        email: validated.data.email || null,
-        classroom_id: validated.data.classroom_id || null,
-        notes: validated.data.notes || null,
-        updated_at: new Date().toISOString(),
-      },
-      { returning: "minimal" }
-    )
+    .update({
+      full_name: validated.data.full_name,
+      email: validated.data.email || null,
+      classroom_id: validated.data.classroom_id || null,
+      notes: validated.data.notes || null,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
     .eq("teacher_id", user.id);
 
@@ -105,7 +99,7 @@ export async function deleteStudent(id: string) {
 
   const { error } = await supabase
     .from("students")
-    .delete({ returning: "minimal" })
+    .delete()
     .eq("id", id)
     .eq("teacher_id", user.id);
 

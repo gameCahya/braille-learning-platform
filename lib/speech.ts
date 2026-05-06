@@ -127,7 +127,12 @@ export class TextToSpeech {
 
       utterance.onerror = (event) => {
         this.currentUtterance = null;
-        reject(new Error(`Speech error: ${event.error}`));
+        // "interrupted" and "canceled" are expected when stop() is called — not real errors
+        if (!event.error || event.error === "interrupted" || event.error === "canceled") {
+          resolve();
+        } else {
+          reject(new Error(`Speech error: ${event.error}`));
+        }
       };
 
       this.currentUtterance = utterance;

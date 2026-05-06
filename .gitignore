@@ -58,6 +58,9 @@ Thumbs.db
 .wrangler/
 wrangler.toml.backup
 
+# Netlify (local CLI state & tokens)
+.netlify/
+
 # Misc
 *.log
 .cache/

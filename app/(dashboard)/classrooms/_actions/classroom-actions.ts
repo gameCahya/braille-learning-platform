@@ -29,14 +29,11 @@ export async function createClassroom(formData: FormData) {
     return { success: false, error: validated.error.message };
   }
 
-  const { error } = await supabase.from("classrooms").insert(
-    {
-      teacher_id: user.id,
-      name: validated.data.name,
-      description: validated.data.description || null,
-    },
-    { returning: "minimal" }
-  );
+  const { error } = await supabase.from("classrooms").insert({
+    teacher_id: user.id,
+    name: validated.data.name,
+    description: validated.data.description || null,
+  });
 
   if (error) {
     console.error("Create classroom error:", error);
@@ -68,14 +65,11 @@ export async function updateClassroom(id: string, formData: FormData) {
 
   const { error } = await supabase
     .from("classrooms")
-    .update(
-      {
-        name: validated.data.name,
-        description: validated.data.description || null,
-        updated_at: new Date().toISOString(),
-      },
-      { returning: "minimal" }
-    )
+    .update({
+      name: validated.data.name,
+      description: validated.data.description || null,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
     .eq("teacher_id", user.id);
 
@@ -100,7 +94,7 @@ export async function deleteClassroom(id: string) {
 
   const { error } = await supabase
     .from("classrooms")
-    .delete({ returning: "minimal" })
+    .delete()
     .eq("id", id)
     .eq("teacher_id", user.id);
 

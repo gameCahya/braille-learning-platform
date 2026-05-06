@@ -47,7 +47,8 @@ export interface Exercise {
   id: string;
   type: "multiple-choice" | "text-to-braille" | "braille-to-text";
   question: string;
-  questionImage?: string; // Gambar untuk soal
+  questionImage?: string;
+  imageAlt?: string;
   options?: string[];
   optionImages?: string[]; // Gambar untuk opsi jawaban
   correctAnswer: string;

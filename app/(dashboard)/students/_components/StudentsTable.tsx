@@ -25,7 +25,7 @@ type Student = {
   full_name: string;
   email: string | null;
   classroom_id: string | null;
-  classrooms: { name: string } | null;
+  classrooms: { name: string }[] | null;
 };
 
 interface StudentsTableProps {
@@ -50,9 +50,10 @@ export function StudentsTable({ students }: StudentsTableProps) {
       accessorKey: "classrooms",
       header: "Class",
       cell: ({ row }) => {
-        const classroom = row.original.classrooms;
-        return classroom?.name ? (
-          <Badge variant="outline">{classroom.name}</Badge>
+        const classrooms = row.original.classrooms;
+        const name = Array.isArray(classrooms) ? classrooms[0]?.name : null;
+        return name ? (
+          <Badge variant="outline">{name}</Badge>
         ) : (
           <span className="text-muted-foreground text-sm">No class</span>
         );
