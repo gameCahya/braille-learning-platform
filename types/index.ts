@@ -1,19 +1,20 @@
-// Database Models
-export interface User {
-  id: string;
-  email: string;
-  created_at: string;
-}
+import type { Tables } from "@/types/supabase";
 
-export interface Profile {
-  id: string;
-  email: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  created_at: string;
-  updated_at: string;
-}
+// =============================================
+// Database types — langsung dari generated schema
+// Selalu akurat, tidak perlu update manual
+// =============================================
+export type Profile = Tables<"profiles">;
+export type UserProgress = Tables<"user_progress">;
+export type QuizResult = Tables<"quiz_results">;
+export type ModuleAudio = Tables<"module_audio">;
+export type Classroom = Tables<"classrooms">;
+export type Student = Tables<"students">;
 
+// =============================================
+// Static data types — tidak ada di database,
+// dipakai untuk data modul statis di lib/data/
+// =============================================
 export interface Module {
   id: string;
   title: string;
@@ -21,7 +22,7 @@ export interface Module {
   content: ModuleContent;
   braille_content: string | null;
   difficulty: "beginner" | "intermediate" | "advanced";
-  order_number: number; // FIXED: Changed from orderNumber to match database
+  order_number: number;
   created_at: string;
 }
 
@@ -39,8 +40,8 @@ export interface Lesson {
   braille?: string;
   example?: string;
   audioUrl?: string;
-  image?: string; // URL gambar untuk lesson
-  imageAlt?: string; // Alt text untuk accessibility
+  image?: string;
+  imageAlt?: string;
 }
 
 export interface Exercise {
@@ -50,43 +51,11 @@ export interface Exercise {
   questionImage?: string;
   imageAlt?: string;
   options?: string[];
-  optionImages?: string[]; // Gambar untuk opsi jawaban
+  optionImages?: string[];
   correctAnswer: string;
   hint?: string;
   points: number;
-  explanation?: string; // Penjelasan jawaban
-}
-
-export interface UserProgress {
-  id: string;
-  user_id: string;
-  module_id: string;
-  completed: boolean;
-  score?: number | null;
-  completed_at: string | null;
-  created_at: string;
-}
-
-export interface QuizResult {
-  id: string;
-  user_id: string;
-  module_id: string;
-  score: number;
-  total_points: number; // NEW: Added to match database
-  correct_answers: number; // NEW: Added to match database
-  total_questions: number; // NEW: Added to match database
-  answers: Record<string, string>;
-  details?: Record<string, unknown>; // NEW: Added to match database (JSONB)
-  feedback?: string; // NEW: Added to match database
-  created_at: string;
-}
-
-export interface ChatMessage {
-  id: string;
-  user_id: string;
-  message: string;
-  response: string;
-  created_at: string;
+  explanation?: string;
 }
 
 export interface BrailleConversion {
@@ -95,7 +64,6 @@ export interface BrailleConversion {
   direction: "text-to-braille" | "braille-to-text";
 }
 
-// API Response Types
 export interface ApiResponse<T> {
   data?: T;
   error?: string;

@@ -20,13 +20,15 @@ import { Eye } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
-type Student = {
+type StudentWithClassroom = {
   id: string;
   full_name: string;
   email: string | null;
   classroom_id: string | null;
-  classrooms: { name: string }[] | null;
+  classrooms: { name: string } | null;
 };
+
+type Student = StudentWithClassroom;
 
 interface StudentsTableProps {
   students: Student[];
@@ -50,8 +52,7 @@ export function StudentsTable({ students }: StudentsTableProps) {
       accessorKey: "classrooms",
       header: "Class",
       cell: ({ row }) => {
-        const classrooms = row.original.classrooms;
-        const name = Array.isArray(classrooms) ? classrooms[0]?.name : null;
+        const name = row.original.classrooms?.name ?? null;
         return name ? (
           <Badge variant="outline">{name}</Badge>
         ) : (

@@ -16,13 +16,13 @@ export default async function LearnPage() {
   const { data: profile } = await supabase
     .from("profiles")
     .select("full_name")
-    .eq("id", user?.id)
+    .eq("id", user!.id)
     .single();
 
   const { data: progressData } = await supabase
     .from("user_progress")
     .select("*")
-    .eq("user_id", user?.id);
+    .eq("user_id", user!.id);
 
   const completedModules = progressData?.filter((p) => p.completed).length || 0;
   const totalModules = 10;

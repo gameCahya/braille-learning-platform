@@ -2,33 +2,102 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, CheckCircle2, Volume2, BookOpen, XCircle, RefreshCw } from "lucide-react";
+import {
+  ArrowLeft,
+  Pencil,
+  Headphones,
+  BookOpen,
+  Mic,
+  CheckCircle2,
+  XCircle,
+  RefreshCw,
+  ClipboardList,
+} from "lucide-react";
 import { getModuleById } from "@/lib/data/modules";
 import { getModuleUUID } from "@/lib/data/moduleMapping";
-import BrailleDisplay from "@/components/braille/BrailleDisplay";
 import QuizComponent from "@/components/learning/QuizComponent";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import PhaseMenulis from "./_components/PhaseMenulis";
+import PhaseMendengarkan from "./_components/PhaseMendengarkan";
+import PhaseMembaca from "./_components/PhaseMembaca";
+import PhaseBerbicara from "./_components/PhaseBerbicara";
 
-// PASSING GRADE CONSTANT
-const PASSING_GRADE = 70; // 70% minimum untuk lulus
+type Phase = "menulis" | "mendengarkan" | "membaca" | "berbicara";
+
+const PASSING_GRADE = 70;
+
+const PHASES: {
+  id: Phase;
+  label: string;
+  icon: React.ElementType;
+  desc: string;
+  border: string;
+  activeBg: string;
+  iconColor: string;
+}[] = [
+  {
+    id: "menulis",
+    label: "Menulis",
+    icon: Pencil,
+    desc: "Siswa tulis pola Braille di kertas",
+    border: "border-blue-200 dark:border-blue-800",
+    activeBg:
+      "bg-blue-100 border-blue-500 dark:bg-blue-900 dark:border-blue-400",
+    iconColor: "text-blue-600",
+  },
+  {
+    id: "mendengarkan",
+    label: "Mendengarkan",
+    icon: Headphones,
+    desc: "Putar audio, siswa mendengarkan",
+    border: "border-purple-200 dark:border-purple-800",
+    activeBg:
+      "bg-purple-100 border-purple-500 dark:bg-purple-900 dark:border-purple-400",
+    iconColor: "text-purple-600",
+  },
+  {
+    id: "membaca",
+    label: "Membaca",
+    icon: BookOpen,
+    desc: "Kosakata dan gambar untuk dibaca",
+    border: "border-green-200 dark:border-green-800",
+    activeBg:
+      "bg-green-100 border-green-500 dark:bg-green-900 dark:border-green-400",
+    iconColor: "text-green-600",
+  },
+  {
+    id: "berbicara",
+    label: "Berbicara",
+    icon: Mic,
+    desc: "Siswa ucapkan kata, putar panduan audio",
+    border: "border-orange-200 dark:border-orange-800",
+    activeBg:
+      "bg-orange-100 border-orange-500 dark:bg-orange-900 dark:border-orange-400",
+    iconColor: "text-orange-600",
+  },
+];
 
 export default function ModuleDetailPage() {
   const params = useParams();
   const router = useRouter();
   const moduleId = params.id as string;
   const moduleUUID = getModuleUUID(moduleId);
-  
-  const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
-  const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
+
+  const [activePhase, setActivePhase] = useState<Phase | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizScore, setQuizScore] = useState(0);
-  const [quizPassed, setQuizPassed] = useState(false); // NEW: Track if passed
+  const [quizPassed, setQuizPassed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isModuleCompleted, setIsModuleCompleted] = useState(false);
@@ -38,8 +107,10 @@ export default function ModuleDetailPage() {
   useEffect(() => {
     async function loadProgress() {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (user && learningModule) {
         const { data, error } = await supabase
           .from("user_progress")
@@ -47,226 +118,129 @@ export default function ModuleDetailPage() {
           .eq("user_id", user.id)
           .eq("module_id", moduleUUID)
           .maybeSingle();
-        
-        if (error) {
-          console.error("Error loading progress:", error);
-        } else if (data) {
+
+        if (!error && data) {
           setIsModuleCompleted(data.completed || false);
         }
       }
       setLoading(false);
     }
-
     loadProgress();
   }, [moduleId, moduleUUID, learningModule]);
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-slate-600 dark:text-slate-400">
-              Loading module...
-            </p>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center min-h-[200px]">
+        <p className="text-muted-foreground">Memuat modul...</p>
       </div>
     );
   }
 
   if (!learningModule) {
     return (
-      <div className="space-y-6">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-slate-600 dark:text-slate-400">
-              Module not found
-            </p>
-            <div className="flex justify-center mt-4">
-              <Button onClick={() => router.push("/learn/modules")}>
-                Back to Modules
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="space-y-4 text-center">
+        <p className="text-muted-foreground">Modul tidak ditemukan.</p>
+        <Button onClick={() => router.push("/learn/modules")}>
+          Kembali ke Modul
+        </Button>
       </div>
     );
   }
 
-  const currentLesson = learningModule.content.lessons[currentLessonIndex];
-  const totalLessons = learningModule.content.lessons.length;
-  const progressPercentage = (completedLessons.size / totalLessons) * 100;
+  const hasExercises = (learningModule.content.exercises?.length ?? 0) > 0;
 
-  const handleLessonComplete = () => {
-    setCompletedLessons((prev) => new Set(prev).add(currentLessonIndex));
-    toast.success("Lesson completed!", {
-      description: "Great job! Keep learning.",
-    });
-  };
-
-  const handleNextLesson = () => {
-    if (currentLessonIndex < totalLessons - 1) {
-      setCurrentLessonIndex(currentLessonIndex + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
-  const handlePreviousLesson = () => {
-    if (currentLessonIndex > 0) {
-      setCurrentLessonIndex(currentLessonIndex - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
-  // NEW: Retry Quiz Function
   const handleRetryQuiz = () => {
     setQuizCompleted(false);
     setQuizScore(0);
     setQuizPassed(false);
-    setShowQuiz(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    toast.info("Quiz reset. Try again!", {
-      description: `You need ${PASSING_GRADE}% to pass.`,
-    });
   };
 
   const handleCompleteModule = async () => {
-    // Check if module has exercises and quiz not completed
-    if (learningModule.content.exercises && learningModule.content.exercises.length > 0 && !quizCompleted) {
-      setShowQuiz(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-
-    // NEW: Check if quiz passed
-    if (quizCompleted && !quizPassed) {
-      toast.error("Quiz not passed!", {
-        description: `You need at least ${PASSING_GRADE}% to complete this module. Please retry the quiz.`,
+    if (hasExercises && !quizPassed) {
+      toast.error("Quiz belum lulus", {
+        description: `Perlu minimal ${PASSING_GRADE}% untuk menyelesaikan modul.`,
       });
       return;
     }
 
     setSaving(true);
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
-      toast.error("Please sign in to save progress");
+      toast.error("Silakan masuk terlebih dahulu");
       setSaving(false);
       return;
     }
 
     try {
-      const { data, error } = await supabase
-        .from("user_progress")
-        .upsert(
-          {
-            user_id: user.id,
-            module_id: moduleUUID,
-            completed: true,
-            score: quizScore || 100,
-            completed_at: new Date().toISOString(),
-          },
-          {
-            onConflict: "user_id,module_id",
-            ignoreDuplicates: false,
-          }
-        )
-        .select()
-        .single();
+      const { error } = await supabase.from("user_progress").upsert(
+        {
+          user_id: user.id,
+          module_id: moduleUUID,
+          completed: true,
+          score: quizScore || 100,
+          completed_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,module_id", ignoreDuplicates: false }
+      );
 
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      toast.success("Module completed!", {
-        description: "You've finished this module. Great work!",
-      });
-
-      if (data) {
-        setIsModuleCompleted(true);
-      }
-
-      setTimeout(() => {
-        router.push("/learn/modules");
-      }, 2000);
-    } catch (error) {
-      console.error("Failed to save progress:", error);
-      
-      const err = error as { code?: string; message?: string };
-      
-      if (err.code === "23503") {
-        toast.error("Module not found in database", {
-          description: "Please contact support if this persists.",
-        });
-      } else if (err.code === "23505") {
-        toast.error("Progress already saved", {
-          description: "Your progress has been recorded.",
-        });
-      } else {
-        toast.error("Failed to save progress", {
-          description: err.message || "Please try again.",
-        });
-      }
+      toast.success("Modul selesai!", { description: "Kerja bagus!" });
+      setIsModuleCompleted(true);
+      setTimeout(() => router.push("/learn/modules"), 2000);
+    } catch {
+      toast.error("Gagal menyimpan progress");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleQuizComplete = async (score: number, answers: Record<string, string>) => {
+  const handleQuizComplete = async (
+    score: number,
+    answers: Record<string, string>
+  ) => {
     setQuizScore(score);
     setQuizCompleted(true);
-    
-    // NEW: Check if passed
     const passed = score >= PASSING_GRADE;
     setQuizPassed(passed);
-    
+
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (user) {
-      try {
-        const { error } = await supabase.from("quiz_results").insert({
-          user_id: user.id,
-          module_id: moduleUUID,
-          score,
-          total_points: 100,
-          correct_answers: Object.values(answers).filter((a) => a === "correct").length,
-          total_questions: Object.keys(answers).length,
-          answers,
-        });
-
-        if (error) {
-          console.error("Error saving quiz result:", error);
-        } else {
-          // NEW: Different toast based on pass/fail
-          if (passed) {
-            toast.success("Quiz passed! 🎉", {
-              description: `You scored ${score}%. Excellent!`,
-            });
-          } else {
-            toast.error("Quiz failed 😞", {
-              description: `You scored ${score}%. You need ${PASSING_GRADE}% to pass. Please try again.`,
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Failed to save quiz result:", error);
-      }
+      await supabase.from("quiz_results").insert({
+        user_id: user.id,
+        module_id: moduleUUID,
+        score,
+        total_points: 100,
+        correct_answers: Object.values(answers).filter((a) => a === "correct")
+          .length,
+        total_questions: Object.keys(answers).length,
+        answers,
+      });
     }
-  };
 
-  const handleSpeak = (text: string) => {
-    if ("speechSynthesis" in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
+    if (passed) {
+      toast.success("Quiz lulus! 🎉", { description: `Skor: ${score}%` });
     } else {
-      toast.error("Text-to-speech not supported");
+      toast.error("Quiz belum lulus", {
+        description: `Skor: ${score}%. Perlu minimal ${PASSING_GRADE}%.`,
+      });
     }
   };
+
+  const difficultyColor =
+    learningModule.difficulty === "beginner"
+      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+      : learningModule.difficulty === "intermediate"
+      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+      : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
 
   return (
     <div className="space-y-6">
@@ -278,252 +252,193 @@ export default function ModuleDetailPage() {
           className="mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Modules
+          Kembali ke Modul
         </Button>
-        
-        <div className="flex items-start justify-between gap-4">
+
+        <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{learningModule.title}</h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-2">
+            <h1 className="text-3xl font-bold tracking-tight">
+              {learningModule.title}
+            </h1>
+            <p className="text-muted-foreground mt-1">
               {learningModule.description}
             </p>
           </div>
-          <div className="flex flex-col gap-2">
-            <Badge className={
-              learningModule.difficulty === "beginner"
-                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                : learningModule.difficulty === "intermediate"
-                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-            }>
+          <div className="flex gap-2 flex-wrap">
+            <Badge className={difficultyColor}>
               {learningModule.difficulty}
             </Badge>
             {isModuleCompleted && (
               <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
                 <CheckCircle2 className="w-3 h-3 mr-1" />
-                Completed
+                Selesai
               </Badge>
             )}
           </div>
         </div>
       </div>
 
-      {/* Progress Overview */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Progress</CardTitle>
-          <CardDescription>
-            {showQuiz 
-              ? `Complete the quiz (minimum ${PASSING_GRADE}% to pass)`
-              : `Lesson ${currentLessonIndex + 1} of ${totalLessons}`
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Progress value={progressPercentage} className="mb-2" />
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            {completedLessons.size} of {totalLessons} lessons completed
-          </p>
-        </CardContent>
-      </Card>
+      {/* Pilih Fase */}
+      {!showQuiz && (
+        <div>
+          <h2 className="text-base font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">
+            Pilih Fase Belajar
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {PHASES.map((phase) => {
+              const Icon = phase.icon;
+              const isActive = activePhase === phase.id;
+              return (
+                <button
+                  key={phase.id}
+                  onClick={() =>
+                    setActivePhase(isActive ? null : phase.id)
+                  }
+                  className={`
+                    rounded-xl border-2 p-4 text-left transition-all cursor-pointer
+                    ${isActive ? phase.activeBg : `bg-card ${phase.border}`}
+                    hover:opacity-90
+                  `}
+                >
+                  <Icon className={`h-6 w-6 mb-2 ${phase.iconColor}`} />
+                  <p className="font-semibold text-sm">{phase.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-snug">
+                    {phase.desc}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
-      {/* Show Quiz or Lessons */}
-      {showQuiz && learningModule.content.exercises ? (
+      {/* Konten Fase */}
+      {!showQuiz && activePhase === "menulis" && (
+        <PhaseMenulis lessons={learningModule.content.lessons} />
+      )}
+      {!showQuiz && activePhase === "mendengarkan" && (
+        <PhaseMendengarkan lessons={learningModule.content.lessons} />
+      )}
+      {!showQuiz && activePhase === "membaca" && (
+        <PhaseMembaca lessons={learningModule.content.lessons} />
+      )}
+      {!showQuiz && activePhase === "berbicara" && (
+        <PhaseBerbicara
+          lessons={learningModule.content.lessons}
+          moduleId={moduleId}
+        />
+      )}
+
+      {/* Quiz */}
+      {showQuiz && hasExercises && (
         <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Module Quiz</CardTitle>
-              <CardDescription>
-                Test your knowledge. Passing grade: {PASSING_GRADE}%
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowQuiz(false)}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h2 className="text-xl font-bold">Quiz Modul</h2>
+            <Badge variant="outline" className="ml-auto">
+              Minimum {PASSING_GRADE}%
+            </Badge>
+          </div>
+
           {!quizCompleted ? (
             <QuizComponent
-              exercises={learningModule.content.exercises}
+              exercises={learningModule.content.exercises!}
               onComplete={handleQuizComplete}
             />
           ) : (
-            <>
-              {/* Quiz Result Card */}
-              <Card className={quizPassed ? "border-green-500" : "border-red-500"}>
+            <div className="space-y-4">
+              <Card
+                className={
+                  quizPassed ? "border-green-500" : "border-destructive"
+                }
+              >
                 <CardHeader>
                   <div className="flex items-center gap-3">
                     {quizPassed ? (
-                      <CheckCircle2 className="h-8 w-8 text-green-600" />
+                      <CheckCircle2 className="h-8 w-8 text-green-600 shrink-0" />
                     ) : (
-                      <XCircle className="h-8 w-8 text-red-600" />
+                      <XCircle className="h-8 w-8 text-destructive shrink-0" />
                     )}
                     <div>
-                      <CardTitle className={quizPassed ? "text-green-700" : "text-red-700"}>
-                        {quizPassed ? "Quiz Passed! 🎉" : "Quiz Failed 😞"}
+                      <CardTitle
+                        className={
+                          quizPassed ? "text-green-700" : "text-destructive"
+                        }
+                      >
+                        {quizPassed ? "Quiz Lulus! 🎉" : "Quiz Belum Lulus"}
                       </CardTitle>
                       <CardDescription>
-                        Your score: {quizScore}% (Passing grade: {PASSING_GRADE}%)
+                        Skor: {quizScore}% — Minimum: {PASSING_GRADE}%
                       </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  {quizPassed ? (
-                    <p className="text-green-700 dark:text-green-300">
-                      Excellent work! You can now complete this module.
-                    </p>
-                  ) : (
-                    <p className="text-red-700 dark:text-red-300">
-                      You need at least {PASSING_GRADE}% to pass. Review the lessons and try again!
-                    </p>
-                  )}
-                </CardContent>
               </Card>
 
-              {/* Action Buttons */}
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex gap-3">
-                    {!quizPassed && (
-                      <Button 
-                        onClick={handleRetryQuiz}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        Retry Quiz
-                      </Button>
-                    )}
-                    <Button 
-                      onClick={handleCompleteModule} 
-                      className="flex-1"
-                      disabled={saving || !quizPassed}
-                    >
-                      {saving ? "Saving..." : "Complete Module"}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </>
-          )}
-        </div>
-      ) : (
-        <>
-          {/* Current Lesson */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5" />
-                    {currentLesson.title}
-                  </CardTitle>
-                  <CardDescription>
-                    Lesson {currentLessonIndex + 1}
-                  </CardDescription>
-                </div>
-                {completedLessons.has(currentLessonIndex) && (
-                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                    Completed
-                  </Badge>
+              <div className="flex gap-3">
+                {!quizPassed && (
+                  <Button
+                    variant="outline"
+                    onClick={handleRetryQuiz}
+                    className="flex-1"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Coba Lagi
+                  </Button>
+                )}
+                {quizPassed && (
+                  <Button
+                    onClick={handleCompleteModule}
+                    disabled={saving}
+                    className="flex-1"
+                  >
+                    {saving ? "Menyimpan..." : "Selesaikan Modul"}
+                  </Button>
                 )}
               </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="prose dark:prose-invert max-w-none">
-                <p className="text-lg">{currentLesson.content}</p>
-              </div>
-
-              {currentLesson.braille && (
-                <BrailleDisplay
-                  text=""
-                  braille={currentLesson.braille}
-                  showText={false}
-                  onSpeak={() => handleSpeak(currentLesson.content)}
-                />
-              )}
-
-              {currentLesson.example && (
-                <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
-                  <CardHeader>
-                    <CardTitle className="text-base">Example</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{currentLesson.example}</p>
-                  </CardContent>
-                </Card>
-              )}
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => handleSpeak(currentLesson.content)}
-                >
-                  <Volume2 className="h-4 w-4 mr-2" />
-                  Read Aloud
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Navigation & Actions */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="outline"
-                  onClick={handlePreviousLesson}
-                  disabled={currentLessonIndex === 0}
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Previous
-                </Button>
-
-                <div className="flex gap-2">
-                  {!completedLessons.has(currentLessonIndex) && (
-                    <Button variant="outline" onClick={handleLessonComplete}>
-                      <CheckCircle2 className="h-4 w-4 mr-2" />
-                      Mark Complete
-                    </Button>
-                  )}
-
-                  {currentLessonIndex === totalLessons - 1 &&
-                    completedLessons.size === totalLessons ? (
-                    <Button 
-                      onClick={handleCompleteModule}
-                      disabled={saving}
-                    >
-                      {saving ? "Saving..." : (
-                        learningModule.content.exercises && learningModule.content.exercises.length > 0
-                          ? "Take Quiz"
-                          : "Complete Module"
-                      )}
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={handleNextLesson}
-                      disabled={currentLessonIndex === totalLessons - 1}
-                    >
-                      Next
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </>
+            </div>
+          )}
+        </div>
       )}
 
-      {/* Module Summary */}
-      {learningModule.content.summary && (
+      {/* Aksi Bawah */}
+      {!showQuiz && (
         <Card>
-          <CardHeader>
-            <CardTitle>Module Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-600 dark:text-slate-400">
-              {learningModule.content.summary}
-            </p>
+          <CardContent className="pt-6 space-y-3">
+            <div className="flex gap-3 flex-wrap">
+              {hasExercises && (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowQuiz(true)}
+                  className="flex-1"
+                >
+                  <ClipboardList className="h-4 w-4 mr-2" />
+                  {quizPassed ? `Quiz Selesai (${quizScore}%)` : "Ambil Quiz"}
+                </Button>
+              )}
+              <Button
+                onClick={handleCompleteModule}
+                disabled={saving || isModuleCompleted || (hasExercises && !quizPassed)}
+                className="flex-1"
+              >
+                {saving
+                  ? "Menyimpan..."
+                  : isModuleCompleted
+                  ? "Modul Sudah Selesai ✓"
+                  : "Selesaikan Modul"}
+              </Button>
+            </div>
+            {hasExercises && !quizPassed && (
+              <p className="text-xs text-muted-foreground text-center">
+                Lulus quiz terlebih dahulu untuk menyelesaikan modul
+              </p>
+            )}
           </CardContent>
         </Card>
       )}
