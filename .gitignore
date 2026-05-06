@@ -29,6 +29,7 @@ dist/
 .env.test.local
 .env.production.local
 
+
 # ⚠️ CRITICAL: Never commit these files!
 .env
 .env.production
@@ -60,6 +61,9 @@ wrangler.toml.backup
 
 # Netlify (local CLI state & tokens)
 .netlify/
+
+# Supabase CLI local state (mengandung pooler URL & project info)
+supabase/.temp/
 
 # Misc
 *.log
