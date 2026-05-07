@@ -1,18 +1,15 @@
-// app/(dashboard)/learn/modules/page.tsx
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, CheckCircle2, Lock, Clock } from "lucide-react";
+import { BookOpen, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { MODULES } from "@/lib/data/modules";
 import { getModuleUUID } from "@/lib/data/moduleMapping";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { UserProgress } from "@/types";
-import TutorialDriver from "@/components/tutorial/TutorialDriver";
-import { modulesTutorialSteps } from "@/lib/tutorial/steps";
 
 export default function ModulesPage() {
   const [progress, setProgress] = useState<Record<string, UserProgress>>({});
@@ -22,177 +19,106 @@ export default function ModulesPage() {
     async function loadProgress() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (user) {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from("user_progress")
           .select("*")
           .eq("user_id", user.id);
-        
-        if (error) {
-          console.error("Error loading progress:", error);
-        } else if (data) {
-          const progressMap: Record<string, UserProgress> = {};
-          data.forEach((p) => {
-            progressMap[p.module_id] = p;
-          });
-          setProgress(progressMap);
+
+        if (data) {
+          const map: Record<string, UserProgress> = {};
+          data.forEach((p) => { map[p.module_id] = p; });
+          setProgress(map);
         }
       }
       setLoading(false);
     }
-
     loadProgress();
   }, []);
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "beginner":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "intermediate":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-      case "advanced":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
-      default:
-        return "bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-300";
-    }
-  };
+  const completedCount = Object.values(progress).filter((p) => p.completed).length;
 
-  const isModuleUnlocked = (order_number: number) => {
-    if (order_number === 1) return true;
-    
-    const previousModule = MODULES.find((m) => m.order_number === order_number - 1);
-    if (!previousModule) return false;
-    
-    // Get UUID for previous module
-    const previousModuleUUID = getModuleUUID(previousModule.id);
-    return progress[previousModuleUUID]?.completed || false;
-  };
-
-  const getModuleProgress = (moduleId: string) => {
-    const moduleUUID = getModuleUUID(moduleId);
-    return progress[moduleUUID];
-  };
+  const difficultyColor = (d: string) =>
+    d === "beginner"
+      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+      : d === "intermediate"
+      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+      : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
 
   return (
     <div className="space-y-6">
-      <TutorialDriver
-        steps={modulesTutorialSteps}
-        storageKey="modules-tutorial-seen"
-        autoStart={false}
-        showButton={true}
-      />
-
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Learning Modules</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Complete modules in order to unlock the next level
+        <h1 className="text-3xl font-bold tracking-tight">Modul Belajar</h1>
+        <p className="text-muted-foreground mt-1">
+          Pilih modul yang ingin diajarkan — semua modul bisa dibuka langsung
         </p>
       </div>
 
-      {/* Progress Overview */}
+      {/* Ringkasan progress */}
       <Card>
-        <CardHeader>
-          <CardTitle>Your Progress</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <div className="text-2xl font-bold">
-                {Object.values(progress).filter((p) => p.completed).length} / {MODULES.length}
-              </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
-                Modules completed
-              </div>
+        <CardContent className="pt-5">
+          <div className="flex items-center gap-8">
+            <div>
+              <p className="text-2xl font-bold">{completedCount} / {MODULES.length}</p>
+              <p className="text-sm text-muted-foreground">Modul selesai</p>
             </div>
-            <div className="flex-1">
-              <div className="text-2xl font-bold">
-                {Math.round(
-                  (Object.values(progress).filter((p) => p.completed).length / MODULES.length) * 100
-                )}%
-              </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
-                Overall progress
-              </div>
+            <div>
+              <p className="text-2xl font-bold">
+                {Math.round((completedCount / MODULES.length) * 100)}%
+              </p>
+              <p className="text-sm text-muted-foreground">Progress keseluruhan</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Modules List */}
-      <div className="grid gap-6">
+      {/* Daftar modul */}
+      <div className="grid gap-4">
         {MODULES.map((module) => {
-          const moduleProgress = getModuleProgress(module.id);
-          const isUnlocked = isModuleUnlocked(module.order_number);
-          const isCompleted = moduleProgress?.completed || false;
+          const moduleUUID = getModuleUUID(module.id);
+          const moduleProgress = progress[moduleUUID];
+          const isCompleted = moduleProgress?.completed ?? false;
 
           return (
-            <Card
-              key={module.id}
-              className={`transition-all ${
-                !isUnlocked ? "opacity-60" : "hover:shadow-lg"
-              }`}
-            >
+            <Card key={module.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-bold">
-                        {module.order_number}
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl">{module.title}</CardTitle>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge className={getDifficultyColor(module.difficulty)}>
-                            {module.difficulty}
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                      {module.order_number}
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">{module.title}</CardTitle>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <Badge className={difficultyColor(module.difficulty)}>
+                          {module.difficulty}
+                        </Badge>
+                        {isCompleted && (
+                          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Selesai
                           </Badge>
-                          {isCompleted && (
-                            <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                              <CheckCircle2 className="w-3 h-3 mr-1" />
-                              Completed
-                            </Badge>
-                          )}
-                          {!isUnlocked && (
-                            <Badge variant="outline">
-                              <Lock className="w-3 h-3 mr-1" />
-                              Locked
-                            </Badge>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </div>
-                    <CardDescription className="text-base">
-                      {module.description}
-                    </CardDescription>
                   </div>
                 </div>
+                <CardDescription className="mt-2 ml-13">
+                  {module.description}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
-                    <div className="flex items-center gap-1">
-                      <BookOpen className="w-4 h-4" />
-                      <span>{module.content.lessons.length} lessons</span>
-                    </div>
-                    {moduleProgress && !isCompleted && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        <span>In progress</span>
-                      </div>
-                    )}
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <BookOpen className="w-4 h-4" />
+                    <span>{module.content.lessons.length} pelajaran</span>
                   </div>
-                  <Button
-                    asChild={isUnlocked}
-                    disabled={!isUnlocked || loading}
-                  >
-                    {isUnlocked ? (
-                      <Link href={`/learn/modules/${module.id}`}>
-                        {isCompleted ? "Review" : "Start Learning"}
-                      </Link>
-                    ) : (
-                      <span>Locked</span>
-                    )}
+                  <Button asChild disabled={loading} size="sm">
+                    <Link href={`/learn/modules/${module.id}`}>
+                      {isCompleted ? "Ulangi" : "Mulai Mengajar"}
+                    </Link>
                   </Button>
                 </div>
               </CardContent>

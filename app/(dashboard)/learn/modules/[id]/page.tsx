@@ -93,7 +93,7 @@ export default function ModuleDetailPage() {
   const moduleId = params.id as string;
   const moduleUUID = getModuleUUID(moduleId);
 
-  const [activePhase, setActivePhase] = useState<Phase | null>(null);
+  const [activePhase, setActivePhase] = useState<Phase | null>("menulis");
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizScore, setQuizScore] = useState(0);

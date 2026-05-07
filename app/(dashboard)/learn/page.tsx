@@ -1,14 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, FileText, TrendingUp } from "lucide-react";
-import TutorialDriver from "@/components/tutorial/TutorialDriver";
-import { dashboardTutorialSteps } from "@/lib/tutorial/steps";
+import { Badge } from "@/components/ui/badge";
+import { BookOpen, Grid3X3, ClipboardList, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { MODULES } from "@/lib/data/modules";
 
 export default async function LearnPage() {
   const supabase = await createClient();
-  
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -21,133 +21,142 @@ export default async function LearnPage() {
 
   const { data: progressData } = await supabase
     .from("user_progress")
-    .select("*")
+    .select("module_id, completed")
     .eq("user_id", user!.id);
 
-  const completedModules = progressData?.filter((p) => p.completed).length || 0;
-  const totalModules = 10;
-  const progressPercentage = Math.round((completedModules / totalModules) * 100);
-  const firstName = profile?.full_name?.split(" ")[0] || "there";
+  const completedIds = new Set(
+    progressData?.filter((p) => p.completed).map((p) => p.module_id) ?? []
+  );
+
+  const completedCount = completedIds.size;
+  const totalModules = MODULES.length;
+  const firstName = profile?.full_name?.split(" ")[0] || "Guru";
+
+  const quickLinks = [
+    {
+      href: "/learn/modules",
+      icon: BookOpen,
+      label: "Modul Belajar",
+      desc: "Buka dan ajarkan modul per topik",
+      color: "text-blue-600",
+    },
+    {
+      href: "/braille-reference",
+      icon: Grid3X3,
+      label: "Panduan Braille",
+      desc: "Referensi huruf dan pola Braille",
+      color: "text-purple-600",
+    },
+    {
+      href: "/quiz",
+      icon: ClipboardList,
+      label: "Quiz & Test",
+      desc: "Tampilkan soal untuk kelas",
+      color: "text-orange-600",
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <TutorialDriver
-        steps={dashboardTutorialSteps}
-        storageKey="dashboard-tutorial-seen"
-        autoStart={true}
-        showButton={true}
-      />
-
-      {/* ✅ id="welcome-message" */}
-      <div id="welcome-message">
+      {/* Header */}
+      <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Welcome back, {firstName}! 👋
+          Selamat datang, {firstName}!
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Continue your English learning journey with Braille
+        <p className="text-muted-foreground mt-1">
+          Pilih modul yang ingin diajarkan hari ini
         </p>
       </div>
 
-      {/* ✅ id="progress-overview" */}
-      <Card id="progress-overview">
-        <CardHeader>
-          <CardTitle>Your Progress</CardTitle>
-          <CardDescription>
-            You&apos;ve completed {completedModules} out of {totalModules} modules
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">Overall Progress</span>
-              <span className="text-slate-600 dark:text-slate-400">
-                {progressPercentage}%
-              </span>
-            </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-              <div
-                className="bg-blue-600 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${progressPercentage}%` }}
-                role="progressbar"
-                aria-valuenow={progressPercentage}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-label={`Progress: ${progressPercentage}%`}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Ringkasan modul */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <Card>
+          <CardContent className="pt-5">
+            <p className="text-3xl font-bold">{totalModules}</p>
+            <p className="text-sm text-muted-foreground mt-1">Total Modul</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-5">
+            <p className="text-3xl font-bold text-green-600">{completedCount}</p>
+            <p className="text-sm text-muted-foreground mt-1">Sudah Selesai</p>
+          </CardContent>
+        </Card>
+        <Card className="col-span-2 md:col-span-1">
+          <CardContent className="pt-5">
+            <p className="text-3xl font-bold text-blue-600">
+              {totalModules - completedCount}
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">Belum Selesai</p>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* ✅ id="quick-actions" */}
-      <div id="quick-actions">
-        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <BookOpen className="h-8 w-8 text-blue-600 mb-2" />
-              <CardTitle className="text-lg">Continue Learning</CardTitle>
-              <CardDescription>Resume your current module</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button asChild className="w-full">
-                <Link href="/learn/modules">Start Learning</Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <FileText className="h-8 w-8 text-green-600 mb-2" />
-              <CardTitle className="text-lg">Practice</CardTitle>
-              <CardDescription>Test your knowledge</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/practice">Practice Now</Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-<Card className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <TrendingUp className="h-8 w-8 text-orange-600 mb-2" />
-              <CardTitle className="text-lg">Track Progress</CardTitle>
-              <CardDescription>View your statistics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/progress">View Stats</Link>
-              </Button>
-            </CardContent>
-          </Card>
+      {/* Akses cepat */}
+      <div>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+          Akses Cepat
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {quickLinks.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link key={item.href} href={item.href}>
+                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                  <CardHeader className="pb-2">
+                    <Icon className={`h-7 w-7 mb-1 ${item.color}`} />
+                    <CardTitle className="text-base">{item.label}</CardTitle>
+                    <CardDescription className="text-sm">{item.desc}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       </div>
 
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>Your learning history</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {completedModules === 0 ? (
-            <div className="text-center py-8 text-slate-600 dark:text-slate-400">
-              <p>No activity yet. Start learning to see your progress here!</p>
-              <Button asChild className="mt-4">
-                <Link href="/learn/modules">Get Started</Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                You&apos;ve completed {completedModules} module{completedModules > 1 ? "s" : ""}. 
-                Keep up the great work! 🎉
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Daftar modul ringkas */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            Semua Modul
+          </h2>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/learn/modules">
+              Lihat semua
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Link>
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {MODULES.slice(0, 6).map((mod) => {
+            const done = completedIds.has(mod.id);
+            return (
+              <Link key={mod.id} href={`/learn/modules/${mod.id}`}>
+                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                  <CardContent className="pt-4 pb-4 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{mod.title}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {mod.content.lessons.length} pelajaran
+                      </p>
+                    </div>
+                    <div className="shrink-0">
+                      {done ? (
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                          Selesai
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">Buka</Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
