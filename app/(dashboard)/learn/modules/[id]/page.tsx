@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -21,6 +21,8 @@ import {
   XCircle,
   RefreshCw,
   ClipboardList,
+  School,
+  Play,
 } from "lucide-react";
 import { getModuleById } from "@/lib/data/modules";
 import { getModuleUUID } from "@/lib/data/moduleMapping";
@@ -87,11 +89,15 @@ const PHASES: {
   },
 ];
 
+type ClassStatus = "not_started" | "in_progress" | "completed";
+
 export default function ModuleDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const moduleId = params.id as string;
   const moduleUUID = getModuleUUID(moduleId);
+  const classId = searchParams.get("classId");
 
   const [activePhase, setActivePhase] = useState<Phase | null>("menulis");
   const [showQuiz, setShowQuiz] = useState(false);
@@ -101,32 +107,42 @@ export default function ModuleDetailPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isModuleCompleted, setIsModuleCompleted] = useState(false);
+  const [className, setClassName] = useState<string | null>(null);
+  const [classStatus, setClassStatus] = useState<ClassStatus>("not_started");
 
   const learningModule = getModuleById(moduleId);
 
   useEffect(() => {
     async function loadProgress() {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (user && learningModule) {
-        const { data, error } = await supabase
+        // Load user progress (fallback lama)
+        const { data } = await supabase
           .from("user_progress")
-          .select("*")
+          .select("completed")
           .eq("user_id", user.id)
           .eq("module_id", moduleUUID)
           .maybeSingle();
 
-        if (!error && data) {
-          setIsModuleCompleted(data.completed || false);
+        if (data) setIsModuleCompleted(data.completed || false);
+
+        // Load class progress jika ada classId
+        if (classId) {
+          const [{ data: cls }, { data: cp }] = await Promise.all([
+            supabase.from("classrooms").select("name").eq("id", classId).single(),
+            supabase.from("class_progress").select("status")
+              .eq("classroom_id", classId).eq("module_id", moduleUUID).maybeSingle(),
+          ]);
+          setClassName(cls?.name ?? null);
+          setClassStatus((cp?.status as ClassStatus) ?? "not_started");
         }
       }
       setLoading(false);
     }
     loadProgress();
-  }, [moduleId, moduleUUID, learningModule]);
+  }, [moduleId, moduleUUID, classId, learningModule]);
 
   if (loading) {
     return (
@@ -153,6 +169,32 @@ export default function ModuleDetailPage() {
     setQuizCompleted(false);
     setQuizScore(0);
     setQuizPassed(false);
+  };
+
+  const handleUpdateClassStatus = async (status: ClassStatus) => {
+    if (!classId) return;
+    setSaving(true);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setSaving(false); return; }
+
+    const { error } = await supabase.from("class_progress").upsert(
+      { classroom_id: classId, module_id: moduleUUID, status, updated_by: user.id, updated_at: new Date().toISOString() },
+      { onConflict: "classroom_id,module_id" }
+    );
+
+    if (error) {
+      toast.error("Gagal menyimpan progress kelas");
+    } else {
+      setClassStatus(status);
+      if (status === "completed") {
+        toast.success("Modul selesai diajarkan!", { description: `Kelas ${className}` });
+        setTimeout(() => router.push(`/learn/modules?classId=${classId}`), 1500);
+      } else {
+        toast.success("Status diperbarui");
+      }
+    }
+    setSaving(false);
   };
 
   const handleCompleteModule = async () => {
@@ -248,12 +290,29 @@ export default function ModuleDetailPage() {
       <div>
         <Button
           variant="ghost"
-          onClick={() => router.push("/learn/modules")}
+          onClick={() => router.push(classId ? `/learn/modules?classId=${classId}` : "/learn/modules")}
           className="mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Kembali ke Modul
         </Button>
+
+        {/* Banner kelas aktif */}
+        {className && (
+          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-lg bg-primary/5 border border-primary/20 w-fit">
+            <School className="h-4 w-4 text-primary shrink-0" />
+            <span className="text-sm font-medium">Mengajar untuk:</span>
+            <span className="text-sm font-bold text-primary">{className}</span>
+            {classStatus === "in_progress" && (
+              <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 ml-1">Sedang Diajarkan</Badge>
+            )}
+            {classStatus === "completed" && (
+              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 ml-1">
+                <CheckCircle2 className="w-3 h-3 mr-1" />Selesai Diajarkan
+              </Badge>
+            )}
+          </div>
+        )}
 
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
@@ -411,33 +470,53 @@ export default function ModuleDetailPage() {
       {!showQuiz && (
         <Card>
           <CardContent className="pt-6 space-y-3">
-            <div className="flex gap-3 flex-wrap">
-              {hasExercises && (
+            {/* Tombol quiz */}
+            {hasExercises && (
+              <Button variant="outline" onClick={() => setShowQuiz(true)} className="w-full">
+                <ClipboardList className="h-4 w-4 mr-2" />
+                {quizPassed ? `Quiz Selesai (${quizScore}%)` : "Ambil Quiz"}
+              </Button>
+            )}
+
+            {/* Tombol class progress — hanya jika ada classId */}
+            {classId ? (
+              <div className="flex gap-3 flex-wrap">
+                {classStatus === "not_started" && (
+                  <Button
+                    onClick={() => handleUpdateClassStatus("in_progress")}
+                    disabled={saving}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    {saving ? "Menyimpan..." : "Mulai Mengajarkan"}
+                  </Button>
+                )}
                 <Button
-                  variant="outline"
-                  onClick={() => setShowQuiz(true)}
+                  onClick={() => handleUpdateClassStatus("completed")}
+                  disabled={saving || classStatus === "completed"}
                   className="flex-1"
                 >
-                  <ClipboardList className="h-4 w-4 mr-2" />
-                  {quizPassed ? `Quiz Selesai (${quizScore}%)` : "Ambil Quiz"}
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  {saving ? "Menyimpan..." : classStatus === "completed" ? "Sudah Selesai Diajarkan ✓" : "Selesai Diajarkan"}
                 </Button>
-              )}
-              <Button
-                onClick={handleCompleteModule}
-                disabled={saving || isModuleCompleted || (hasExercises && !quizPassed)}
-                className="flex-1"
-              >
-                {saving
-                  ? "Menyimpan..."
-                  : isModuleCompleted
-                  ? "Modul Sudah Selesai ✓"
-                  : "Selesaikan Modul"}
-              </Button>
-            </div>
-            {hasExercises && !quizPassed && (
-              <p className="text-xs text-muted-foreground text-center">
-                Lulus quiz terlebih dahulu untuk menyelesaikan modul
-              </p>
+              </div>
+            ) : (
+              /* Fallback: tombol lama jika tidak ada classId */
+              <div className="space-y-2">
+                <Button
+                  onClick={handleCompleteModule}
+                  disabled={saving || isModuleCompleted || (hasExercises && !quizPassed)}
+                  className="w-full"
+                >
+                  {saving ? "Menyimpan..." : isModuleCompleted ? "Modul Sudah Selesai ✓" : "Selesaikan Modul"}
+                </Button>
+                {hasExercises && !quizPassed && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Lulus quiz terlebih dahulu untuk menyelesaikan modul
+                  </p>
+                )}
+              </div>
             )}
           </CardContent>
         </Card>
