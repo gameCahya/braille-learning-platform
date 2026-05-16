@@ -11,6 +11,7 @@ import {
   Braces,
   ClipboardList,
   Dumbbell,
+  ArrowLeftRight,
 } from "lucide-react";
 import { NavItem } from "./NavItem";
 
@@ -39,11 +40,12 @@ export function DashboardSidebar() {
         <NavItem href="/" icon={LayoutDashboard} label="Dashboard" />
 
         <NavSection label="Belajar Mandiri" />
-        <NavItem href="/learn" icon={BookOpen} label="Modul Belajar" />
         <NavItem href="/braille-reference" icon={Braces} label="Panduan Braille" />
+        <NavItem href="/converter" icon={ArrowLeftRight} label="Konverter" />
         <NavItem href="/practice" icon={Dumbbell} label="Practice" />
 
         <NavSection label="Mengajar di Kelas" />
+        <NavItem href="/learn" icon={BookOpen} label="Modul Belajar" />
         <NavItem href="/quiz" icon={ClipboardList} label="Quiz & Test" />
 
         <NavSection label="Manajemen" />

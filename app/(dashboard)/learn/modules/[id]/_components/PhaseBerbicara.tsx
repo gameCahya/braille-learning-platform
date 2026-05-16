@@ -173,95 +173,148 @@ export default function PhaseBerbicara({ lessons, moduleId }: Props) {
           Siswa ucapkan kata di depan kelas. Upload audio panduan untuk diputar guru.
         </p>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {lessons.map((lesson) => {
-          const uploadedUrl = audioMap[lesson.id];
-          const isUploading = uploading === lesson.id;
-          const isPlaying = playingId === lesson.id;
+      <CardContent className="space-y-6">
+        {lessons.map((lesson) => (
+          <div key={lesson.id}>
+            {lesson.words && lesson.words.length > 0 ? (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                  {lesson.title}
+                </p>
+                <div className="space-y-2">
+                  {lesson.words.map((word) => {
+                    const uploadedUrl = audioMap[word.id];
+                    const isUploading = uploading === word.id;
+                    const isCurrentlyPlaying = playingId === word.id;
 
-          return (
-            <div
-              key={lesson.id}
-              className="flex items-center justify-between gap-3 p-4 rounded-xl border bg-card"
-            >
-              {/* Teks kata */}
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold text-lg truncate">{lesson.title}</p>
-                {lesson.content && (
-                  <p className="text-sm text-muted-foreground truncate">
-                    {lesson.content}
-                  </p>
-                )}
-              </div>
+                    return (
+                      <div
+                        key={word.id}
+                        className="flex items-center justify-between gap-3 p-3 rounded-xl border bg-card"
+                      >
+                        <div className="min-w-0 flex-1 flex items-center gap-3">
+                          {word.image && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={word.image}
+                              alt={word.imageAlt || word.indonesian}
+                              className="h-10 w-10 object-cover rounded-lg border shrink-0"
+                            />
+                          )}
+                          <div>
+                            <p className="font-semibold text-base leading-tight">{word.indonesian}</p>
+                            <p className="text-xs text-muted-foreground">{word.english}</p>
+                            <p className="text-sm font-mono text-blue-600 dark:text-blue-400">{word.braille}</p>
+                          </div>
+                        </div>
 
-              {/* Kontrol audio */}
-              <div className="flex items-center gap-2 shrink-0">
-                {uploadedUrl && (
-                  <Badge
-                    variant="outline"
-                    className="text-xs text-green-600 border-green-400 hidden sm:flex"
-                  >
-                    Audio
-                  </Badge>
-                )}
-
-                {/* TTS */}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  title="Putar TTS"
-                  onClick={() => handleSpeak(lesson.title)}
-                >
-                  <Volume2 className="h-4 w-4" />
-                </Button>
-
-                {/* Putar audio yang diunggah */}
-                {uploadedUrl && (
-                  <Button
-                    variant={isPlaying ? "default" : "outline"}
-                    size="icon"
-                    title={isPlaying ? "Berhenti" : "Putar audio"}
-                    onClick={() => handlePlayAudio(lesson.id, uploadedUrl)}
-                  >
-                    {isPlaying ? (
-                      <Square className="h-4 w-4 fill-current" />
-                    ) : (
-                      <Play className="h-4 w-4 fill-current" />
-                    )}
-                  </Button>
-                )}
-
-                {/* Upload audio */}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  title={uploadedUrl ? "Ganti audio" : "Upload audio"}
-                  disabled={isUploading}
-                  onClick={() => handleUploadClick(lesson)}
-                >
-                  {isUploading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Upload className="h-4 w-4" />
-                  )}
-                </Button>
-
-                {/* Hapus audio */}
-                {uploadedUrl && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    title="Hapus audio"
-                    className="text-destructive hover:bg-destructive/10"
-                    onClick={() => handleDeleteAudio(lesson)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+                        <div className="flex items-center gap-2 shrink-0">
+                          {uploadedUrl && (
+                            <Badge variant="outline" className="text-xs text-green-600 border-green-400 hidden sm:flex">
+                              Audio
+                            </Badge>
+                          )}
+                          <Button variant="outline" size="icon" title="Putar TTS" onClick={() => handleSpeak(`${word.indonesian}. ${word.english}`)}>
+                            <Volume2 className="h-4 w-4" />
+                          </Button>
+                          {uploadedUrl && (
+                            <Button
+                              variant={isCurrentlyPlaying ? "default" : "outline"}
+                              size="icon"
+                              title={isCurrentlyPlaying ? "Berhenti" : "Putar audio"}
+                              onClick={() => handlePlayAudio(word.id, uploadedUrl)}
+                            >
+                              {isCurrentlyPlaying ? <Square className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
+                            </Button>
+                          )}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            title={uploadedUrl ? "Ganti audio" : "Upload audio"}
+                            disabled={isUploading}
+                            onClick={() => {
+                              targetLessonRef.current = { ...lesson, id: word.id };
+                              fileInputRef.current?.click();
+                            }}
+                          >
+                            {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                          </Button>
+                          {uploadedUrl && (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              title="Hapus audio"
+                              className="text-destructive hover:bg-destructive/10"
+                              onClick={() => handleDeleteAudio({ ...lesson, id: word.id })}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              (() => {
+                const uploadedUrl = audioMap[lesson.id];
+                const isUploading = uploading === lesson.id;
+                const isCurrentlyPlaying = playingId === lesson.id;
+                return (
+                  <div className="flex items-center justify-between gap-3 p-4 rounded-xl border bg-card">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-lg truncate">{lesson.title}</p>
+                      {lesson.content && (
+                        <p className="text-sm text-muted-foreground truncate">{lesson.content}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {uploadedUrl && (
+                        <Badge variant="outline" className="text-xs text-green-600 border-green-400 hidden sm:flex">
+                          Audio
+                        </Badge>
+                      )}
+                      <Button variant="outline" size="icon" title="Putar TTS" onClick={() => handleSpeak(lesson.title)}>
+                        <Volume2 className="h-4 w-4" />
+                      </Button>
+                      {uploadedUrl && (
+                        <Button
+                          variant={isCurrentlyPlaying ? "default" : "outline"}
+                          size="icon"
+                          title={isCurrentlyPlaying ? "Berhenti" : "Putar audio"}
+                          onClick={() => handlePlayAudio(lesson.id, uploadedUrl)}
+                        >
+                          {isCurrentlyPlaying ? <Square className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        title={uploadedUrl ? "Ganti audio" : "Upload audio"}
+                        disabled={isUploading}
+                        onClick={() => handleUploadClick(lesson)}
+                      >
+                        {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                      </Button>
+                      {uploadedUrl && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          title="Hapus audio"
+                          className="text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDeleteAudio(lesson)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()
+            )}
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

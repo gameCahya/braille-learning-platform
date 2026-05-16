@@ -32,6 +32,15 @@ export interface ModuleContent {
   summary?: string;
 }
 
+export interface VocabularyWord {
+  id: string;
+  indonesian: string;
+  english: string;
+  braille: string;
+  image?: string;
+  imageAlt?: string;
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -42,6 +51,7 @@ export interface Lesson {
   audioUrl?: string;
   image?: string;
   imageAlt?: string;
+  words?: VocabularyWord[];
 }
 
 export interface Exercise {

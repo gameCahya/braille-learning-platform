@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ArrowRight, Headphones, Play, Square, Repeat } from "lucide-react";
-import type { Lesson } from "@/types";
+import type { Lesson, VocabularyWord } from "@/types";
 
 interface Props {
   lessons: Lesson[];
 }
+
+type WordEntry = VocabularyWord & { lessonTitle: string };
 
 const REPEAT_OPTIONS = [1, 2, 3, 5, 10];
 
@@ -20,7 +22,27 @@ export default function PhaseMendengarkan({ lessons }: Props) {
   const [currentRepeat, setCurrentRepeat] = useState(0);
   const playingRef = useRef(false);
 
+  const allWords = useMemo<WordEntry[]>(() => {
+    const words: WordEntry[] = [];
+    for (const lesson of lessons) {
+      if (lesson.words && lesson.words.length > 0) {
+        for (const w of lesson.words) {
+          words.push({ ...w, lessonTitle: lesson.title });
+        }
+      }
+    }
+    return words;
+  }, [lessons]);
+
+  const hasWords = allWords.length > 0;
   const lesson = lessons[index];
+  const word = allWords[index];
+
+  const total = hasWords ? allWords.length : lessons.length;
+  const displayLabel = hasWords ? word?.lessonTitle : lesson?.title;
+  const speakText = hasWords
+    ? `${word?.indonesian}. ${word?.english}`
+    : lesson?.title;
 
   useEffect(() => {
     return () => {
@@ -31,6 +53,7 @@ export default function PhaseMendengarkan({ lessons }: Props) {
 
   useEffect(() => {
     stopSpeech();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
   const stopSpeech = () => {
@@ -50,12 +73,12 @@ export default function PhaseMendengarkan({ lessons }: Props) {
     setIsPlaying(true);
     setCurrentRepeat(0);
 
-    const text = lesson.title;
-    const total = repeatCount;
+    const text = speakText ?? "";
+    const lang = hasWords ? "id-ID" : "en-US";
     let current = 0;
 
     const playNext = () => {
-      if (!playingRef.current || current >= total) {
+      if (!playingRef.current || current >= repeatCount) {
         setIsPlaying(false);
         setCurrentRepeat(0);
         playingRef.current = false;
@@ -68,7 +91,7 @@ export default function PhaseMendengarkan({ lessons }: Props) {
       window.speechSynthesis.cancel();
       setTimeout(() => {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "en-US";
+        utterance.lang = lang;
         utterance.rate = 0.8;
         utterance.onend = () => setTimeout(playNext, 600);
         window.speechSynthesis.speak(utterance);
@@ -92,24 +115,49 @@ export default function PhaseMendengarkan({ lessons }: Props) {
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <Badge variant="outline">
-            {index + 1} / {lessons.length}
+            {index + 1} / {total}
           </Badge>
           {isPlaying && (
             <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300 animate-pulse">
               Memutar {currentRepeat}/{repeatCount}
             </Badge>
           )}
+          <p className="text-sm text-muted-foreground">{displayLabel}</p>
         </div>
 
         {/* Tampilan kata besar */}
-        <div className="text-center py-10 bg-muted/30 rounded-xl border">
-          <p className="text-7xl font-bold tracking-widest text-foreground">
-            {lesson.title}
-          </p>
-          {lesson.content && (
-            <p className="text-base text-muted-foreground mt-3 px-4">
-              {lesson.content}
-            </p>
+        <div className="text-center py-10 bg-muted/30 rounded-xl border space-y-2">
+          {hasWords ? (
+            <>
+              {word?.image && (
+                <div className="flex justify-center mb-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={word.image}
+                    alt={word.imageAlt || word.indonesian}
+                    className="h-28 w-28 object-cover rounded-xl border"
+                  />
+                </div>
+              )}
+              <p className="text-7xl font-bold tracking-widest text-foreground">
+                {word?.indonesian}
+              </p>
+              <p className="text-2xl text-muted-foreground">{word?.english}</p>
+              <p className="text-2xl font-mono tracking-widest text-blue-600 dark:text-blue-400 mt-1">
+                {word?.braille}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-7xl font-bold tracking-widest text-foreground">
+                {lesson?.title}
+              </p>
+              {lesson?.content && (
+                <p className="text-base text-muted-foreground mt-3 px-4">
+                  {lesson.content}
+                </p>
+              )}
+            </>
           )}
         </div>
 
@@ -160,18 +208,11 @@ export default function PhaseMendengarkan({ lessons }: Props) {
 
         {/* Navigasi */}
         <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={() => setIndex((i) => i - 1)}
-            disabled={index === 0}
-          >
+          <Button variant="outline" onClick={() => setIndex((i) => i - 1)} disabled={index === 0}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Sebelumnya
           </Button>
-          <Button
-            onClick={() => setIndex((i) => i + 1)}
-            disabled={index === lessons.length - 1}
-          >
+          <Button onClick={() => setIndex((i) => i + 1)} disabled={index === total - 1}>
             Berikutnya
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
