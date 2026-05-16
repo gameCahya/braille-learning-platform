@@ -38,15 +38,17 @@ export function DashboardSidebar() {
       <nav className="flex-1 overflow-y-auto p-3">
         <NavItem href="/" icon={LayoutDashboard} label="Dashboard" />
 
-        <NavSection label="Konten Pembelajaran" />
-        <NavItem href="/braille-reference" icon={Braces} label="Panduan Braille" />
+        <NavSection label="Belajar Mandiri" />
         <NavItem href="/learn" icon={BookOpen} label="Modul Belajar" />
+        <NavItem href="/braille-reference" icon={Braces} label="Panduan Braille" />
         <NavItem href="/practice" icon={Dumbbell} label="Practice" />
+
+        <NavSection label="Mengajar di Kelas" />
+        <NavItem href="/quiz" icon={ClipboardList} label="Quiz & Test" />
 
         <NavSection label="Manajemen" />
         <NavItem href="/classrooms" icon={School} label="Kelas" />
         <NavItem href="/students" icon={Users} label="Siswa" />
-        <NavItem href="/quiz" icon={ClipboardList} label="Quiz & Test" />
         <NavItem href="/reports" icon={BarChart3} label="Laporan" />
       </nav>
 

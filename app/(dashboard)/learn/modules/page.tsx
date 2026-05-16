@@ -52,7 +52,7 @@ export default function ModulesPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Modul Belajar</h1>
         <p className="text-muted-foreground mt-1">
-          Pilih modul yang ingin diajarkan — semua modul bisa dibuka langsung
+          Pilih modul yang ingin dipelajari — semua modul bisa dibuka langsung
         </p>
       </div>
 
@@ -117,7 +117,7 @@ export default function ModulesPage() {
                   </div>
                   <Button asChild disabled={loading} size="sm">
                     <Link href={`/learn/modules/${module.id}`}>
-                      {isCompleted ? "Ulangi" : "Mulai Mengajar"}
+                      {isCompleted ? "Ulangi" : "Pelajari"}
                     </Link>
                   </Button>
                 </div>

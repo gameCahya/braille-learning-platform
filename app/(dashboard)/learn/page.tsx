@@ -37,7 +37,7 @@ export default async function LearnPage() {
       href: "/learn/modules",
       icon: BookOpen,
       label: "Modul Belajar",
-      desc: "Buka dan ajarkan modul per topik",
+      desc: "Pelajari materi Braille per topik",
       color: "text-blue-600",
     },
     {
@@ -64,7 +64,7 @@ export default async function LearnPage() {
           Selamat datang, {firstName}!
         </h1>
         <p className="text-muted-foreground mt-1">
-          Pilih modul yang ingin diajarkan hari ini
+          Pilih materi yang ingin dipelajari hari ini
         </p>
       </div>
 
