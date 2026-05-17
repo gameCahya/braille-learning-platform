@@ -11,6 +11,7 @@ import Link from "next/link";
 import TutorialDriver from "@/components/tutorial/TutorialDriver";
 import { dashboardSteps } from "@/lib/tutorial/steps";
 
+
 const actions = [
   {
     href: "/braille-reference",
@@ -56,13 +57,10 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name")
-    .eq("id", user!.id)
-    .single();
-
-  const firstName = profile?.full_name?.split(" ")[0] || "Guru";
+  const firstName =
+    (user?.user_metadata?.full_name as string | undefined)?.split(" ")[0] ??
+    user?.email?.split("@")[0] ??
+    "Guru";
 
   return (
     <div className="space-y-8">

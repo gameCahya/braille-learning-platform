@@ -15,24 +15,19 @@ export default async function ReportsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Satu query dengan nested select — eliminasi waterfall classrooms → students
   const { data: classrooms } = await supabase
     .from("classrooms")
-    .select("id, name")
+    .select("id, name, students(id)")
     .eq("teacher_id", user!.id);
 
-  const classroomIds = classrooms?.map((c) => c.id) ?? [];
-
-  const { data: students } = await supabase
-    .from("students")
-    .select("id, full_name, classroom_id")
-    .in("classroom_id", classroomIds.length > 0 ? classroomIds : ["__none__"]);
-
   const studentsByClass = (classrooms ?? []).map((cls) => ({
-    ...cls,
-    count: students?.filter((s) => s.classroom_id === cls.id).length ?? 0,
+    id: cls.id,
+    name: cls.name,
+    count: (cls.students ?? []).length,
   }));
 
-  const totalStudents = students?.length ?? 0;
+  const totalStudents = studentsByClass.reduce((sum, cls) => sum + cls.count, 0);
 
   const stats = [
     { label: "Total Siswa", value: totalStudents, icon: Users },
