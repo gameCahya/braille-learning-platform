@@ -2,6 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { School, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { learnSteps } from "@/lib/tutorial/steps";
 
 interface ClassPickerProps {
   classrooms: {
@@ -16,7 +18,7 @@ interface ClassPickerProps {
 export default function ClassPicker({ classrooms }: ClassPickerProps) {
   return (
     <div className="space-y-6">
-      <div>
+      <div id="class-picker-header">
         <h1 className="text-3xl font-bold tracking-tight">Pilih Kelas</h1>
         <p className="text-muted-foreground mt-1">
           Pilih kelas yang ingin Anda ajarkan hari ini
@@ -37,7 +39,7 @@ export default function ClassPicker({ classrooms }: ClassPickerProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div id="class-picker-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {classrooms.map((cls) => (
             <Link key={cls.id} href={`/learn/modules?classId=${cls.id}`}>
               <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
@@ -73,6 +75,8 @@ export default function ClassPicker({ classrooms }: ClassPickerProps) {
           ))}
         </div>
       )}
+
+      <TutorialDriver steps={learnSteps} storageKey="bralingo-tutorial-learn" />
     </div>
   );
 }

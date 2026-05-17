@@ -11,6 +11,8 @@ import { textToBraille } from "@/lib/braille";
 import { speak, stopSpeaking } from "@/lib/speech";
 import { BookOpen, Zap, Award, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { practiceSteps } from "@/lib/tutorial/steps";
 
 type ExerciseType = "flashcard" | "braille-to-text" | "text-to-braille";
 type Difficulty = "easy" | "medium" | "hard";
@@ -214,7 +216,7 @@ export default function PracticePage() {
   if (!exerciseType) {
     return (
       <div className="space-y-8">
-        <div>
+        <div id="practice-header">
           <h1 className="text-3xl font-bold tracking-tight mb-2">Practice Braille</h1>
           <p className="text-muted-foreground">
             Choose an exercise type and difficulty to start practicing.
@@ -222,7 +224,7 @@ export default function PracticePage() {
         </div>
 
         {/* Accessibility Notice */}
-        <Card className="border-primary bg-primary/5">
+        <Card id="accessibility-notice" className="border-primary bg-primary/5">
           <CardContent className="pt-6">
             <div className="flex items-start gap-3">
               <Volume2 className="h-5 w-5 text-primary mt-0.5" />
@@ -239,7 +241,7 @@ export default function PracticePage() {
         </Card>
 
         {/* Exercise Types */}
-        <div className="grid gap-6 md:grid-cols-3">
+        <div id="practice-types" className="grid gap-6 md:grid-cols-3">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex items-center gap-2 mb-2">
@@ -345,6 +347,8 @@ export default function PracticePage() {
             </CardContent>
           </Card>
         </div>
+
+        <TutorialDriver steps={practiceSteps} storageKey="bralingo-tutorial-practice" />
       </div>
     );
   }

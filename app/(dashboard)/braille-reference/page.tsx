@@ -1,5 +1,7 @@
 import { getBrailleReference } from "@/lib/braille";
 import BrailleCharCard from "@/components/braille/BrailleCharCard";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { brailleReferenceSteps } from "@/lib/tutorial/steps";
 
 export default function BrailleReferencePage() {
   const reference = getBrailleReference();
@@ -21,7 +23,7 @@ export default function BrailleReferencePage() {
 
   return (
     <div className="space-y-10">
-      <div>
+      <div id="braille-header">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Panduan Braille
         </h1>
@@ -32,7 +34,7 @@ export default function BrailleReferencePage() {
       </div>
 
       {/* Struktur sel Braille */}
-      <div className="bg-card border rounded-2xl p-6 space-y-3">
+      <div id="braille-cell-structure" className="bg-card border rounded-2xl p-6 space-y-3">
         <h2 className="text-base font-semibold text-foreground">
           Struktur Sel Braille
         </h2>
@@ -46,7 +48,7 @@ export default function BrailleReferencePage() {
       </div>
 
       {/* Alfabet A–Z */}
-      <section className="space-y-4">
+      <section id="braille-alphabet" className="space-y-4">
         <div>
           <h2 className="text-base font-semibold text-foreground">
             Alfabet (A–Z)
@@ -69,7 +71,7 @@ export default function BrailleReferencePage() {
       </section>
 
       {/* Angka 0–9 */}
-      <section className="space-y-4">
+      <section id="braille-numbers" className="space-y-4">
         <div>
           <h2 className="text-base font-semibold text-foreground">
             Angka (0–9)
@@ -91,7 +93,7 @@ export default function BrailleReferencePage() {
       </section>
 
       {/* Tanda Baca */}
-      <section className="space-y-4">
+      <section id="braille-punctuation" className="space-y-4">
         <div>
           <h2 className="text-base font-semibold text-foreground">
             Tanda Baca
@@ -142,6 +144,8 @@ export default function BrailleReferencePage() {
           ))}
         </div>
       </section>
+
+      <TutorialDriver steps={brailleReferenceSteps} storageKey="bralingo-tutorial-braille-reference" />
     </div>
   );
 }

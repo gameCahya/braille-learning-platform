@@ -33,6 +33,8 @@ import PhaseMenulis from "./_components/PhaseMenulis";
 import PhaseMendengarkan from "./_components/PhaseMendengarkan";
 import PhaseMembaca from "./_components/PhaseMembaca";
 import PhaseBerbicara from "./_components/PhaseBerbicara";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { moduleDetailSteps } from "@/lib/tutorial/steps";
 
 type Phase = "menulis" | "mendengarkan" | "membaca" | "berbicara";
 
@@ -314,7 +316,7 @@ export default function ModuleDetailPage() {
           </div>
         )}
 
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div id="module-title" className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               {learningModule.title}
@@ -339,7 +341,7 @@ export default function ModuleDetailPage() {
 
       {/* Pilih Fase */}
       {!showQuiz && (
-        <div>
+        <div id="phase-selector">
           <h2 className="text-base font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">
             Pilih Fase Belajar
           </h2>
@@ -468,7 +470,7 @@ export default function ModuleDetailPage() {
 
       {/* Aksi Bawah */}
       {!showQuiz && (
-        <Card>
+        <Card id="module-actions">
           <CardContent className="pt-6 space-y-3">
             {/* Tombol quiz */}
             {hasExercises && (
@@ -521,6 +523,8 @@ export default function ModuleDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      <TutorialDriver steps={moduleDetailSteps} storageKey="bralingo-tutorial-module-detail" />
     </div>
   );
 }

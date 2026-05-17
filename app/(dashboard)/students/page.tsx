@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { StudentsTable } from "./_components/StudentsTable";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { studentsSteps } from "@/lib/tutorial/steps";
 
 export default async function StudentsPage() {
   const supabase = await createClient();
@@ -34,22 +36,26 @@ export default async function StudentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div id="students-header" className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Students</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Siswa</h1>
           <p className="text-muted-foreground">
-            Manage and view your students&apos; progress
+            Kelola dan lihat daftar siswa Anda
           </p>
         </div>
-        <Button asChild>
+        <Button id="students-add-btn" asChild>
           <Link href="/students/new">
             <Plus className="mr-2 h-4 w-4" />
-            Add Student
+            Tambah Siswa
           </Link>
         </Button>
       </div>
 
-      <StudentsTable students={students || []} />
+      <div id="students-table">
+        <StudentsTable students={students || []} />
+      </div>
+
+      <TutorialDriver steps={studentsSteps} storageKey="bralingo-tutorial-students" />
     </div>
   );
 }

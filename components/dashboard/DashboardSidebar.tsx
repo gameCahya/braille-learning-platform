@@ -36,7 +36,7 @@ export function DashboardSidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-3">
+      <nav id="sidebar-nav" className="flex-1 overflow-y-auto p-3">
         <NavItem href="/" icon={LayoutDashboard} label="Dashboard" />
 
         <NavSection label="Belajar Mandiri" />

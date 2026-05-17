@@ -8,6 +8,8 @@ import {
   School,
 } from "lucide-react";
 import Link from "next/link";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { dashboardSteps } from "@/lib/tutorial/steps";
 
 const actions = [
   {
@@ -65,7 +67,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Greeting */}
-      <div>
+      <div id="dashboard-greeting">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Selamat datang, {firstName}!
         </h1>
@@ -75,7 +77,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Action Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div id="dashboard-actions" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {actions.map(({ href, icon: Icon, label, desc }) => (
           <div key={href} className="tactile-wrapper">
             <Link
@@ -93,6 +95,8 @@ export default async function DashboardPage() {
           </div>
         ))}
       </div>
+
+      <TutorialDriver steps={dashboardSteps} storageKey="bralingo-tutorial-dashboard" />
     </div>
   );
 }

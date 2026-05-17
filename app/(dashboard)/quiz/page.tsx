@@ -2,17 +2,20 @@ import Link from "next/link";
 import { quizzes, quizTopics } from "@/lib/data/quiz";
 import { ClipboardList, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { quizSteps } from "@/lib/tutorial/steps";
 
 export default function QuizPage() {
   return (
     <div className="space-y-6">
-      <div>
+      <div id="quiz-header">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">Quiz & Test</h1>
         <p className="text-muted-foreground mt-1">
           Pilih quiz untuk ditampilkan kepada siswa di kelas.
         </p>
       </div>
 
+      <div id="quiz-topics" className="space-y-6">
       {quizTopics.map((topic) => (
         <div key={topic} className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
@@ -43,6 +46,9 @@ export default function QuizPage() {
           </div>
         </div>
       ))}
+      </div>
+
+      <TutorialDriver steps={quizSteps} storageKey="bralingo-tutorial-quiz" />
     </div>
   );
 }

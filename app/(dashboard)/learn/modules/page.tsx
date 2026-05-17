@@ -6,6 +6,8 @@ import { BookOpen, CheckCircle2, Clock, School, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { MODULES } from "@/lib/data/modules";
 import { getModuleUUID } from "@/lib/data/moduleMapping";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { modulesSteps } from "@/lib/tutorial/steps";
 
 interface Props {
   searchParams: Promise<{ classId?: string }>;
@@ -64,7 +66,7 @@ export default async function ModulesPage({ searchParams }: Props) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
+      <div id="modules-header">
         <Button variant="ghost" size="sm" asChild className="mb-3 -ml-2">
           <Link href="/learn">
             <ArrowLeft className="h-4 w-4 mr-1" />
@@ -93,7 +95,7 @@ export default async function ModulesPage({ searchParams }: Props) {
 
       {/* Ringkasan progress */}
       {classId && (
-        <Card>
+        <Card id="modules-progress">
           <CardContent className="pt-5">
             <div className="flex items-center gap-8">
               <div>
@@ -112,7 +114,7 @@ export default async function ModulesPage({ searchParams }: Props) {
       )}
 
       {/* Daftar modul */}
-      <div className="grid gap-4">
+      <div id="modules-list" className="grid gap-4">
         {MODULES.map((module) => {
           const moduleUUID = getModuleUUID(module.id);
           return (
@@ -153,6 +155,8 @@ export default async function ModulesPage({ searchParams }: Props) {
           );
         })}
       </div>
+
+      <TutorialDriver steps={modulesSteps} storageKey="bralingo-tutorial-modules" />
     </div>
   );
 }

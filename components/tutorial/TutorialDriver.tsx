@@ -40,10 +40,10 @@ export default function TutorialDriver({
 
     const driverObj = driver({
       showProgress: true,
-      progressText: "{{current}} of {{total}}",
-      nextBtnText: "Next →",
-      prevBtnText: "← Previous",
-      doneBtnText: "Finish",
+      progressText: "{{current}} dari {{total}}",
+      nextBtnText: "Selanjutnya →",
+      prevBtnText: "← Sebelumnya",
+      doneBtnText: "Selesai",
       allowKeyboardControl: true,
       allowClose: true,
       overlayClickBehavior: "close",
@@ -51,12 +51,12 @@ export default function TutorialDriver({
       steps: steps,
       onDestroyed: () => {
         localStorage.setItem(storageKey, "true");
-        announceToScreenReader("Tutorial closed. Press H anytime to replay.");
+        announceToScreenReader("Panduan ditutup. Tekan H kapan saja untuk mengulangi.");
       },
     });
 
     driverRef.current = driverObj;
-    announceToScreenReader("Tutorial started. Use arrow keys to navigate, Escape to close.");
+    announceToScreenReader("Panduan dimulai. Gunakan tombol panah untuk navigasi, Escape untuk menutup.");
     driverObj.drive();
   }, [steps, storageKey, announceToScreenReader]);
 
@@ -96,10 +96,10 @@ export default function TutorialDriver({
         onClick={startTutorial}
         size="lg"
         className="rounded-full shadow-lg"
-        aria-label="Start tutorial (or press H key)"
+        aria-label="Mulai panduan (atau tekan H)"
       >
         <HelpCircle className="h-5 w-5 mr-2" />
-        Help
+        Panduan
       </Button>
     </div>
   );
