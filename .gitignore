@@ -69,8 +69,10 @@ supabase/.temp/
 *.log
 .cache/
 
-# Claude Code memory (local only)
+# Claude Code (local only)
 MEMORY.md
+.claude/
+.mcp.json
 
 # Graphify output (generated, local only)
 graphify-out/
