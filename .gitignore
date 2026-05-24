@@ -72,6 +72,9 @@ supabase/.temp/
 # Claude Code memory (local only)
 MEMORY.md
 
+# Graphify output (generated, local only)
+graphify-out/
+
 # direnv — local environment loader
 .envrc
 
