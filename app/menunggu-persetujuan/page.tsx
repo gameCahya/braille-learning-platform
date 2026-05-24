@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/SignOutButton";
-import { Clock, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, Mail, MessageCircle } from "lucide-react";
 
 export default async function MenungguPersetujuanPage() {
   const supabase = await createClient();
@@ -16,6 +17,13 @@ export default async function MenungguPersetujuanPage() {
     .single();
 
   const roleLabel = profile?.role === "teacher" ? "Guru" : "Siswa";
+  const nama = profile?.full_name ?? user.email;
+
+  const waNumber = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP;
+  const waMessage = encodeURIComponent(
+    `Halo Admin, saya ${nama} (${user.email}) sudah mendaftar sebagai ${roleLabel} di platform Braille Learning. Mohon bantuannya untuk konfirmasi akun saya. Terima kasih 🙏`
+  );
+  const waUrl = waNumber ? `https://wa.me/${waNumber}?text=${waMessage}` : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -30,7 +38,7 @@ export default async function MenungguPersetujuanPage() {
           Menunggu Persetujuan
         </h1>
         <p className="text-gray-500 mb-6">
-          Halo, <span className="font-medium text-gray-700">{profile?.full_name ?? user.email}</span>!
+          Halo, <span className="font-medium text-gray-700">{nama}</span>!
           Pendaftaran kamu sebagai <strong>{roleLabel}</strong> sedang menunggu
           persetujuan dari admin.
         </p>
@@ -52,7 +60,17 @@ export default async function MenungguPersetujuanPage() {
           Proses persetujuan biasanya memakan waktu 1×24 jam pada hari kerja.
         </p>
 
-        <SignOutButton />
+        <div className="space-y-3">
+          {waUrl && (
+            <Button asChild className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white">
+              <a href={waUrl} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="h-4 w-4" />
+                Hubungi Admin via WhatsApp
+              </a>
+            </Button>
+          )}
+          <SignOutButton />
+        </div>
       </div>
     </div>
   );
