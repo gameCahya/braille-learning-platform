@@ -12,16 +12,24 @@ export default async function MenungguPersetujuanPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, email, role")
+    .select("full_name, email, role, school_name, grade_level")
     .eq("id", user.id)
     .single();
 
   const roleLabel = profile?.role === "teacher" ? "Guru" : "Siswa";
   const nama = profile?.full_name ?? user.email;
+  const sekolah = profile?.school_name ?? "-";
+  const kelas = profile?.grade_level ?? "-";
 
   const waNumber = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP;
   const waMessage = encodeURIComponent(
-    `Halo Admin, saya ${nama} (${user.email}) sudah mendaftar sebagai ${roleLabel} di platform Braille Learning. Mohon bantuannya untuk konfirmasi akun saya. Terima kasih 🙏`
+    `Halo Admin, saya ingin konfirmasi pendaftaran akun saya di platform Braille Learning.\n\n` +
+    `Nama: ${nama}\n` +
+    `Email: ${user.email}\n` +
+    `Daftar sebagai: ${roleLabel}\n` +
+    `Sekolah: ${sekolah}\n` +
+    `Kelas: ${kelas}\n\n` +
+    `Mohon bantuannya untuk menyetujui akun saya. Terima kasih 🙏`
   );
   const waUrl = waNumber ? `https://wa.me/${waNumber}?text=${waMessage}` : null;
 
