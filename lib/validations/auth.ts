@@ -14,6 +14,17 @@ export const loginSchema = z.object({
 
 // Register schema
 export const registerSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, "Nama lengkap wajib diisi")
+    .min(2, "Nama lengkap minimal 2 karakter"),
+  role: z.enum(["teacher", "student"], {
+    error: "Pilih peran kamu (Guru atau Siswa)",
+  }),
+  schoolName: z
+    .string()
+    .min(1, "Nama sekolah wajib diisi"),
+  gradeLevel: z.string().optional(),
   email: z
     .string()
     .min(1, "Email wajib diisi")
@@ -29,13 +40,17 @@ export const registerSchema = z.object({
   confirmPassword: z
     .string()
     .min(1, "Konfirmasi password wajib diisi"),
-  fullName: z
-    .string()
-    .min(1, "Nama lengkap wajib diisi")
-    .min(2, "Nama lengkap minimal 2 karakter"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Password tidak cocok",
   path: ["confirmPassword"],
+}).superRefine((data, ctx) => {
+  if (data.role === "student" && !data.gradeLevel) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Tingkat kelas wajib dipilih untuk siswa",
+      path: ["gradeLevel"],
+    });
+  }
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

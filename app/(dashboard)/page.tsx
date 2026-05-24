@@ -2,10 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   Braces,
   BookOpen,
-  Dumbbell,
-  ClipboardList,
-  Users,
-  School,
+  ArrowLeftRight,
 } from "lucide-react";
 import Link from "next/link";
 import TutorialDriver from "@/components/tutorial/TutorialDriver";
@@ -14,40 +11,22 @@ import { dashboardSteps } from "@/lib/tutorial/steps";
 
 const actions = [
   {
+    href: "/learn",
+    icon: BookOpen,
+    label: "Modul Website",
+    desc: "Modul pembelajaran dari guru",
+  },
+  {
     href: "/braille-reference",
     icon: Braces,
     label: "Panduan Braille",
-    desc: "Referensi titik Braille A–Z dan angka",
+    desc: "Referensi titik Braille A–Z, angka, dan tanda baca",
   },
   {
-    href: "/learn",
-    icon: BookOpen,
-    label: "Modul Belajar",
-    desc: "Buka modul untuk sesi mengajar",
-  },
-  {
-    href: "/practice",
-    icon: Dumbbell,
-    label: "Practice",
-    desc: "Latihan menyanyi dan berhitung",
-  },
-  {
-    href: "/quiz",
-    icon: ClipboardList,
-    label: "Quiz & Test",
-    desc: "Tampilkan soal quiz ke siswa",
-  },
-  {
-    href: "/students",
-    icon: Users,
-    label: "Siswa",
-    desc: "Kelola daftar siswa kelas",
-  },
-  {
-    href: "/classrooms",
-    icon: School,
-    label: "Kelas",
-    desc: "Lihat dan kelola kelas kamu",
+    href: "/converter",
+    icon: ArrowLeftRight,
+    label: "Konverter",
+    desc: "Konversi teks ke Braille dan sebaliknya",
   },
 ];
 
@@ -60,7 +39,7 @@ export default async function DashboardPage() {
   const firstName =
     (user?.user_metadata?.full_name as string | undefined)?.split(" ")[0] ??
     user?.email?.split("@")[0] ??
-    "Guru";
+    "Pengguna";
 
   return (
     <div className="space-y-8">
@@ -70,7 +49,7 @@ export default async function DashboardPage() {
           Selamat datang, {firstName}!
         </h1>
         <p className="text-muted-foreground mt-1">
-          Pilih menu di bawah untuk memulai sesi mengajar.
+          Pilih menu di bawah untuk mulai belajar.
         </p>
       </div>
 

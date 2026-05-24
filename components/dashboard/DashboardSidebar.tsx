@@ -10,10 +10,15 @@ import {
   BookOpen,
   Braces,
   ClipboardList,
-  Dumbbell,
   ArrowLeftRight,
+  Music,
+  Dumbbell,
 } from "lucide-react";
 import { NavItem } from "./NavItem";
+
+interface DashboardSidebarProps {
+  role: "teacher" | "student";
+}
 
 function NavSection({ label }: { label: string }) {
   return (
@@ -23,7 +28,7 @@ function NavSection({ label }: { label: string }) {
   );
 }
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ role }: DashboardSidebarProps) {
   return (
     <aside className="hidden md:flex w-64 flex-col border-r bg-sidebar">
 
@@ -37,21 +42,20 @@ export function DashboardSidebar() {
 
       {/* Navigation */}
       <nav id="sidebar-nav" className="flex-1 overflow-y-auto p-3">
-        <NavItem href="/" icon={LayoutDashboard} label="Dashboard" />
-
-        <NavSection label="Belajar Mandiri" />
-        <NavItem href="/braille-reference" icon={Braces} label="Panduan Braille" />
-        <NavItem href="/converter" icon={ArrowLeftRight} label="Konverter" />
+        <NavItem href="/" icon={LayoutDashboard} label="Dasbor" />
+        <NavItem href="/materi" icon={Braces} label="Materi" />
         <NavItem href="/practice" icon={Dumbbell} label="Practice" />
+        <NavItem href="/entertain" icon={Music} label="Entertain" />
 
-        <NavSection label="Mengajar di Kelas" />
-        <NavItem href="/learn" icon={BookOpen} label="Modul Belajar" />
-        <NavItem href="/quiz" icon={ClipboardList} label="Quiz & Test" />
-
-        <NavSection label="Manajemen" />
-        <NavItem href="/classrooms" icon={School} label="Kelas" />
-        <NavItem href="/students" icon={Users} label="Siswa" />
-        <NavItem href="/reports" icon={BarChart3} label="Laporan" />
+        {role === "teacher" && (
+          <>
+            <NavSection label="Manajemen" />
+            <NavItem href="/classrooms" icon={School} label="Kelas" />
+            <NavItem href="/students" icon={Users} label="Siswa" />
+            <NavItem href="/reports" icon={BarChart3} label="Laporan" />
+            <NavItem href="/quiz" icon={ClipboardList} label="Quiz & Test" />
+          </>
+        )}
       </nav>
 
       {/* Footer */}

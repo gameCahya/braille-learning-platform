@@ -20,22 +20,15 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Ambil profil guru
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url, role")
+    .select("full_name, avatar_url, role, school_name, grade_level")
     .eq("id", user.id)
     .single();
 
-  // Pastikan hanya teacher yang bisa akses dashboard
-  // (Jika tidak ada role, defaultnya teacher sesuai skema)
-  if (profile?.role && profile.role !== "teacher") {
-    redirect("/");
-  }
-
   return (
     <div className="flex h-screen overflow-hidden">
-      <DashboardSidebar />
+      <DashboardSidebar role={profile?.role ?? "teacher"} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <DashboardHeader user={user} profile={profile} />
         <main className="flex-1 overflow-y-auto bg-muted/30 p-6">

@@ -6,6 +6,8 @@ interface BrailleCharCardProps {
   char: string;
   braille: string;
   dots?: string;
+  description?: string;
+  name?: string;
   speakText?: string;
 }
 
@@ -24,6 +26,8 @@ export default function BrailleCharCard({
   char,
   braille,
   dots,
+  description,
+  name,
   speakText,
 }: BrailleCharCardProps) {
   const handleSpeak = () => {
@@ -47,9 +51,14 @@ export default function BrailleCharCard({
       <div className="text-5xl font-mono text-foreground leading-none py-1">
         {braille}
       </div>
-      {dots && (
-        <div className="text-xs text-muted-foreground font-mono">
-          Titik: {dots}
+      {name && (
+        <div className="text-xs text-muted-foreground font-medium text-center">
+          {name}
+        </div>
+      )}
+      {(description || dots) && (
+        <div className="text-xs text-muted-foreground text-center">
+          {description ?? `Titik: ${dots}`}
         </div>
       )}
       <button

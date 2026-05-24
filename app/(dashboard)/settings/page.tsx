@@ -18,31 +18,31 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url")
+    .select("full_name, avatar_url, role, school_name, email")
     .eq("id", user.id)
     .single();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Pengaturan</h1>
         <p className="text-muted-foreground">
-          Manage your account settings and preferences
+          Kelola akun dan informasi profil kamu
         </p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="profile">Profil</TabsTrigger>
+          <TabsTrigger value="account">Akun</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
+              <CardTitle>Informasi Profil</CardTitle>
               <CardDescription>
-                Update your personal information
+                Perbarui informasi pribadi kamu
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -54,15 +54,22 @@ export default async function SettingsPage() {
         <TabsContent value="account" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Account Settings</CardTitle>
+              <CardTitle>Pengaturan Akun</CardTitle>
               <CardDescription>
-                Manage your account security and preferences
+                Informasi akun kamu
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Account settings coming soon.
-              </p>
+            <CardContent className="space-y-4">
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">Email</p>
+                <p className="text-sm text-muted-foreground">{profile?.email ?? user.email}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">Peran</p>
+                <p className="text-sm text-muted-foreground capitalize">
+                  {profile?.role === "teacher" ? "Guru" : "Siswa"}
+                </p>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

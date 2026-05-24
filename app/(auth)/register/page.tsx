@@ -17,10 +17,15 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
+    defaultValues: { role: "student" },
   });
+
+  const selectedRole = watch("role");
 
   const onSubmit = async (data: RegisterInput) => {
     setIsLoading(true);
@@ -43,6 +48,8 @@ export default function RegisterPage() {
       setIsLoading(false);
     }
   };
+
+  const inputClass = "w-full bg-muted border-2 border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50";
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 md:p-8">
@@ -73,7 +80,7 @@ export default function RegisterPage() {
               disabled={isLoading}
               aria-invalid={errors.fullName ? "true" : "false"}
               aria-describedby={errors.fullName ? "fullName-error" : undefined}
-              className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
+              className={inputClass}
               {...register("fullName")}
             />
             {errors.fullName && (
@@ -82,6 +89,85 @@ export default function RegisterPage() {
               </p>
             )}
           </div>
+
+          {/* Pilih Peran */}
+          <div className="flex flex-col gap-1.5">
+            <p className="text-sm font-medium text-foreground">Saya mendaftar sebagai:</p>
+            <input type="hidden" {...register("role")} />
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={() => setValue("role", "student", { shouldValidate: true })}
+                className={`py-3 px-4 rounded-xl border-2 text-sm font-semibold transition-all ${
+                  selectedRole === "student"
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-muted text-muted-foreground hover:border-primary/50"
+                }`}
+              >
+                Siswa
+              </button>
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={() => setValue("role", "teacher", { shouldValidate: true })}
+                className={`py-3 px-4 rounded-xl border-2 text-sm font-semibold transition-all ${
+                  selectedRole === "teacher"
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-muted text-muted-foreground hover:border-primary/50"
+                }`}
+              >
+                Guru
+              </button>
+            </div>
+            {errors.role && (
+              <p className="text-sm text-destructive" role="alert">
+                {errors.role.message}
+              </p>
+            )}
+          </div>
+
+          {/* Nama Sekolah */}
+          <div className="flex flex-col gap-1.5">
+            <input
+              type="text"
+              placeholder="Nama Sekolah"
+              disabled={isLoading}
+              aria-invalid={errors.schoolName ? "true" : "false"}
+              aria-describedby={errors.schoolName ? "schoolName-error" : undefined}
+              className={inputClass}
+              {...register("schoolName")}
+            />
+            {errors.schoolName && (
+              <p id="schoolName-error" className="text-sm text-destructive" role="alert">
+                {errors.schoolName.message}
+              </p>
+            )}
+          </div>
+
+          {/* Tingkat Kelas — hanya untuk siswa */}
+          {selectedRole === "student" && (
+            <div className="flex flex-col gap-1.5">
+              <select
+                disabled={isLoading}
+                aria-invalid={errors.gradeLevel ? "true" : "false"}
+                aria-describedby={errors.gradeLevel ? "gradeLevel-error" : undefined}
+                className={`${inputClass} cursor-pointer`}
+                {...register("gradeLevel")}
+                defaultValue=""
+              >
+                <option value="" disabled>Pilih Tingkat Kelas</option>
+                <option value="VII">Kelas VII</option>
+                <option value="VIII">Kelas VIII</option>
+                <option value="IX">Kelas IX</option>
+              </select>
+              {errors.gradeLevel && (
+                <p id="gradeLevel-error" className="text-sm text-destructive" role="alert">
+                  {errors.gradeLevel.message}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Email */}
           <div className="flex flex-col gap-1.5">
@@ -92,7 +178,7 @@ export default function RegisterPage() {
               disabled={isLoading}
               aria-invalid={errors.email ? "true" : "false"}
               aria-describedby={errors.email ? "email-error" : undefined}
-              className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
+              className={inputClass}
               {...register("email")}
             />
             {errors.email && (
@@ -112,7 +198,7 @@ export default function RegisterPage() {
                 disabled={isLoading}
                 aria-invalid={errors.password ? "true" : "false"}
                 aria-describedby="password-requirements password-error"
-                className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 pr-12 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
+                className={`${inputClass} pr-12`}
                 {...register("password")}
               />
               <button
@@ -144,7 +230,7 @@ export default function RegisterPage() {
                 disabled={isLoading}
                 aria-invalid={errors.confirmPassword ? "true" : "false"}
                 aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
-                className="w-full bg-muted border-2 border-border rounded-xl px-4 py-3 pr-12 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors disabled:opacity-50"
+                className={`${inputClass} pr-12`}
                 {...register("confirmPassword")}
               />
               <button

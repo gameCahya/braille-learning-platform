@@ -244,15 +244,48 @@ export function isValidBraille(text: string): boolean {
 }
 
 /**
+ * Format dot numbers into Indonesian description
+ * "1" → "titik 1", "1-2" → "titik 1 dan 2", "1-2-5" → "titik 1, 2, dan 5"
+ */
+export function formatDotDescription(dots: string): string {
+  if (!dots) return "";
+  const parts = dots.split("-");
+  if (parts.length === 1) return `titik ${parts[0]}`;
+  const last = parts[parts.length - 1];
+  const rest = parts.slice(0, -1);
+  if (parts.length === 2) return `titik ${rest[0]} dan ${last}`;
+  return `titik ${rest.join(", ")}, dan ${last}`;
+}
+
+const PUNCTUATION_NAMES: Record<string, string> = {
+  ".": "tanda titik",
+  ",": "tanda koma",
+  "?": "tanda tanya",
+  "!": "tanda seru",
+  ";": "tanda titik koma",
+  ":": "tanda titik dua",
+  "'": "tanda apostrof",
+  '"': "tanda kutip",
+  "-": "tanda hubung",
+  "(": "tanda kurung buka",
+  ")": "tanda kurung tutup",
+  "/": "tanda garis miring",
+};
+
+/**
  * Get full Braille alphabet reference
  */
 export function getBrailleReference() {
   return {
-    alphabet: Object.entries(BRAILLE_ALPHABET).map(([char, braille]) => ({
-      char: char.toUpperCase(),
-      braille,
-      dots: getBrailleDots(char),
-    })),
+    alphabet: Object.entries(BRAILLE_ALPHABET).map(([char, braille]) => {
+      const dots = getBrailleDots(char);
+      return {
+        char: char.toUpperCase(),
+        braille,
+        dots,
+        description: formatDotDescription(dots),
+      };
+    }),
     numbers: Object.entries(BRAILLE_NUMBERS).map(([char, braille]) => ({
       char,
       braille,
@@ -260,6 +293,7 @@ export function getBrailleReference() {
     punctuation: Object.entries(BRAILLE_PUNCTUATION).map(([char, braille]) => ({
       char,
       braille,
+      name: PUNCTUATION_NAMES[char] ?? char,
     })),
   };
 }

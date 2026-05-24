@@ -41,6 +41,9 @@ export async function register(data: RegisterInput) {
     options: {
       data: {
         full_name: data.fullName,
+        role: data.role,
+        school_name: data.schoolName,
+        grade_level: data.gradeLevel ?? null,
       },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
     },

@@ -1,4 +1,3 @@
-// app/(dashboard)/settings/_actions/profile-actions.ts
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
@@ -6,15 +5,13 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const profileSchema = z.object({
-  full_name: z.string().min(1, "Full name is required"),
-  avatar_url: z.string().url().optional().or(z.literal("")),
+  full_name: z.string().min(1, "Nama lengkap wajib diisi"),
+  school_name: z.string().min(1, "Nama sekolah wajib diisi"),
 });
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return { success: false, error: "Unauthorized" };
@@ -22,7 +19,7 @@ export async function updateProfile(formData: FormData) {
 
   const validated = profileSchema.safeParse({
     full_name: formData.get("full_name"),
-    avatar_url: formData.get("avatar_url"),
+    school_name: formData.get("school_name"),
   });
 
   if (!validated.success) {
@@ -33,7 +30,7 @@ export async function updateProfile(formData: FormData) {
     .from("profiles")
     .update({
       full_name: validated.data.full_name,
-      avatar_url: validated.data.avatar_url || null,
+      school_name: validated.data.school_name,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);

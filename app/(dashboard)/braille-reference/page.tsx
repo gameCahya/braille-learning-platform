@@ -9,15 +9,15 @@ export default function BrailleReferencePage() {
   const indicators = [
     {
       label: "Indikator Huruf Kapital",
-      desc: "Ditempatkan sebelum huruf besar",
+      desc: "tanda huruf kapital — titik 6",
       symbol: "⠠",
-      speakText: "capital letter indicator",
+      speakText: "capital letter indicator, titik 6",
     },
     {
       label: "Indikator Angka",
-      desc: "Ditempatkan sebelum angka",
+      desc: "tanda angka — titik 3, 4, 5, dan 6",
       symbol: "⠼",
-      speakText: "number indicator",
+      speakText: "number indicator, titik 3, 4, 5, dan 6",
     },
   ];
 
@@ -64,6 +64,7 @@ export default function BrailleReferencePage() {
               char={item.char}
               braille={item.braille}
               dots={item.dots}
+              description={item.description}
               speakText={item.char}
             />
           ))}
@@ -77,7 +78,10 @@ export default function BrailleReferencePage() {
             Angka (0–9)
           </h2>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Angka dalam Braille didahului tanda indikator angka (⠼)
+            Angka dalam Braille didahului tanda indikator angka (⠼).{" "}
+            <span className="font-medium text-foreground">
+              Kotak pertama: tanda angka, kotak kedua: angkanya.
+            </span>
           </p>
         </div>
         <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-10 gap-3">
@@ -108,6 +112,8 @@ export default function BrailleReferencePage() {
               key={item.char}
               char={item.char}
               braille={item.braille}
+              name={item.name}
+              speakText={item.name}
             />
           ))}
         </div>

@@ -11,7 +11,7 @@ export default function QuizPage() {
       <div id="quiz-header">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">Quiz & Test</h1>
         <p className="text-muted-foreground mt-1">
-          Pilih quiz untuk ditampilkan kepada siswa di kelas.
+          Pilih kuis untuk ditampilkan kepada siswa di kelas.
         </p>
       </div>
 
