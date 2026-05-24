@@ -38,8 +38,8 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Route publik yang boleh diakses tanpa login
-  const publicRoutes = [
+  // Route publik (tidak butuh login)
+  const authRoutes = [
     "/login",
     "/register",
     "/auth/callback",
@@ -47,9 +47,7 @@ export async function proxy(request: NextRequest) {
     "/forgot-password",
     "/reset-password",
   ];
-  const isPublicRoute = publicRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
   // "/" → redirect ke /login jika belum login
   if (pathname === "/" && !user) {
@@ -57,13 +55,46 @@ export async function proxy(request: NextRequest) {
   }
 
   // Belum login + akses route protected → redirect ke /login
-  if (!user && !isPublicRoute) {
+  if (!user && !isAuthRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Sudah login + akses halaman auth → redirect ke dashboard
-  if (user && isPublicRoute && pathname !== "/auth/callback") {
-    return NextResponse.redirect(new URL("/", request.url));
+  if (user && isAuthRoute && pathname !== "/auth/callback") {
+    return NextResponse.redirect(new URL("/learn", request.url));
+  }
+
+  // Routing berbasis role dan status (hanya untuk user yang sudah login)
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role, status")
+      .eq("id", user.id)
+      .single();
+
+    const isPending = !profile || profile.status === "pending";
+    const isRejected = profile?.status === "rejected";
+    const isAdmin = profile?.role === "admin";
+
+    // User ditolak → redirect ke halaman khusus
+    if (isRejected && !pathname.startsWith("/ditolak")) {
+      return NextResponse.redirect(new URL("/ditolak", request.url));
+    }
+
+    // User pending → hanya boleh akses /menunggu-persetujuan
+    if (isPending && !isRejected && !pathname.startsWith("/menunggu-persetujuan")) {
+      return NextResponse.redirect(new URL("/menunggu-persetujuan", request.url));
+    }
+
+    // User approved/admin yang masuk ke halaman tunggu → redirect ke tempat yang tepat
+    if (!isPending && !isRejected && pathname.startsWith("/menunggu-persetujuan")) {
+      return NextResponse.redirect(new URL(isAdmin ? "/admin" : "/learn", request.url));
+    }
+
+    // Non-admin mencoba akses /admin → redirect ke dashboard
+    if (!isAdmin && pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/learn", request.url));
+    }
   }
 
   return response;

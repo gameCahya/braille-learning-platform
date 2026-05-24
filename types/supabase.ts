@@ -249,6 +249,7 @@ export type Database = {
           id: string
           role: Database["public"]["Enums"]["user_role"] | null
           school_name: string | null
+          status: string
           updated_at: string
         }
         Insert: {
@@ -261,6 +262,7 @@ export type Database = {
           id: string
           role?: Database["public"]["Enums"]["user_role"] | null
           school_name?: string | null
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -273,6 +275,7 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["user_role"] | null
           school_name?: string | null
+          status?: string
           updated_at?: string
         }
         Relationships: [
@@ -463,7 +466,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      user_role: "teacher" | "student"
+      user_role: "teacher" | "student" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
