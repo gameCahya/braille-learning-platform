@@ -79,6 +79,7 @@ export function ModulesTable({ modules }: ModulesTableProps) {
           <TableRow>
             <TableHead>Judul</TableHead>
             <TableHead>Kesulitan</TableHead>
+            <TableHead>Target Kelas</TableHead>
             <TableHead className="text-center">Pelajaran</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="w-12" />
@@ -104,6 +105,9 @@ export function ModulesTable({ modules }: ModulesTableProps) {
                 <Badge variant={DIFFICULTY_VARIANTS[mod.difficulty] ?? "secondary"}>
                   {DIFFICULTY_LABELS[mod.difficulty] ?? mod.difficulty}
                 </Badge>
+              </TableCell>
+              <TableCell className="text-sm">
+                {mod.target_grade ? `Kelas ${mod.target_grade}` : "Semua"}
               </TableCell>
               <TableCell className="text-center text-sm">
                 {mod.lessons.length}

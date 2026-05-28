@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ModuleForm } from "../../_components/ModuleForm";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import type { TeacherModule } from "@/types";
+import type { TeacherModule, TeacherModuleLesson } from "@/types";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -34,7 +34,7 @@ export default async function EditModulePage({ params }: Props) {
 
   const mod: TeacherModule = {
     ...row,
-    lessons: Array.isArray(row.lessons) ? row.lessons : [],
+    lessons: (Array.isArray(row.lessons) ? row.lessons : []) as unknown as TeacherModuleLesson[],
   };
 
   return (

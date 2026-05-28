@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { MODULES } from "@/lib/data/modules";
+import { ALL_MODULES } from "@/lib/data/modules";
 import ClassPicker from "./_components/ClassPicker";
 
 export default async function LearnPage() {
@@ -7,7 +7,7 @@ export default async function LearnPage() {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const totalModules = MODULES.length;
+  const totalModules = ALL_MODULES.length;
 
   // Satu query dengan nested select — eliminasi waterfall classrooms → class_progress
   const { data: classrooms } = await supabase

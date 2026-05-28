@@ -17,6 +17,7 @@ const moduleSchema = z.object({
   description: z.string().optional(),
   difficulty: z.enum(["beginner", "intermediate", "advanced"]),
   is_published: z.boolean().default(false),
+  target_grade: z.enum(["VII", "VIII", "IX"]).nullable().default(null),
   lessons: z.array(lessonSchema).min(1, "Minimal satu pelajaran"),
 });
 
@@ -25,6 +26,7 @@ export async function createTeacherModule(data: {
   description?: string;
   difficulty: string;
   is_published: boolean;
+  target_grade: string | null;
   lessons: TeacherModuleLesson[];
 }) {
   const supabase = await createClient();
@@ -34,7 +36,7 @@ export async function createTeacherModule(data: {
 
   const validated = moduleSchema.safeParse(data);
   if (!validated.success) {
-    return { success: false, error: validated.error.errors[0].message };
+    return { success: false, error: validated.error.issues[0]?.message ?? "Data tidak valid" };
   }
 
   const { data: existing } = await supabase
@@ -43,7 +45,7 @@ export async function createTeacherModule(data: {
     .eq("teacher_id", user.id)
     .order("order_number", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const nextOrder = (existing?.order_number ?? 0) + 1;
 
@@ -53,6 +55,7 @@ export async function createTeacherModule(data: {
     description: validated.data.description || null,
     difficulty: validated.data.difficulty,
     is_published: validated.data.is_published,
+    target_grade: validated.data.target_grade,
     lessons: validated.data.lessons,
     order_number: nextOrder,
   });
@@ -73,6 +76,7 @@ export async function updateTeacherModule(
     description?: string;
     difficulty: string;
     is_published: boolean;
+    target_grade: string | null;
     lessons: TeacherModuleLesson[];
   }
 ) {
@@ -83,7 +87,7 @@ export async function updateTeacherModule(
 
   const validated = moduleSchema.safeParse(data);
   if (!validated.success) {
-    return { success: false, error: validated.error.errors[0].message };
+    return { success: false, error: validated.error.issues[0]?.message ?? "Data tidak valid" };
   }
 
   const { error } = await supabase
@@ -93,6 +97,7 @@ export async function updateTeacherModule(
       description: validated.data.description || null,
       difficulty: validated.data.difficulty,
       is_published: validated.data.is_published,
+      target_grade: validated.data.target_grade,
       lessons: validated.data.lessons,
       updated_at: new Date().toISOString(),
     })

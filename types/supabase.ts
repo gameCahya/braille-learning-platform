@@ -413,6 +413,7 @@ export type Database = {
           lessons: Json
           order_number: number
           teacher_id: string
+          target_grade: string | null
           title: string
           updated_at: string
         }
@@ -425,6 +426,7 @@ export type Database = {
           lessons?: Json
           order_number?: number
           teacher_id: string
+          target_grade?: string | null
           title: string
           updated_at?: string
         }
@@ -437,6 +439,7 @@ export type Database = {
           lessons?: Json
           order_number?: number
           teacher_id?: string
+          target_grade?: string | null
           title?: string
           updated_at?: string
         }

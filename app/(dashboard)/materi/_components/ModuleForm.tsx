@@ -27,7 +27,6 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, Trash2, GripVertical } from "lucide-react";
 import { useState } from "react";
-import { nanoid } from "nanoid";
 import type { TeacherModule } from "@/types";
 
 const formSchema = z.object({
@@ -35,6 +34,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   difficulty: z.enum(["beginner", "intermediate", "advanced"]),
   is_published: z.boolean(),
+  target_grade: z.enum(["VII", "VIII", "IX"]).nullable(),
   lessons: z
     .array(
       z.object({
@@ -70,9 +70,10 @@ export function ModuleForm({ module }: ModuleFormProps) {
       description: module?.description ?? "",
       difficulty: (module?.difficulty as FormValues["difficulty"]) ?? "beginner",
       is_published: module?.is_published ?? false,
+      target_grade: (module?.target_grade as FormValues["target_grade"]) ?? null,
       lessons: module?.lessons.length
         ? module.lessons
-        : [{ id: nanoid(), title: "", content: "", braille: "" }],
+        : [{ id: crypto.randomUUID(), title: "", content: "", braille: "" }],
     },
   });
 
@@ -169,6 +170,33 @@ export function ModuleForm({ module }: ModuleFormProps) {
 
             <FormField
               control={form.control}
+              name="target_grade"
+              render={({ field }) => (
+                <FormItem className="flex-1 min-w-[180px]">
+                  <FormLabel>Target Kelas</FormLabel>
+                  <Select
+                    onValueChange={(val) => field.onChange(val === "all" ? null : val)}
+                    defaultValue={field.value ?? "all"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Semua Kelas" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Kelas</SelectItem>
+                      <SelectItem value="VII">Kelas VII</SelectItem>
+                      <SelectItem value="VIII">Kelas VIII</SelectItem>
+                      <SelectItem value="IX">Kelas IX</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="is_published"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-end pb-1">
@@ -202,7 +230,7 @@ export function ModuleForm({ module }: ModuleFormProps) {
               variant="outline"
               size="sm"
               onClick={() =>
-                append({ id: nanoid(), title: "", content: "", braille: "" })
+                append({ id: crypto.randomUUID(), title: "", content: "", braille: "" })
               }
             >
               <Plus className="h-4 w-4 mr-1" />

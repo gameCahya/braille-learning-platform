@@ -15,7 +15,7 @@ import {
   Trophy
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { MODULES } from "@/lib/data/modules";
+import { ALL_MODULES } from "@/lib/data/modules";
 import type { UserProgress, QuizResult } from "@/types";
 import { 
   BarChart, 
@@ -82,8 +82,9 @@ export default function ProgressPage() {
     );
   }
 
+  const modules = ALL_MODULES.map((m, i) => ({ ...m, order_number: i + 1 }));
   const completedModules = progress.filter((p) => p.completed);
-  const totalModules = MODULES.length;
+  const totalModules = modules.length;
   const overallProgress = Math.round((completedModules.length / totalModules) * 100);
   const averageScore = completedModules.length > 0
     ? Math.round(
@@ -92,7 +93,7 @@ export default function ProgressPage() {
     : 0;
 
   // Prepare chart data
-  const moduleData = MODULES.map((module) => {
+  const moduleData = modules.map((module) => {
     const moduleProgress = progress.find((p) => p.module_id === module.id);
     return {
       name: `Module ${module.order_number}`,
@@ -106,7 +107,7 @@ export default function ProgressPage() {
     score: quiz.score,
   }));
 
-  const difficultyData = MODULES.reduce((acc, module) => {
+  const difficultyData = modules.reduce((acc, module) => {
     const moduleProgress = progress.find((p) => p.module_id === module.id);
     if (moduleProgress?.completed) {
       const existing = acc.find((d) => d.name === module.difficulty);
@@ -364,7 +365,7 @@ export default function ProgressPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {MODULES.map((module) => {
+            {modules.map((module) => {
               const moduleProgress = progress.find((p) => p.module_id === module.id);
               const isCompleted = moduleProgress?.completed || false;
               const score = moduleProgress?.score || 0;

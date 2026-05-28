@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Pencil } from "lucide-react";
 import Link from "next/link";
-import type { TeacherModule } from "@/types";
+import type { TeacherModule, TeacherModuleLesson } from "@/types";
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   beginner: "Pemula",
@@ -32,7 +32,7 @@ export default async function ModuleDetailPage({ params }: Props) {
 
   const mod: TeacherModule = {
     ...row,
-    lessons: Array.isArray(row.lessons) ? row.lessons : [],
+    lessons: (Array.isArray(row.lessons) ? row.lessons : []) as unknown as TeacherModuleLesson[],
   };
 
   const { data: profile } = await supabase
@@ -62,6 +62,11 @@ export default async function ModuleDetailPage({ params }: Props) {
               <Badge variant="secondary">
                 {DIFFICULTY_LABELS[mod.difficulty] ?? mod.difficulty}
               </Badge>
+              {mod.target_grade && (
+                <Badge variant="outline">
+                  Kelas {mod.target_grade}
+                </Badge>
+              )}
               {isOwner && (
                 <Badge variant={mod.is_published ? "default" : "outline"}>
                   {mod.is_published ? "Diterbitkan" : "Draft"}

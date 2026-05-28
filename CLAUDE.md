@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Memory
 
-At the start of every session, read `MEMORY.md` in the project root for ongoing context, decisions, and notes that are not captured in the code or git history.
+At the start of every session, read `MEMORY.md` AND `AGENTS.md` in the project root for ongoing context, decisions, and notes that are not captured in the code or git history.
+
+Type `/memory` at the end of a session to review changes and update AGENTS.md.
 
 ## Commands
 
@@ -13,6 +15,7 @@ pnpm dev      # Start development server
 pnpm build    # Production build
 pnpm start    # Start production server
 pnpm lint     # Run ESLint
+/memory       # Review sesi dan update AGENTS.md
 ```
 
 No test suite is configured.
@@ -39,7 +42,7 @@ No test suite is configured.
 **Key lib files:**
 - `lib/braille.ts` — text ↔ Braille conversion, dot patterns, alphabet/number/punctuation mappings
 - `lib/speech.ts` — `TextToSpeech` class wrapping Web Speech API (voice selection, spell-out mode)
-- `lib/data/modules.ts` — static learning module data (10 modules)
+- `lib/data/modules/` — static learning module data per-grade (Kelas 7, 8, 9) with 29 modules total
 - `lib/tutorial/` — Driver.js tutorial step definitions
 
 ## Environment Variables

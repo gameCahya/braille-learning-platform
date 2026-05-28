@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { ModulesTable } from "./_components/ModulesTable";
 import { redirect } from "next/navigation";
-import type { TeacherModule } from "@/types";
+import type { TeacherModule, TeacherModuleLesson } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
 
@@ -30,41 +30,54 @@ export default async function MateriPage() {
 
     const modules: TeacherModule[] = (rows ?? []).map((r) => ({
       ...r,
-      lessons: Array.isArray(r.lessons) ? r.lessons : [],
+      lessons: (Array.isArray(r.lessons) ? r.lessons : []) as unknown as TeacherModuleLesson[],
     }));
 
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Materi</h1>
-            <p className="text-muted-foreground">
-              Buat dan kelola modul pembelajaran untuk siswa Anda
-            </p>
-          </div>
-          <Button asChild>
-            <Link href="/materi/new">
-              <Plus className="mr-2 h-4 w-4" />
-              Modul Baru
-            </Link>
-          </Button>
+          <h1 className="text-3xl font-bold tracking-tight">Materi</h1>
+          <p className="text-muted-foreground">
+            Buat dan kelola modul pembelajaran untuk siswa Anda
+          </p>
         </div>
+        <Button asChild>
+          <Link href="/materi/new">
+            <Plus className="mr-2 h-4 w-4" />
+            Modul Baru
+          </Link>
+        </Button>
 
         <ModulesTable modules={modules} />
       </div>
     );
   }
 
-  // Tampilan siswa — modul yang diterbitkan dari guru kelasnya
-  const { data: rows } = await supabase
+  // Tampilan siswa — modul yang diterbitkan, difilter berdasarkan kelas
+  const { data: profileWithGrade } = await supabase
+    .from("profiles")
+    .select("grade_level")
+    .eq("id", user.id)
+    .single();
+
+  const studentGrade = profileWithGrade?.grade_level;
+
+  let query = supabase
     .from("teacher_modules")
     .select("*")
-    .eq("is_published", true)
-    .order("order_number", { ascending: true });
+    .eq("is_published", true);
+
+  if (studentGrade) {
+    query = query.or(`target_grade.is.null,target_grade.eq.${studentGrade}`);
+  }
+
+  query = query.order("order_number", { ascending: true });
+
+  const { data: rows } = await query;
 
   const modules: TeacherModule[] = (rows ?? []).map((r) => ({
     ...r,
-    lessons: Array.isArray(r.lessons) ? r.lessons : [],
+    lessons: (Array.isArray(r.lessons) ? r.lessons : []) as unknown as TeacherModuleLesson[],
   }));
 
   if (modules.length === 0) {
@@ -75,7 +88,7 @@ export default async function MateriPage() {
         </div>
         <h1 className="text-2xl font-bold">Belum Ada Materi</h1>
         <p className="text-muted-foreground max-w-sm">
-          Guru Anda belum menerbitkan modul. Cek lagi nanti.
+          Guru Anda belum menerbitkan modul untuk kelas ini. Cek lagi nanti.
         </p>
       </div>
     );
@@ -103,9 +116,16 @@ export default async function MateriPage() {
           >
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-semibold leading-tight">{mod.title}</h3>
-              <Badge variant="secondary" className="shrink-0 text-xs">
-                {DIFFICULTY_LABELS[mod.difficulty] ?? mod.difficulty}
-              </Badge>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {mod.target_grade && (
+                  <Badge variant="outline" className="text-xs">
+                    Kelas {mod.target_grade}
+                  </Badge>
+                )}
+                <Badge variant="secondary" className="text-xs">
+                  {DIFFICULTY_LABELS[mod.difficulty] ?? mod.difficulty}
+                </Badge>
+              </div>
             </div>
             {mod.description && (
               <p className="text-sm text-muted-foreground line-clamp-2">
