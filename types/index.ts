@@ -10,6 +10,18 @@ export type QuizResult = Tables<"quiz_results">;
 export type ModuleAudio = Tables<"module_audio">;
 export type Classroom = Tables<"classrooms">;
 export type Student = Tables<"students">;
+export type TeacherModuleRow = Tables<"teacher_modules">;
+
+export interface TeacherModuleLesson {
+  id: string;
+  title: string;
+  content: string;
+  braille?: string;
+}
+
+export interface TeacherModule extends Omit<TeacherModuleRow, "lessons"> {
+  lessons: TeacherModuleLesson[];
+}
 
 // =============================================
 // Static data types — tidak ada di database,
