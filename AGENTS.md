@@ -8,7 +8,7 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 
 ## ✅ Sesi Terakhir (28 Mei 2026)
 
-**Periode:** 7 Mei – 28 Mei 2026 (16 commits)
+**Periode:** 7 Mei – 28 Mei 2026 (16 commits + migration apply via psql)
 
 ### Fitur Baru
 - **Guru CRUD Modul (`/materi/`)** — halaman *new*, *detail*, *edit*, dan daftar modul dengan Server Actions + form validasi Zod
@@ -24,6 +24,14 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 ### Perbaikan
 - Fix `Performance.measure` error — pindah Tabs admin ke client component
 - Fix build errors terkait import/types
+- Fix: ganti `confirm()` dengan `AlertDialog` accessible di ModulesTable
+
+### Aksesibilitas Tunanetra
+- Skip-to-content link di dashboard layout
+- `aria-hidden` pada ikon sidebar, `aria-label` pada nav & Phase buttons
+- `aria-label` pada teks Braille di PhaseMembaca/Mendengarkan/Berbicara
+- `aria-live` region untuk notifikasi status
+- Alt text deskriptif di QuizComponent
 
 ### Perubahan Arsitektur
 - Route `app/(dashboard)/materi/` — halaman CRUD modul untuk guru
@@ -31,10 +39,16 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 - Route `app/(dashboard)/entertain/` — halaman hiburan
 - Tabel baru di Supabase: `class_progress`, `teacher_modules`; kolom baru: `profiles.school_name`, `profiles.grade_level`, `profiles.status`, `teacher_modules.target_grade`
 - Migrasi Supabase CLI — semua schema via migration files di `supabase/migrations/`
+- Restrukturisasi `learn/` — GradePicker, grade-specific routes (`kelas-7`, `kelas-8`, `kelas-9`), Phase components pindah ke `_components/`
+- Duplikasi modul standar: server action `duplicate-module.ts` + tombol di ModuleDetailClient
 
 ### Belum Selesai
 - Belum ada tes otomatis (unit/integrasi)
 - Belum ada halaman help/docs untuk guru
+
+---
+
+## ✅ Ringkasan Proyek
 
 ---
 
@@ -89,3 +103,4 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 - **Tutorial Driver.js belum mencakup halaman `/materi/`** — perlu update `lib/tutorial/steps.ts`
 - **Belum ada validasi unique** untuk nama modul per guru di `teacher_modules`
 - **Belum ada sistem caching** — banyak halaman dashboard query langsung ke Supabase tiap render
+- **Migrasi belum via `supabase db push`** — terakhir di-apply manual via psql langsung
