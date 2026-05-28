@@ -13,6 +13,7 @@ import {
   ArrowLeftRight,
   Music,
   Dumbbell,
+  GraduationCap,
 } from "lucide-react";
 import { NavItem } from "./NavItem";
 
@@ -44,6 +45,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
       <nav id="sidebar-nav" className="flex-1 overflow-y-auto p-3">
         <NavItem href="/" icon={LayoutDashboard} label="Dasbor" />
         <NavItem href="/materi" icon={Braces} label="Materi" />
+        <NavItem href="/learn" icon={GraduationCap} label="Belajar" />
         <NavItem href="/practice" icon={Dumbbell} label="Practice" />
         <NavItem href="/entertain" icon={Music} label="Entertain" />
 
