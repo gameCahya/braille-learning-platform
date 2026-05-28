@@ -51,7 +51,7 @@ export default function PhaseMembaca({ lessons }: Props) {
                     <div className="p-3 flex flex-col gap-1">
                       <p className="font-bold text-base leading-tight">{word.indonesian}</p>
                       <p className="text-xs text-muted-foreground">{word.english}</p>
-                      <p className="text-lg font-mono tracking-widest text-blue-600 dark:text-blue-400">
+                      <p className="text-lg font-mono tracking-widest text-blue-600 dark:text-blue-400" aria-label={`Braille untuk "${word.indonesian}"`}>
                         {word.braille}
                       </p>
                     </div>

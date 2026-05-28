@@ -204,7 +204,7 @@ export default function PhaseBerbicara({ lessons, moduleId }: Props) {
                           <div>
                             <p className="font-semibold text-base leading-tight">{word.indonesian}</p>
                             <p className="text-xs text-muted-foreground">{word.english}</p>
-                            <p className="text-sm font-mono text-blue-600 dark:text-blue-400">{word.braille}</p>
+                            <p className="text-sm font-mono text-blue-600 dark:text-blue-400" aria-label={`Braille untuk "${word.indonesian}"`}>{word.braille}</p>
                           </div>
                         </div>
 

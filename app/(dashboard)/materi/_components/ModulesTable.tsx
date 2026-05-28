@@ -22,6 +22,16 @@ import { MoreHorizontal, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
 import { deleteTeacherModule, togglePublishModule } from "../_actions/module-actions";
 import { toast } from "sonner";
 import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import type { TeacherModule } from "@/types";
 
 const DIFFICULTY_LABELS: Record<string, string> = {
@@ -42,6 +52,11 @@ interface ModulesTableProps {
 
 export function ModulesTable({ modules }: ModulesTableProps) {
   const [pending, setPending] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  function handleAlertClose(open: boolean) {
+    if (!open) setDeleteTarget(null);
+  }
 
   async function handleTogglePublish(mod: TeacherModule) {
     setPending(mod.id);
@@ -51,8 +66,8 @@ export function ModulesTable({ modules }: ModulesTableProps) {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Hapus modul ini? Tindakan ini tidak bisa dibatalkan.")) return;
     setPending(id);
+    setDeleteTarget(null);
     const result = await deleteTeacherModule(id);
     if (result.success) {
       toast.success("Modul berhasil dihapus");
@@ -73,6 +88,7 @@ export function ModulesTable({ modules }: ModulesTableProps) {
   }
 
   return (
+    <>
     <div className="rounded-lg border">
       <Table>
         <TableHeader>
@@ -156,7 +172,7 @@ export function ModulesTable({ modules }: ModulesTableProps) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-destructive focus:text-destructive"
-                      onClick={() => handleDelete(mod.id)}
+                      onClick={() => setDeleteTarget(mod.id)}
                       disabled={pending === mod.id}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
@@ -170,5 +186,23 @@ export function ModulesTable({ modules }: ModulesTableProps) {
         </TableBody>
       </Table>
     </div>
+
+    <AlertDialog open={!!deleteTarget} onOpenChange={handleAlertClose}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Hapus Modul</AlertDialogTitle>
+          <AlertDialogDescription>
+            Apakah Anda yakin ingin menghapus modul ini? Tindakan ini tidak bisa dibatalkan.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Batal</AlertDialogCancel>
+          <AlertDialogAction onClick={() => { if (deleteTarget) handleDelete(deleteTarget); }}>
+            Hapus
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

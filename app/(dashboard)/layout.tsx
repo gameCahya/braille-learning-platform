@@ -37,10 +37,16 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-background focus:text-foreground focus:rounded-lg focus:border focus:shadow-lg"
+      >
+        Langsung ke konten utama
+      </a>
       <DashboardSidebar role={sidebarRole} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <DashboardHeader user={user} profile={profile} />
-        <main className="flex-1 overflow-y-auto bg-muted/30 p-6">
+        <main id="main-content" className="flex-1 overflow-y-auto bg-muted/30 p-6" tabIndex={-1}>
           {children}
         </main>
       </div>

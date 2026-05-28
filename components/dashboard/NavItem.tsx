@@ -27,7 +27,7 @@ export function NavItem({ href, icon: Icon, label }: NavItemProps) {
           : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       )}
     >
-      <Icon className="h-4 w-4 shrink-0" />
+      <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
       <span>{label}</span>
     </Link>
   );

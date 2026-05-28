@@ -143,7 +143,7 @@ export default function PhaseMendengarkan({ lessons }: Props) {
                 {word?.indonesian}
               </p>
               <p className="text-2xl text-muted-foreground">{word?.english}</p>
-              <p className="text-2xl font-mono tracking-widest text-blue-600 dark:text-blue-400 mt-1">
+              <p className="text-2xl font-mono tracking-widest text-blue-600 dark:text-blue-400 mt-1" aria-label={`Braille untuk "${word?.indonesian ?? ""}"`}>
                 {word?.braille}
               </p>
             </>

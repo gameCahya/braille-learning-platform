@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
@@ -23,6 +23,7 @@ import {
   ClipboardList,
   School,
   Play,
+  CopyPlus,
 } from "lucide-react";
 import { getModuleById } from "@/lib/data/modules";
 import { getModuleUUID } from "@/lib/data/moduleMapping";
@@ -35,6 +36,7 @@ import PhaseMembaca from "./PhaseMembaca";
 import PhaseBerbicara from "./PhaseBerbicara";
 import TutorialDriver from "@/components/tutorial/TutorialDriver";
 import { moduleDetailSteps } from "@/lib/tutorial/steps";
+import { duplicateModule } from "../_actions/duplicate-module";
 
 type Phase = "menulis" | "mendengarkan" | "membaca" | "berbicara";
 
@@ -105,8 +107,11 @@ export default function ModuleDetailClient() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isModuleCompleted, setIsModuleCompleted] = useState(false);
+  const [isTeacher, setIsTeacher] = useState(false);
   const [className, setClassName] = useState<string | null>(null);
   const [classStatus, setClassStatus] = useState<ClassStatus>("not_started");
+  const [statusAnnouncement, setStatusAnnouncement] = useState("");
+  const [isDuplicating, startDuplicateTransition] = useTransition();
 
   const learningModule = getModuleById(moduleId);
   const backPath = classId ? `/learn/kelas?classId=${classId}` : "/learn";
@@ -116,6 +121,13 @@ export default function ModuleDetailClient() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user && learningModule) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+        if (profile?.role === "teacher") setIsTeacher(true);
+
         const { data } = await supabase
           .from("user_progress")
           .select("completed")
@@ -177,6 +189,7 @@ export default function ModuleDetailClient() {
       toast.error("Gagal menyimpan progress kelas");
     } else {
       setClassStatus(status);
+      setStatusAnnouncement(status === "completed" ? `Modul selesai diajarkan untuk kelas ${className}` : `Status diperbarui menjadi ${status}`);
       if (status === "completed") {
         toast.success("Modul selesai diajarkan!", { description: `Kelas ${className}` });
         setTimeout(() => router.push(backPath), 1500);
@@ -286,9 +299,13 @@ export default function ModuleDetailClient() {
               const Icon = phase.icon;
               const isActive = activePhase === phase.id;
               return (
-                <button key={phase.id} onClick={() => setActivePhase(isActive ? null : phase.id)}
+                <button
+                  key={phase.id}
+                  onClick={() => setActivePhase(isActive ? null : phase.id)}
+                  aria-label={`Pilih fase ${phase.label}`}
+                  aria-pressed={isActive}
                   className={`rounded-xl border-2 p-4 text-left transition-all cursor-pointer ${isActive ? phase.activeBg : `bg-card ${phase.border}`} hover:opacity-90`}>
-                  <Icon className={`h-6 w-6 mb-2 ${phase.iconColor}`} />
+                  <Icon className={`h-6 w-6 mb-2 ${phase.iconColor}`} aria-hidden="true" />
                   <p className="font-semibold text-sm">{phase.label}</p>
                   <p className="text-xs text-muted-foreground mt-1 leading-snug">{phase.desc}</p>
                 </button>
@@ -373,7 +390,37 @@ export default function ModuleDetailClient() {
         </Card>
       )}
 
+      {isTeacher && (
+        <Card>
+          <CardContent className="pt-6">
+            <Button
+              variant="outline"
+              className="w-full"
+              disabled={isDuplicating}
+              onClick={() => {
+                startDuplicateTransition(async () => {
+                  const result = await duplicateModule(moduleId);
+                  if (result.success && result.newId) {
+                    setStatusAnnouncement("Modul berhasil diduplikasi. Mengalihkan ke halaman edit.");
+                    router.push(`/materi/${result.newId}/edit`);
+                  } else {
+                    toast.error(result.error ?? "Gagal menduplikasi modul");
+                  }
+                });
+              }}
+            >
+              <CopyPlus className="h-4 w-4 mr-2" />
+              {isDuplicating ? "Menduplikasi..." : "Duplikasi ke Materi Saya"}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       <TutorialDriver steps={moduleDetailSteps} storageKey="bralingo-tutorial-module-detail" />
+
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {statusAnnouncement}
+      </div>
     </div>
   );
 }

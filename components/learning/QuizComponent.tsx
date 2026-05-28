@@ -189,7 +189,7 @@ export default function QuizComponent({ exercises, onComplete }: QuizComponentPr
               <img
               src={currentQuestion.questionImage}
 
-              alt="Question image"
+              alt={currentQuestion.question}
               className="w-full h-full object-cover"
               />
             </div>
