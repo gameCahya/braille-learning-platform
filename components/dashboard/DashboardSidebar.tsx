@@ -45,7 +45,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
       <nav id="sidebar-nav" aria-label="Navigasi sidebar" className="flex-1 overflow-y-auto p-3">
         <NavItem href="/" icon={LayoutDashboard} label="Dasbor" />
         <NavItem href="/materi" icon={Braces} label="Materi" />
-        <NavItem href="/learn" icon={GraduationCap} label="Belajar" />
+        <NavItem href="/learn" icon={GraduationCap} label="Bahan Ajar" />
         <NavItem href="/practice" icon={Dumbbell} label="Practice" />
         <NavItem href="/entertain" icon={Music} label="Entertain" />
 
