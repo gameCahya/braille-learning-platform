@@ -57,10 +57,12 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full flex flex-col gap-4 mb-8">
 
           {/* Email */}
-          <div className="flex flex-col gap-1.5">
-            <input
-              type="email"
-              placeholder="Email"
+           <div className="flex flex-col gap-1.5">
+             <label htmlFor="email" className="sr-only">Email</label>
+             <input
+               id="email"
+               type="email"
+               placeholder="Email"
               autoComplete="email"
               disabled={isLoading}
               aria-invalid={errors.email ? "true" : "false"}
@@ -77,8 +79,10 @@ export default function LoginPage() {
 
           {/* Password */}
           <div className="flex flex-col gap-1.5">
+            <label htmlFor="password" className="sr-only">Password</label>
             <div className="relative">
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 autoComplete="current-password"
@@ -94,7 +98,7 @@ export default function LoginPage() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full"
                 aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
               </button>
             </div>
             {errors.password && (

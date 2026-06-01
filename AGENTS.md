@@ -6,55 +6,59 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 
 ---
 
-## ✅ Sesi Terakhir (28 Mei 2026)
+## ✅ Sesi Terakhir (01 Jun 2026 — Sesi 3)
 
-**Periode:** 7 Mei – 28 Mei 2026 (16 commits + migration apply via psql)
+**Periode:** 01 Jun 2026 (0 commits — perubahan uncommitted)
 
 ### Fitur Baru
-- **Guru CRUD Modul (`/materi/`)** — halaman *new*, *detail*, *edit*, dan daftar modul dengan Server Actions + form validasi Zod
-- **Filter modul per kelas** — kolom `target_grade` di `teacher_modules`, guru pilih target kelas (VII/VIII/IX/Semua) saat buat modul, siswa cuma lihat modul untuk kelasnya
-- **Admin approval system** — user registrasi butuh approval admin; halaman `/admin/`, `/menunggu-persetujuan/`, `/ditolak/` + RLS policies
-- **School/grade field** — field `school_name` dan `grade_level` di tabel `profiles` + migration
-- **WhatsApp admin button** — tombol WA di halaman menunggu persetujuan, menampilkan sekolah & kelas user
-- **Per-class progress tracking** — tabel `class_progress`, komponen `ClassPicker`
-- **Driver.js tutorial** — tutorial interaktif di semua halaman dashboard (refactored ke `TutorialDriverImpl`)
-- **Vocabulary word structure** — `Lesson.words[]` dengan `VocabularyWord` (indonesian, english, braille, image)
-- **Performance** — eliminasi waterfall DB queries, kurangi TTI
+- (tidak ada fitur baru)
 
 ### Perbaikan
-- Fix `Performance.measure` error — pindah Tabs admin ke client component
-- Fix build errors terkait import/types
-- Fix: ganti `confirm()` dengan `AlertDialog` accessible di ModulesTable
-
-### Aksesibilitas Tunanetra
-- Skip-to-content link di dashboard layout
-- `aria-hidden` pada ikon sidebar, `aria-label` pada nav & Phase buttons
-- `aria-label` pada teks Braille di PhaseMembaca/Mendengarkan/Berbicara
-- `aria-live` region untuk notifikasi status
-- Alt text deskriptif di QuizComponent
+- **Aksesibilitas form login** — tambah `<label>` + `id` pada input email/password (`login/page.tsx`)
+- **Aksesibilitas form register** — tambah `<label>` + `id` pada semua input: fullName, schoolName, gradeLevel, email, password, confirmPassword (`register/page.tsx`)
+- **Ikon dekoratif** — tambah `aria-hidden="true"` pada ikon Eye/EyeOff di halaman login dan register
+- **Redirect error check** — investigasi `isRedirectError()` dari `next/navigation`, tidak tersedia di Next.js 16.1.1 (hanya `getRedirectError` tapi itu creator bukan checker); tetap pakai pola `error.message === "NEXT_REDIRECT"`
 
 ### Perubahan Arsitektur
-- Route `app/(dashboard)/materi/` — halaman CRUD modul untuk guru
-- Route `app/admin/`, `/menunggu-persetujuan/`, `/ditolak/` — sistem approval
-- Route `app/(dashboard)/entertain/` — halaman hiburan
-- Tabel baru di Supabase: `class_progress`, `teacher_modules`; kolom baru: `profiles.school_name`, `profiles.grade_level`, `profiles.status`, `teacher_modules.target_grade`
-- Migrasi Supabase CLI — semua schema via migration files di `supabase/migrations/`
-- Restrukturisasi `learn/` — GradePicker, grade-specific routes (`kelas-7`, `kelas-8`, `kelas-9`), Phase components pindah ke `_components/`
-- Duplikasi modul standar: server action `duplicate-module.ts` + tombol di ModuleDetailClient
+- (tidak ada perubahan arsitektur)
 
 ### Belum Selesai
-- Belum ada tes otomatis (unit/integrasi)
-- Belum ada halaman help/docs untuk guru
+- Perubahan masih uncommitted — 4 file modified: `login/page.tsx`, `register/page.tsx`, `AGENTS.md`, `.opencode/commands/memory.sh`
+
+---
+
+## ✅ Sesi Terakhir (28 Mei 2026 — Sesi 2)
+
+**Periode:** 28 Mei 2026 (6 commits: 64e140b..c2a3e60)
+
+### Fitur Baru
+- **Link "Bahan Ajar" di sidebar guru** — akses modul Braille statis via `/learn/`
+- **Guru skip ClassPicker** — guru langsung lihat GradePicker di `/learn/` tanpa milih kelas
+- **Duplikasi modul standar → materi guru** — server action `duplicate-module.ts`, tombol di `ModuleDetailClient`, modul hasil duplikasi jadi draft di `teacher_modules`
+- **Aksesibilitas tunanetra** (batch 10 fix):
+  - Skip-to-content link di dashboard layout
+  - `aria-hidden` pada ikon sidebar, `aria-label` pada nav
+  - `aria-label` pada teks Braille (PhaseMembaca/Mendengarkan/Berbicara)
+  - `aria-live` region untuk notifikasi status
+  - Alt text deskriptif di QuizComponent
+  - `AlertDialog` gantikan `confirm()` di ModulesTable
+- **Semua migration ter-apply ke DB** via psql pooler langsung
+
+### Perbaikan
+- Fix: label sidebar dari "Belajar" → "Bahan Ajar"
+
+### Perubahan Arsitektur
+- Server action baru: `app/(dashboard)/learn/_actions/duplicate-module.ts`
+- Aksesibilitas diterapkan di: `layout.tsx`, `DashboardSidebar`, `NavItem`, `ModuleDetailClient`, `PhaseMembaca/Mendengarkan/Berbicara`, `ModulesTable`, `QuizComponent`
+
+### Belum Selesai
+- Migration apply masih via psql langsung, belum `supabase db push`
 
 ---
 
 ## ✅ Ringkasan Proyek
 
----
-
-## ✅ Ringkasan Proyek
-
-**Target pengguna:** Guru (bukan siswa). Siswa tidak mengoperasikan website — mereka belajar Braille secara fisik di kelas.
+**Target pengguna:** Admin, guru, dan siswa — ketiganya mengoperasikan website. Admin mengelola approval & data; guru membuat & mengelola modul, kelas, dan siswa; siswa mengakses modul Braille, mengerjakan kuis, dan melihat progress.
 
 **Stack:**
 - Next.js 16 (App Router), React 19, TypeScript 5
@@ -89,7 +93,7 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 - **Tutorial:** Driver.js — komponen `TutorialDriverImpl` dipasang di layout dashboard. Steps di `lib/tutorial/steps.ts`.
 - **Braille modul statis:** Ada di `lib/data/modules.ts`. Untuk modul dinamis (guru), pakai tabel `teacher_modules`.
 - **Progress:** Ada dua sistem: `user_progress` (per user) dan `class_progress` (per kelas). Dipilih via `ClassPicker`.
-- **Route naming:** Semua rute dashboard pake Bahasa Indonesia (`/materi/`, `/belajar/` via `learn`, `/kuis/` via `quiz`).
+- **Route naming:** Semua rute dashboard pake Bahasa Indonesia (`/materi/`, `/belajar/` via `learn`, `/kuis/` via `quiz`). Sidebar label "Bahan Ajar" mengarah ke `/learn/`.
 - **Target grade:** Kolom `target_grade` di `teacher_modules` — nullable. NULL berarti "Semua Kelas". Filter siswa: tampilkan modul dengan `target_grade IS NULL` atau `target_grade = student.grade_level`.
 
 ---

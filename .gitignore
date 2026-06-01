@@ -12,8 +12,8 @@ catatan/
 coverage/
 *.lcov
 .nyc_output
-/docs
-docs/
+/docs-braille
+docs-braille/
 
 # Next.js
 .next/

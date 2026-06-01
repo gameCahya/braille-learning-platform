@@ -73,7 +73,9 @@ export default function RegisterPage() {
 
           {/* Nama Lengkap */}
           <div className="flex flex-col gap-1.5">
+            <label htmlFor="fullName" className="sr-only">Nama Lengkap</label>
             <input
+              id="fullName"
               type="text"
               placeholder="Nama Lengkap"
               autoComplete="name"
@@ -129,7 +131,9 @@ export default function RegisterPage() {
 
           {/* Nama Sekolah */}
           <div className="flex flex-col gap-1.5">
+            <label htmlFor="schoolName" className="sr-only">Nama Sekolah</label>
             <input
+              id="schoolName"
               type="text"
               placeholder="Nama Sekolah"
               disabled={isLoading}
@@ -148,7 +152,9 @@ export default function RegisterPage() {
           {/* Tingkat Kelas — hanya untuk siswa */}
           {selectedRole === "student" && (
             <div className="flex flex-col gap-1.5">
+              <label htmlFor="gradeLevel" className="sr-only">Tingkat Kelas</label>
               <select
+                id="gradeLevel"
                 disabled={isLoading}
                 aria-invalid={errors.gradeLevel ? "true" : "false"}
                 aria-describedby={errors.gradeLevel ? "gradeLevel-error" : undefined}
@@ -171,7 +177,9 @@ export default function RegisterPage() {
 
           {/* Email */}
           <div className="flex flex-col gap-1.5">
+            <label htmlFor="email" className="sr-only">Email</label>
             <input
+              id="email"
               type="email"
               placeholder="Email"
               autoComplete="email"
@@ -190,8 +198,10 @@ export default function RegisterPage() {
 
           {/* Password */}
           <div className="flex flex-col gap-1.5">
+            <label htmlFor="password" className="sr-only">Password</label>
             <div className="relative">
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 autoComplete="new-password"
@@ -207,7 +217,7 @@ export default function RegisterPage() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full"
                 aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
               </button>
             </div>
             <p id="password-requirements" className="text-xs text-muted-foreground">
@@ -222,8 +232,10 @@ export default function RegisterPage() {
 
           {/* Konfirmasi Password */}
           <div className="flex flex-col gap-1.5">
+            <label htmlFor="confirmPassword" className="sr-only">Konfirmasi Password</label>
             <div className="relative">
               <input
+                id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Konfirmasi Password"
                 autoComplete="new-password"
