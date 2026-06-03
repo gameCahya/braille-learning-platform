@@ -4,32 +4,15 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  TrendingUp, 
-  Award, 
-  Target, 
-  BookOpen,
-  CheckCircle2,
-  Clock,
-  Zap,
-  Trophy
+import {
+  TrendingUp, Award, Target, BookOpen, CheckCircle2, Clock, Zap, Trophy,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ALL_MODULES } from "@/lib/data/modules";
 import type { UserProgress, QuizResult } from "@/types";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, PieChart, Pie, Cell,
 } from "recharts";
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
@@ -45,13 +28,11 @@ export default function ProgressPage() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
-        // Load progress
         const { data: progressData } = await supabase
           .from("user_progress")
           .select("*")
           .eq("user_id", user.id);
 
-        // Load quiz results
         const { data: quizData } = await supabase
           .from("quiz_results")
           .select("*")
@@ -73,9 +54,7 @@ export default function ProgressPage() {
       <div className="space-y-6">
         <Card>
           <CardContent className="pt-6 text-center">
-            <p className="text-slate-600 dark:text-slate-400">
-              Loading your progress...
-            </p>
+            <p className="text-muted-foreground" role="status">Memuat progres kamu...</p>
           </CardContent>
         </Card>
       </div>
@@ -87,69 +66,34 @@ export default function ProgressPage() {
   const totalModules = modules.length;
   const overallProgress = Math.round((completedModules.length / totalModules) * 100);
   const averageScore = completedModules.length > 0
-    ? Math.round(
-        completedModules.reduce((sum, p) => sum + (p.score || 0), 0) / completedModules.length
-      )
+    ? Math.round(completedModules.reduce((sum, p) => sum + (p.score || 0), 0) / completedModules.length)
     : 0;
 
-  // Prepare chart data
   const moduleData = modules.map((module) => {
-    const moduleProgress = progress.find((p) => p.module_id === module.id);
-    return {
-      name: `Module ${module.order_number}`,
-      score: moduleProgress?.score || 0,
-      completed: moduleProgress?.completed ? 1 : 0,
-    };
+    const mp = progress.find((p) => p.module_id === module.id);
+    return { name: module.title.substring(0, 15), score: mp?.score || 0, completed: mp?.completed ? 1 : 0 };
   });
 
-  const quizTrend = quizResults.slice(-5).map((quiz, index) => ({
-    name: `Quiz ${index + 1}`,
-    score: quiz.score,
+  const quizTrend = quizResults.slice(-5).map((q, i) => ({
+    name: `Kuis ${i + 1}`, score: q.score,
   }));
 
   const difficultyData = modules.reduce((acc, module) => {
-    const moduleProgress = progress.find((p) => p.module_id === module.id);
-    if (moduleProgress?.completed) {
-      const existing = acc.find((d) => d.name === module.difficulty);
-      if (existing) {
-        existing.value += 1;
-      } else {
-        acc.push({ name: module.difficulty, value: 1 });
-      }
+    const mp = progress.find((p) => p.module_id === module.id);
+    if (mp?.completed) {
+      const label = module.difficulty === "beginner" ? "Pemula" : module.difficulty === "intermediate" ? "Menengah" : "Lanjutan";
+      const existing = acc.find((d) => d.name === label);
+      if (existing) existing.value += 1;
+      else acc.push({ name: label, value: 1 });
     }
     return acc;
   }, [] as Array<{ name: string; value: number }>);
 
-  // Achievements
   const achievements = [
-    {
-      id: 1,
-      title: "First Steps",
-      description: "Complete your first module",
-      icon: "🎯",
-      earned: completedModules.length >= 1,
-    },
-    {
-      id: 2,
-      title: "Quick Learner",
-      description: "Complete 3 modules",
-      icon: "⚡",
-      earned: completedModules.length >= 3,
-    },
-    {
-      id: 3,
-      title: "Perfect Score",
-      description: "Get 100% on any quiz",
-      icon: "💯",
-      earned: quizResults.some((q) => q.score === 100),
-    },
-    {
-      id: 4,
-      title: "Dedicated Student",
-      description: "Complete all modules",
-      icon: "🏆",
-      earned: completedModules.length === totalModules,
-    },
+    { id: 1, title: "Langkah Awal", description: "Selesaikan modul pertama", icon: "🎯", earned: completedModules.length >= 1 },
+    { id: 2, title: "Pembelajar Cepat", description: "Selesaikan 3 modul", icon: "⚡", earned: completedModules.length >= 3 },
+    { id: 3, title: "Skor Sempurna", description: "Dapatkan 100% di kuis manapun", icon: "💯", earned: quizResults.some((q) => q.score === 100) },
+    { id: 4, title: "Siswa Berdedikasi", description: "Selesaikan semua modul", icon: "🏆", earned: completedModules.length === totalModules },
   ];
 
   return (
@@ -157,129 +101,129 @@ export default function ProgressPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-          <TrendingUp className="h-8 w-8 text-blue-600" />
-          Your Progress
+          <TrendingUp className="h-8 w-8 text-blue-600" aria-hidden="true" />
+          Progres Kamu
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Track your learning journey and achievements
+        <p className="text-muted-foreground mt-2">
+          Lacak perjalanan belajar dan pencapaianmu
         </p>
       </div>
 
       {/* Key Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <section aria-label="Statistik utama" className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardDescription className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              Modules Completed
+              <BookOpen className="h-4 w-4" aria-hidden="true" />
+              Modul Selesai
             </CardDescription>
-            <CardTitle className="text-3xl">
+            <CardTitle className="text-3xl" aria-label={`${completedModules.length} dari ${totalModules} modul selesai`}>
               {completedModules.length}/{totalModules}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Progress value={overallProgress} className="h-2" />
+            <Progress value={overallProgress} className="h-2" aria-label={`Progres keseluruhan: ${overallProgress} persen`} />
+            <p className="text-xs text-muted-foreground mt-2 sr-only">{overallProgress}% selesai</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
             <CardDescription className="flex items-center gap-2">
-              <Target className="h-4 w-4" />
-              Average Score
+              <Target className="h-4 w-4" aria-hidden="true" />
+              Skor Rata-rata
             </CardDescription>
-            <CardTitle className="text-3xl text-green-600">
-              {averageScore}%
-            </CardTitle>
+            <CardTitle className="text-3xl text-green-600">{averageScore}%</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Across {completedModules.length} modules
-            </p>
+            <p className="text-sm text-muted-foreground">Dari {completedModules.length} modul</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
             <CardDescription className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4" />
-              Quizzes Taken
+              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+              Kuis Dikerjakan
             </CardDescription>
-            <CardTitle className="text-3xl text-blue-600">
-              {quizResults.length}
-            </CardTitle>
+            <CardTitle className="text-3xl text-blue-600">{quizResults.length}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Total quiz attempts
-            </p>
+            <p className="text-sm text-muted-foreground">Total percobaan kuis</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
             <CardDescription className="flex items-center gap-2">
-              <Trophy className="h-4 w-4" />
-              Achievements
+              <Trophy className="h-4 w-4" aria-hidden="true" />
+              Pencapaian
             </CardDescription>
             <CardTitle className="text-3xl text-purple-600">
               {achievements.filter((a) => a.earned).length}/{achievements.length}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Badges earned
-            </p>
+            <p className="text-sm text-muted-foreground">Lencana diperoleh</p>
           </CardContent>
         </Card>
-      </div>
+      </section>
 
-      {/* Charts Row */}
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Module Scores */}
         <Card>
           <CardHeader>
-            <CardTitle>Module Scores</CardTitle>
-            <CardDescription>Your performance across all modules</CardDescription>
+            <CardTitle>Skor per Modul</CardTitle>
+            <CardDescription>Performa kamu di setiap modul</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={moduleData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="score" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Quiz Trend */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quiz Performance Trend</CardTitle>
-            <CardDescription>Your recent quiz scores</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {quizTrend.length > 0 ? (
+            <div aria-hidden="true">
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={quizTrend}>
+                <BarChart data={moduleData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="score" 
-                    stroke="#10b981" 
-                    strokeWidth={2}
-                  />
-                </LineChart>
+                  <Bar dataKey="score" fill="#3b82f6" />
+                </BarChart>
               </ResponsiveContainer>
+            </div>
+            <div className="sr-only" role="list" aria-label="Daftar skor modul">
+              {moduleData.map((m) => (
+                <span key={m.name}>{m.name}: skor {m.score}. </span>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Tren Skor Kuis</CardTitle>
+            <CardDescription>Skor kuis terbaru kamu</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {quizTrend.length > 0 ? (
+              <>
+                <div aria-hidden="true">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={quizTrend}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="score" stroke="#10b981" strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="sr-only" role="list" aria-label="Tren skor kuis">
+                  {quizTrend.map((q) => (
+                    <span key={q.name}>{q.name}: skor {q.score}. </span>
+                  ))}
+                </div>
+              </>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-slate-400">
-                <p>No quiz data yet. Complete some quizzes to see your trend!</p>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                <p>Belum ada data kuis. Kerjakan kuis untuk melihat tren!</p>
               </div>
             )}
           </CardContent>
@@ -290,29 +234,26 @@ export default function ProgressPage() {
       {difficultyData.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Completed Modules by Difficulty</CardTitle>
-            <CardDescription>Distribution of completed modules</CardDescription>
+            <CardTitle>Modul Selesai per Tingkat</CardTitle>
+            <CardDescription>Distribusi modul yang sudah diselesaikan</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={difficultyData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={(entry) => `${entry.name}: ${entry.value}`}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {difficultyData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <div aria-hidden="true">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie data={difficultyData} cx="50%" cy="50%" labelLine={false}
+                    label={(entry) => `${entry.name}: ${entry.value}`} outerRadius={100} fill="#8884d8" dataKey="value">
+                    {difficultyData.map((_, i) => <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="sr-only" role="list" aria-label="Distribusi tingkat kesulitan">
+              {difficultyData.map((d) => (
+                <span key={d.name}>Tingkat {d.name}: {d.value} modul. </span>
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}
@@ -321,34 +262,29 @@ export default function ProgressPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-yellow-500" />
-            Achievements
+            <Award className="h-5 w-5 text-yellow-500" aria-hidden="true" />
+            Pencapaian
           </CardTitle>
-          <CardDescription>Your learning milestones</CardDescription>
+          <CardDescription>Milestone pembelajaran kamu</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {achievements.map((achievement) => (
-              <div
-                key={achievement.id}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="list" aria-label="Daftar pencapaian">
+            {achievements.map((a) => (
+              <div key={a.id}
                 className={`p-4 rounded-lg border-2 transition-all ${
-                  achievement.earned
-                    ? "border-yellow-400 bg-yellow-50 dark:bg-yellow-950"
-                    : "border-slate-200 dark:border-slate-700 opacity-50"
+                  a.earned ? "border-yellow-400 bg-yellow-50 dark:bg-yellow-950" : "border-border opacity-50"
                 }`}
+                role="listitem"
+                aria-label={`${a.title}: ${a.earned ? "Diperoleh" : "Belum diperoleh"}. ${a.description}`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="text-3xl">{achievement.icon}</div>
+                  <span className="text-3xl" aria-hidden="true">{a.icon}</span>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold">{achievement.title}</h3>
-                      {achievement.earned && (
-                        <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      )}
+                      <h3 className="font-semibold">{a.title}</h3>
+                      {a.earned && <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />}
                     </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                      {achievement.description}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{a.description}</p>
                   </div>
                 </div>
               </div>
@@ -360,60 +296,42 @@ export default function ProgressPage() {
       {/* Module Details */}
       <Card>
         <CardHeader>
-          <CardTitle>Module Details</CardTitle>
-          <CardDescription>Your progress in each module</CardDescription>
+          <CardTitle>Detail Modul</CardTitle>
+          <CardDescription>Progres kamu di setiap modul</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-3" role="list" aria-label="Daftar modul">
             {modules.map((module) => {
-              const moduleProgress = progress.find((p) => p.module_id === module.id);
-              const isCompleted = moduleProgress?.completed || false;
-              const score = moduleProgress?.score || 0;
+              const mp = progress.find((p) => p.module_id === module.id);
+              const isCompleted = mp?.completed || false;
+              const score = mp?.score || 0;
+              const diffLabel = module.difficulty === "beginner" ? "Pemula" : module.difficulty === "intermediate" ? "Menengah" : "Lanjutan";
 
               return (
-                <div
-                  key={module.id}
-                  className="flex items-center justify-between p-4 rounded-lg border"
-                >
+                <div key={module.id} className="flex items-center justify-between p-4 rounded-lg border" role="listitem"
+                  aria-label={`${module.title}: ${isCompleted ? `Selesai, skor ${score}` : "Belum dimulai"}, tingkat ${diffLabel}`}>
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-bold">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 font-bold" aria-hidden="true">
                       {module.order_number}
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold">{module.title}</h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge
-                          variant="outline"
-                          className={
-                            module.difficulty === "beginner"
-                              ? "border-green-500 text-green-700"
-                              : module.difficulty === "intermediate"
-                              ? "border-yellow-500 text-yellow-700"
-                              : "border-red-500 text-red-700"
-                          }
-                        >
-                          {module.difficulty}
+                        <Badge variant="outline" className={module.difficulty === "beginner" ? "border-green-500 text-green-700" : module.difficulty === "intermediate" ? "border-yellow-500 text-yellow-700" : "border-red-500 text-red-700"}>
+                          {diffLabel}
                         </Badge>
-                        {isCompleted && (
-                          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                            Completed
-                          </Badge>
-                        )}
+                        {isCompleted && <Badge className="bg-green-100 text-green-800">Selesai</Badge>}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     {isCompleted ? (
                       <>
-                        <div className="text-2xl font-bold text-green-600">
-                          {score}%
-                        </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">
-                          Score
-                        </p>
+                        <div className="text-2xl font-bold text-green-600">{score}%</div>
+                        <p className="text-xs text-muted-foreground">Skor</p>
                       </>
                     ) : (
-                      <Badge variant="outline">Not Started</Badge>
+                      <Badge variant="outline">Belum Dimulai</Badge>
                     )}
                   </div>
                 </div>
@@ -423,16 +341,15 @@ export default function ProgressPage() {
         </CardContent>
       </Card>
 
-      {/* Motivational Message */}
+      {/* Motivational */}
       {completedModules.length === totalModules ? (
-        <Card className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 border-2 border-blue-200 dark:border-blue-800">
+        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 border-2 border-blue-200">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
-              <div className="text-6xl">🎉</div>
-              <h2 className="text-2xl font-bold">Congratulations!</h2>
-              <p className="text-slate-600 dark:text-slate-400">
-                You&apos;ve completed all modules! You&apos;re now a Braille master. Keep practicing to
-                maintain your skills!
+              <span className="text-6xl" aria-hidden="true">🎉</span>
+              <h2 className="text-2xl font-bold">Selamat!</h2>
+              <p className="text-muted-foreground">
+                Kamu sudah menyelesaikan semua modul! Kamu sekarang ahli Braille. Terus berlatih ya!
               </p>
             </div>
           </CardContent>
@@ -441,13 +358,11 @@ export default function ProgressPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <Zap className="h-8 w-8 text-orange-500" />
+              <Zap className="h-8 w-8 text-orange-500" aria-hidden="true" />
               <div>
-                <h3 className="font-semibold">Keep Going!</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  You&apos;re {overallProgress}% of the way through. Complete{" "}
-                  {totalModules - completedModules.length} more module
-                  {totalModules - completedModules.length > 1 ? "s" : ""} to finish!
+                <h3 className="font-semibold">Terus Berjuang!</h3>
+                <p className="text-sm text-muted-foreground">
+                  Kamu sudah {overallProgress}% selesai. Tinggal {totalModules - completedModules.length} modul lagi!
                 </p>
               </div>
             </div>

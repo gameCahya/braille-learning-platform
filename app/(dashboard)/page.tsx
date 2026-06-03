@@ -36,8 +36,9 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const fullName = user?.user_metadata?.full_name;
   const firstName =
-    (user?.user_metadata?.full_name as string | undefined)?.split(" ")[0] ??
+    (typeof fullName === "string" ? fullName.split(" ")[0] : undefined) ??
     user?.email?.split("@")[0] ??
     "Pengguna";
 
@@ -55,18 +56,18 @@ export default async function DashboardPage() {
 
       {/* Action Grid */}
       <div id="dashboard-actions" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {actions.map(({ href, icon: Icon, label, desc }) => (
+        {actions.map(({ href, icon: ActionIcon, label, desc }) => (
           <div key={href} className="tactile-wrapper">
             <Link
               href={href}
               className="flex items-start gap-4 bg-card text-foreground rounded-2xl border-2 border-b-4 border-border px-5 py-4 hover:border-primary hover:bg-primary/5 active:border-b-2 active:translate-y-0.5 transition-all"
             >
               <div className="p-2.5 rounded-xl bg-primary/10 shrink-0 mt-0.5">
-                <Icon className="h-5 w-5 text-primary" />
+                <ActionIcon className="h-5 w-5 text-primary" aria-hidden="true" />
               </div>
               <div>
-                <p className="font-semibold text-sm">{label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
+                <span className="font-semibold text-sm">{label}</span>
+                <span className="text-xs text-muted-foreground mt-0.5">{desc}</span>
               </div>
             </Link>
           </div>

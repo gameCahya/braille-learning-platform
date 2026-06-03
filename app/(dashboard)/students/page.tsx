@@ -45,7 +45,7 @@ export default async function StudentsPage() {
         </div>
         <Button id="students-add-btn" asChild>
           <Link href="/students/new">
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
             Tambah Siswa
           </Link>
         </Button>

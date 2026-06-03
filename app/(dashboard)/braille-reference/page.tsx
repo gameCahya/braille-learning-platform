@@ -1,5 +1,6 @@
-import { getBrailleReference } from "@/lib/braille";
+import { getBrailleReference, formatDotDescription, getBrailleDots } from "@/lib/braille";
 import BrailleCharCard from "@/components/braille/BrailleCharCard";
+import { ReadAloudButton } from "@/components/braille/ReadAloudButton";
 import TutorialDriver from "@/components/tutorial/TutorialDriver";
 import { brailleReferenceSteps } from "@/lib/tutorial/steps";
 
@@ -49,13 +50,19 @@ export default function BrailleReferencePage() {
 
       {/* Alfabet A–Z */}
       <section id="braille-alphabet" className="space-y-4">
-        <div>
-          <h2 className="text-base font-semibold text-foreground">
-            Alfabet (A–Z)
-          </h2>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            26 huruf dasar dalam Braille
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-foreground">
+              Alfabet (A–Z)
+            </h2>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              26 huruf dasar dalam Braille
+            </p>
+          </div>
+          <ReadAloudButton
+            label="Dengarkan Alfabet"
+            items={reference.alphabet.map((item) => `${item.char}: ${item.description}`)}
+          />
         </div>
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
           {reference.alphabet.map((item) => (
@@ -143,7 +150,11 @@ export default function BrailleReferencePage() {
                   {item.desc}
                 </p>
               </div>
-              <div className="text-4xl font-mono text-foreground">
+              <div
+                className="text-4xl font-mono text-foreground"
+                role="img"
+                aria-label={`Simbol Braille: ${item.speakText}`}
+              >
                 {item.symbol}
               </div>
             </div>
