@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
 import type { Lesson } from "@/types";
+import { getBrailleDots, formatDotDescription, brailleStringToDescription } from "@/lib/braille";
 
 interface Props {
   lessons: Lesson[];
@@ -51,7 +52,7 @@ export default function PhaseMembaca({ lessons }: Props) {
                     <div className="p-3 flex flex-col gap-1">
                       <p className="font-bold text-base leading-tight">{word.indonesian}</p>
                       <p className="text-xs text-muted-foreground">{word.english}</p>
-                      <p className="text-lg font-mono tracking-widest text-blue-600 dark:text-blue-400" aria-label={`Braille untuk "${word.indonesian}"`}>
+                      <p className="text-lg font-mono tracking-widest text-blue-600 dark:text-blue-400" aria-label={`Braille untuk "${word.indonesian}": ${word.braille ? brailleStringToDescription(word.braille) : ""}`}>
                         {word.braille}
                       </p>
                     </div>
@@ -86,7 +87,10 @@ export default function PhaseMembaca({ lessons }: Props) {
                     </p>
                   )}
                   {lesson.braille && (
-                    <p className="text-2xl font-mono tracking-widest text-blue-600 dark:text-blue-400 mt-1">
+                    <p
+                      className="text-2xl font-mono tracking-widest text-blue-600 dark:text-blue-400 mt-1"
+                      aria-label={`Braille: ${brailleStringToDescription(lesson.braille)}`}
+                    >
                       {lesson.braille}
                     </p>
                   )}
