@@ -16,6 +16,7 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { NavItem } from "./NavItem";
+import { HelpCircle } from "lucide-react";
 
 interface DashboardSidebarProps {
   role: "teacher" | "student";
@@ -62,6 +63,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
 
       {/* Footer */}
       <div className="border-t p-3 shrink-0">
+        <NavItem href="/help" icon={HelpCircle} label="Panduan" />
         <NavItem href="/settings" icon={Settings} label="Pengaturan" />
       </div>
     </aside>

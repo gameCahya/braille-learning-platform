@@ -1,6 +1,7 @@
 "use client";
 
 import { Volume2 } from "lucide-react";
+import { getBrailleDots, formatDotDescription } from "@/lib/braille";
 
 interface BrailleCharCardProps {
   char: string;
@@ -45,10 +46,16 @@ export default function BrailleCharCard({
     }, 100);
   };
 
+  const dotDesc = dots ? formatDotDescription(dots) : (speakText ? `Braille untuk ${speakText}` : `Karakter Braille ${braille}`);
+
   return (
     <div className="bg-card border rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-primary transition-colors group">
       <div className="text-2xl font-bold text-foreground">{char}</div>
-      <div className="text-5xl font-mono text-foreground leading-none py-1">
+      <div
+        className="text-5xl font-mono text-foreground leading-none py-1"
+        role="img"
+        aria-label={dotDesc}
+      >
         {braille}
       </div>
       {name && (
@@ -66,7 +73,7 @@ export default function BrailleCharCard({
         aria-label={`Dengarkan ${char}`}
         className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
       >
-        <Volume2 className="h-3.5 w-3.5" />
+        <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
         Dengarkan
       </button>
     </div>

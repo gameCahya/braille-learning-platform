@@ -18,7 +18,7 @@ export default function BrailleConverterPage() {
 
   const handleConvert = () => {
     if (!inputText.trim()) {
-      toast.error("Please enter some text");
+      toast.error("Masukkan teks terlebih dahulu");
       return;
     }
 
@@ -26,20 +26,20 @@ export default function BrailleConverterPage() {
       if (mode === "text-to-braille") {
         const braille = textToBraille(inputText);
         setOutputText(braille);
-        toast.success("Converted to Braille");
+        toast.success("Berhasil dikonversi ke Braille");
       } else {
         if (!isValidBraille(inputText)) {
-          toast.error("Invalid Braille characters detected");
+          toast.error("Karakter Braille tidak valid terdeteksi");
           return;
         }
         const text = brailleToText(inputText);
         setOutputText(text);
-        toast.success("Converted to text");
+        toast.success("Berhasil dikonversi ke teks");
       }
     } catch (err) {
       console.error("Conversion error:", err);
-      toast.error("Conversion failed", {
-        description: "Please check your input and try again.",
+      toast.error("Konversi gagal", {
+        description: "Periksa input kamu dan coba lagi.",
       });
     }
   };
@@ -54,28 +54,28 @@ export default function BrailleConverterPage() {
 
   const handleCopyOutput = async () => {
     if (!outputText) {
-      toast.error("Nothing to copy");
+      toast.error("Tidak ada yang bisa disalin");
       return;
     }
 
     try {
       await navigator.clipboard.writeText(outputText);
-      toast.success("Copied to clipboard");
+      toast.success("Disalin ke clipboard");
     } catch (err) {
       console.error("Copy error:", err);
-      toast.error("Failed to copy");
+      toast.error("Gagal menyalin");
     }
   };
 
   const handleClear = () => {
     setInputText("");
     setOutputText("");
-    toast.info("Cleared");
+    toast.info("Dibersihkan");
   };
 
   const handleSpeak = () => {
     if (!inputText && !outputText) {
-      toast.error("Nothing to speak");
+      toast.error("Tidak ada yang bisa dibacakan");
       return;
     }
 
@@ -87,7 +87,7 @@ export default function BrailleConverterPage() {
       utterance.rate = 0.9;
       window.speechSynthesis.speak(utterance);
     } else {
-      toast.error("Text-to-speech not supported in your browser");
+      toast.error("Text-to-speech tidak didukung di browser kamu");
     }
   };
 
@@ -95,9 +95,9 @@ export default function BrailleConverterPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Braille Converter</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Convert text to Braille and vice versa
+        <h1 className="text-3xl font-bold tracking-tight">Konverter Braille</h1>
+        <p className="text-muted-foreground mt-2">
+          Konversi teks ke Braille dan sebaliknya
         </p>
       </div>
 
@@ -106,21 +106,21 @@ export default function BrailleConverterPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Conversion Mode</CardTitle>
+              <CardTitle>Mode Konversi</CardTitle>
               <CardDescription>
                 {mode === "text-to-braille"
-                  ? "Convert regular text to Braille"
-                  : "Convert Braille back to text"}
+                  ? "Konversi teks biasa ke Braille"
+                  : "Konversi Braille kembali ke teks"}
               </CardDescription>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={handleSwapMode}
-              aria-label="Swap conversion mode"
+              aria-label="Tukar mode konversi"
             >
-              <ArrowLeftRight className="h-4 w-4 mr-2" />
-              Swap
+              <ArrowLeftRight className="h-4 w-4 mr-2" aria-hidden="true" />
+              Tukar
             </Button>
           </div>
         </CardHeader>
@@ -130,26 +130,27 @@ export default function BrailleConverterPage() {
       <Card>
         <CardHeader>
           <CardTitle>
-            {mode === "text-to-braille" ? "Enter Text" : "Enter Braille"}
+            {mode === "text-to-braille" ? "Masukkan Teks" : "Masukkan Braille"}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="input">
+            <Label htmlFor="converter-input">
               {mode === "text-to-braille"
-                ? "Text to convert"
-                : "Braille to convert"}
+                ? "Teks yang akan dikonversi"
+                : "Braille yang akan dikonversi"}
             </Label>
             <textarea
-              id="input"
+              id="converter-input"
               className="w-full min-h-[150px] p-4 rounded-lg border bg-white dark:bg-slate-950 focus:ring-2 focus:ring-blue-600 focus:border-transparent resize-none"
               placeholder={
                 mode === "text-to-braille"
-                  ? "Type your text here..."
-                  : "Paste Braille characters here..."
+                  ? "Ketik teks di sini..."
+                  : "Tempel karakter Braille di sini..."
               }
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
+              aria-label={mode === "text-to-braille" ? "Input teks" : "Input Braille"}
               style={
                 mode === "braille-to-text"
                   ? { fontSize: "2rem", fontFamily: "monospace" }
@@ -160,10 +161,10 @@ export default function BrailleConverterPage() {
 
           <div className="flex gap-2">
             <Button onClick={handleConvert} className="flex-1">
-              Convert
+              Konversi
             </Button>
-            <Button variant="outline" onClick={handleClear}>
-              <Trash2 className="h-4 w-4" />
+            <Button variant="outline" onClick={handleClear} aria-label="Bersihkan input">
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
         </CardContent>
@@ -181,8 +182,8 @@ export default function BrailleConverterPage() {
 
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleCopyOutput} className="flex-1">
-              <Copy className="h-4 w-4 mr-2" />
-              Copy {mode === "text-to-braille" ? "Braille" : "Text"}
+              <Copy className="h-4 w-4 mr-2" aria-hidden="true" />
+              Salin {mode === "text-to-braille" ? "Braille" : "Teks"}
             </Button>
           </div>
         </div>
@@ -191,35 +192,38 @@ export default function BrailleConverterPage() {
       {/* Examples */}
       <Card>
         <CardHeader>
-          <CardTitle>Examples</CardTitle>
+          <CardTitle>Contoh</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-3" role="list" aria-label="Contoh teks untuk dikonversi">
             <button
               onClick={() => setInputText("Hello World")}
               className="w-full text-left p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Gunakan contoh: Hello World"
             >
               <div className="font-medium">Hello World</div>
               <div className="text-sm text-slate-600 dark:text-slate-400">
-                Basic greeting
+                Sapaan dasar
               </div>
             </button>
             <button
               onClick={() => setInputText("I love learning English")}
               className="w-full text-left p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Gunakan contoh: I love learning English"
             >
               <div className="font-medium">I love learning English</div>
               <div className="text-sm text-slate-600 dark:text-slate-400">
-                Sentence with punctuation
+                Kalimat dengan tanda baca
               </div>
             </button>
             <button
               onClick={() => setInputText("12345")}
               className="w-full text-left p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Gunakan contoh: 12345"
             >
               <div className="font-medium">12345</div>
               <div className="text-sm text-slate-600 dark:text-slate-400">
-                Numbers
+                Angka
               </div>
             </button>
           </div>

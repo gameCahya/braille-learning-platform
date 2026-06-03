@@ -35,10 +35,10 @@ export default async function MenungguPersetujuanPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg max-w-md w-full p-8 text-center">
+      <main className="bg-white rounded-2xl shadow-lg max-w-md w-full p-8 text-center">
         <div className="flex justify-center mb-6">
-          <div className="bg-amber-100 rounded-full p-4">
-            <Clock className="h-10 w-10 text-amber-600" />
+          <div className="bg-amber-100 rounded-full p-4" aria-hidden="true">
+            <Clock className="h-10 w-10 text-amber-600" aria-hidden="true" />
           </div>
         </div>
 
@@ -53,7 +53,7 @@ export default async function MenungguPersetujuanPage() {
 
         <div className="bg-blue-50 rounded-xl p-4 mb-6 text-left space-y-2">
           <div className="flex items-start gap-3">
-            <Mail className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
+            <Mail className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" aria-hidden="true" />
             <div>
               <p className="text-sm font-medium text-blue-900">Cek email kamu</p>
               <p className="text-sm text-blue-700">
@@ -71,15 +71,20 @@ export default async function MenungguPersetujuanPage() {
         <div className="space-y-3">
           {waUrl && (
             <Button asChild className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white">
-              <a href={waUrl} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-4 w-4" />
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Hubungi Admin via WhatsApp — membuka di tab baru"
+              >
+                <MessageCircle className="h-4 w-4" aria-hidden="true" />
                 Hubungi Admin via WhatsApp
               </a>
             </Button>
           )}
           <SignOutButton />
         </div>
-      </div>
+      </main>
     </div>
   );
 }

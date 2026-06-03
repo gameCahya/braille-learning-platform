@@ -42,11 +42,12 @@ export function PendingActionButtons({ userId }: { userId: string }) {
         onClick={handleApprove}
         disabled={loading !== null}
         className="bg-green-600 hover:bg-green-700 text-white gap-1"
+        aria-label="Setujui pengguna"
       >
         {loading === "approve" ? (
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
         ) : (
-          <Check className="h-3.5 w-3.5" />
+          <Check className="h-3.5 w-3.5" aria-hidden="true" />
         )}
         Setujui
       </Button>
@@ -56,11 +57,12 @@ export function PendingActionButtons({ userId }: { userId: string }) {
         onClick={handleReject}
         disabled={loading !== null}
         className="gap-1"
+        aria-label="Tolak pengguna"
       >
         {loading === "reject" ? (
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
         ) : (
-          <X className="h-3.5 w-3.5" />
+          <X className="h-3.5 w-3.5" aria-hidden="true" />
         )}
         Tolak
       </Button>
@@ -85,9 +87,9 @@ export function RoleSelect({
 
   return (
     <div className="flex items-center gap-1">
-      {loading && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+      {loading && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" aria-hidden="true" />}
       <Select defaultValue={currentRole} onValueChange={handleChange} disabled={loading}>
-        <SelectTrigger className="h-8 w-[110px] text-xs">
+        <SelectTrigger className="h-8 w-[110px] text-xs" aria-label="Ubah role pengguna">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -117,9 +119,9 @@ export function StatusSelect({
 
   return (
     <div className="flex items-center gap-1">
-      {loading && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+      {loading && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" aria-hidden="true" />}
       <Select defaultValue={currentStatus} onValueChange={handleChange} disabled={loading}>
-        <SelectTrigger className="h-8 w-[120px] text-xs">
+        <SelectTrigger className="h-8 w-[120px] text-xs" aria-label="Ubah status pengguna">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

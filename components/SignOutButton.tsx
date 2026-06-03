@@ -20,8 +20,9 @@ export function SignOutButton({ className }: { className?: string }) {
       disabled={loading}
       onClick={handleSignOut}
       className={className ?? "w-full gap-2"}
+      aria-label="Keluar dari akun"
     >
-      <LogOut className="h-4 w-4" />
+      <LogOut className="h-4 w-4" aria-hidden="true" />
       Keluar
     </Button>
   );

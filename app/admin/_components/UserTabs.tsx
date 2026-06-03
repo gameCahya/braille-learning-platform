@@ -49,7 +49,7 @@ export function UserTabs({ users }: { users: Profile[] }) {
 
   return (
     <Tabs defaultValue="pending">
-      <TabsList>
+      <TabsList aria-label="Filter pengguna">
         <TabsTrigger value="pending" className="gap-1.5">
           Menunggu
           {pending.length > 0 && (
@@ -72,11 +72,11 @@ export function UserTabs({ users }: { users: Profile[] }) {
           <CardContent>
             {pending.length === 0 ? (
               <div className="text-center py-12 text-gray-400">
-                <UserCheck className="h-10 w-10 mx-auto mb-2 opacity-40" />
+                <UserCheck className="h-10 w-10 mx-auto mb-2 opacity-40" aria-hidden="true" />
                 <p className="text-sm">Tidak ada pendaftaran yang menunggu</p>
               </div>
             ) : (
-              <Table>
+              <Table aria-label="Daftar pengguna menunggu persetujuan">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nama</TableHead>
@@ -128,7 +128,7 @@ export function UserTabs({ users }: { users: Profile[] }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table aria-label="Daftar semua pengguna">
               <TableHeader>
                 <TableRow>
                   <TableHead>Nama</TableHead>

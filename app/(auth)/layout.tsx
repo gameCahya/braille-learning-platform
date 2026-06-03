@@ -11,18 +11,18 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="min-h-screen">
-      {/* Skip to main content link for screen readers */}
+    <div className="min-h-screen">
+      {/* Skip to main content — untuk pengguna screen reader */}
       <a
-        href="#main-content"
+        href="#auth-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
       >
-        Skip to main content
+        Langsung ke konten utama
       </a>
 
-      <div id="main-content" role="main">
+      <div id="auth-content">
         {children}
       </div>
-    </main>
+    </div>
   );
 }

@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { brailleStringToDescription } from "@/lib/braille";
 
 interface BrailleDisplayProps {
   text: string;
@@ -17,16 +18,18 @@ export default function BrailleDisplay({
   showText = true,
   onSpeak,
 }: BrailleDisplayProps) {
+  const dotDescription = braille ? brailleStringToDescription(braille) : "";
+
   return (
     <Card className="p-6">
       <div className="space-y-4">
         {/* Original Text */}
         {showText && text && (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              Text
-            </label>
-            <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+            <span className="text-sm font-medium text-muted-foreground">
+              Teks Asli
+            </span>
+            <div className="p-4 bg-muted rounded-lg">
               <p className="text-lg font-medium">{text}</p>
             </div>
           </div>
@@ -35,37 +38,43 @@ export default function BrailleDisplay({
         {/* Braille Output */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
+            <span className="text-sm font-medium text-muted-foreground">
               Braille
-            </label>
+            </span>
             {onSpeak && (
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={onSpeak}
-                aria-label="Read text aloud"
+                aria-label="Dengarkan teks"
               >
-                <Volume2 className="h-4 w-4 mr-1" />
-                Speak
+                <Volume2 className="h-4 w-4 mr-1" aria-hidden="true" />
+                Dengarkan
               </Button>
             )}
           </div>
           <div
             className="p-6 bg-blue-50 dark:bg-blue-950 rounded-lg border-2 border-blue-200 dark:border-blue-800"
             role="region"
-            aria-label="Braille output"
+            aria-label={braille ? `Teks Braille: ${dotDescription}` : "Output Braille"}
           >
             {braille ? (
-              <p
-                className="text-4xl md:text-5xl font-mono leading-relaxed tracking-wider select-all"
-                style={{ fontFamily: "monospace" }}
-                aria-label={`Braille representation: ${text}`}
-              >
-                {braille}
-              </p>
+              <>
+                {/* Visual Braille */}
+                <p
+                  className="text-4xl md:text-5xl font-mono leading-relaxed tracking-wider select-all"
+                  aria-hidden="true"
+                >
+                  {braille}
+                </p>
+                {/* Screen reader description */}
+                <span className="sr-only">
+                  {dotDescription}
+                </span>
+              </>
             ) : (
               <p className="text-slate-400 dark:text-slate-600 text-center">
-                Enter text to see Braille conversion
+                Masukkan teks untuk melihat hasil konversi Braille
               </p>
             )}
           </div>
@@ -73,8 +82,8 @@ export default function BrailleDisplay({
 
         {/* Character count */}
         {braille && (
-          <div className="text-xs text-slate-500 dark:text-slate-400 text-right">
-            {text.length} characters → {braille.replace(/\s/g, "").length} Braille symbols
+          <div className="text-xs text-muted-foreground text-right">
+            {text.length} karakter → {braille.replace(/\s/g, "").length} simbol Braille
           </div>
         )}
       </div>

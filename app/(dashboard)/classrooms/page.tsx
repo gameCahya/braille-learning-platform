@@ -29,7 +29,7 @@ export default async function ClassroomsPage() {
         </div>
         <Button id="classrooms-add-btn" asChild>
           <Link href="/classrooms/new">
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
             Kelas Baru
           </Link>
         </Button>

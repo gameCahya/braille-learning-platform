@@ -47,19 +47,24 @@ export default async function AdminPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {stats.map((s) => (
-          <Card key={s.label} className="border-0 shadow-sm">
-            <CardContent className="p-4">
-              <div className={`inline-flex rounded-lg p-2 mb-3 ${s.color}`}>
-                <s.icon className="h-4 w-4" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900">{s.value}</div>
-              <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <section aria-label="Statistik ringkasan" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <Card key={s.label} className="border-0 shadow-sm">
+              <CardContent className="p-4">
+                <div className={`inline-flex rounded-lg p-2 mb-3 ${s.color}`} aria-hidden="true">
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900" aria-label={`${s.label}: ${s.value}`}>
+                  {s.value}
+                </div>
+                <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </section>
 
       <UserTabs users={users} />
     </div>
