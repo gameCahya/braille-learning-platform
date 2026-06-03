@@ -2,32 +2,93 @@
 
 Proyek: **Bralingo** — Platform pembelajaran Braille untuk siswa tunanetra SMPLB.
 
-File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
+File ini diupdate manual di akhir setiap sesi.
 
 ---
 
-## ✅ Sesi Terakhir (01 Jun 2026 — Sesi 3)
+## ✅ Sesi Terakhir (02 Jun 2026 — Sesi 4)
 
-**Periode:** 01 Jun 2026 (0 commits — perubahan uncommitted)
+**Periode:** 02 Jun 2026 (belum commit; ~18 file modified)
 
 ### Fitur Baru
-- (tidak ada fitur baru)
+_(tidak ada fitur baru — sesi full aksesibilitas audit + fix)_
 
-### Perbaikan
-- **Aksesibilitas form login** — tambah `<label>` + `id` pada input email/password (`login/page.tsx`)
-- **Aksesibilitas form register** — tambah `<label>` + `id` pada semua input: fullName, schoolName, gradeLevel, email, password, confirmPassword (`register/page.tsx`)
-- **Ikon dekoratif** — tambah `aria-hidden="true"` pada ikon Eye/EyeOff di halaman login dan register
-- **Redirect error check** — investigasi `isRedirectError()` dari `next/navigation`, tidak tersedia di Next.js 16.1.1 (hanya `getRedirectError` tapi itu creator bukan checker); tetap pakai pola `error.message === "NEXT_REDIRECT"`
+### Perbaikan — Audit & Fix Aksesibilitas Seluruh Aplikasi
 
-### Perubahan Arsitektur
-- (tidak ada perubahan arsitektur)
+**Batch 1 — Login & Register:**
+- `app/(auth)/layout.tsx`: Hapus duplicate `<main>`, skip link diterjemahkan ke Indonesia, ganti target `#main-content` → `#auth-content`
+- `app/(auth)/login/page.tsx`: `aria-required` pada semua input, server error summary dengan `role="alert"` + auto-fokus, `<fieldset>` grouping, semua ID diprefix (`login-*`)
+- `app/(auth)/register/page.tsx`: Role selector dirombak jadi proper radio group (`role="radiogroup"` + `aria-checked` + keyboard Arrow nav), `aria-required` pada semua input, conditional `aria-describedby` pada password, `aria-hidden` pada ikon confirmPassword, `aria-live` untuk gradeLevel dinamis, `<fieldset>` grouping per section, semua ID diprefix (`register-*`)
 
-### Belum Selesai
-- Perubahan masih uncommitted — 4 file modified: `login/page.tsx`, `register/page.tsx`, `AGENTS.md`, `.opencode/commands/memory.sh`
+**Batch 2 — Halaman Publik & Admin:**
+- `app/menunggu-persetujuan/page.tsx`: Tambah `<main>` landmark, `aria-hidden` pada Clock/Mail/MessageCircle, `aria-label` pada link WhatsApp eksternal
+- `app/ditolak/page.tsx`: Tambah `<main>` landmark, `aria-hidden` pada XCircle
+- `app/admin/layout.tsx`: Skip-to-content link + `tabIndex={-1}` pada `<main>`, `aria-hidden` ShieldCheck, `aria-label` pada header
+- `app/admin/page.tsx`: `aria-hidden` pada 6 ikon stat card, `aria-label` pada section statistik + value
+- `app/admin/_components/UserTabs.tsx`: `aria-hidden` UserCheck empty state, `aria-label` pada TabsList & tabel
+- `app/admin/_components/UserActionButtons.tsx`: `aria-hidden` pada Check/X/Loader2, `aria-label` pada tombol & select
+
+**Batch 3 — Dashboard Components:**
+- `components/dashboard/DashboardHeader.tsx`: `aria-label` pada mobile menu button & avatar trigger, `aria-hidden` pada Menu/Settings/LogOut, judul header dinamis (Dashboard Guru/Siswa)
+- `components/SignOutButton.tsx`: `aria-hidden` pada LogOut, `aria-label` pada button
+- `components/braille/BrailleCharCard.tsx`: `aria-hidden` pada Volume2
+
+**Batch 4 — Halaman Konten:**
+- `app/(dashboard)/converter/page.tsx`: `aria-hidden` pada semua ikon, `aria-label` pada clear button + textarea + contoh, semua UI teks diterjemahkan ke Indonesia (sebelumnya Inggris)
+- `app/(dashboard)/practice/_components/PracticeClient.tsx`: `aria-hidden` pada semua ikon, semua UI teks diterjemahkan ke Indonesia
+- `app/(dashboard)/quiz/[id]/_components/QuizPresenter.tsx`: `aria-hidden` pada semua ikon, progress bar pakai `role="progressbar"` + `aria-valuenow/min/max`, `aria-label` pada tombol nav & opsi
+- `app/(dashboard)/braille-reference/page.tsx`: Indikator simbol Braille pakai `role="img"` + `aria-label`
+- `app/(dashboard)/quiz/page.tsx`: `aria-hidden` pada ClipboardList & ChevronRight
+- `app/(dashboard)/classrooms/page.tsx`: `aria-hidden` pada Plus
+- `app/(dashboard)/students/page.tsx`: `aria-hidden` pada Plus
+- `app/(dashboard)/entertain/page.tsx`: `aria-hidden` pada Music
+
+### Prinsip Aksesibilitas yang Diterapkan di Seluruh App
+- ✅ Setiap halaman punya tepat 1 `<main>` landmark
+- ✅ Semua layout punya skip-to-content link (Bahasa Indonesia)
+- ✅ Semua ikon dekoratif lucide-react diberi `aria-hidden="true"`
+- ✅ Semua input/tombol tanpa teks punya `aria-label`
+- ✅ Semua input required punya `aria-required="true"`
+- ✅ Error message menggunakan `role="alert"` + auto-fokus
+- ✅ Dynamic content menggunakan `aria-live` region
+- ✅ Semua teks UI konsisten Bahasa Indonesia
+- ✅ Progress bar menggunakan `role="progressbar"` + `aria-valuenow`
+
+### Belum Selesai (masih dari sesi sebelumnya)
+- Perlu commit semua perubahan a11y ini
+- Belum ada automated tests (Vitest + Playwright)
+- Belum ada halaman help/docs untuk guru
+- Belum ada fitur edit siswa di halaman students
+- Belum ada fitur export raport (PDF/Excel)
+- Tutorial Driver.js belum mencakup halaman `/materi/`
+- Belum ada validasi unique untuk nama modul per guru
+- Belum ada sistem caching
+- Migrasi belum via `supabase db push`
 
 ---
 
-## ✅ Sesi Terakhir (28 Mei 2026 — Sesi 2)
+## ✅ Sesi 3 (01 Jun 2026)
+
+**Periode:** 01 Jun 2026 (1 commit: dc73378; 3 file uncommitted)
+
+### Fitur Baru
+- **Daily notes** — template dan command daily note di `.opencode/templates/daily.md` + `.opencode/commands/daily.md`, daily note pertama di `docs-braille/daily/2026-06-01.md`
+- **`@vercel/next-browser` skill** — experimental agent devtools: inspek component tree, props, hooks, screenshot, network, errors dari terminal (Next.js 16.2+ feature, tapi bekerja di 16.1.1 untuk fitur non-PPR)
+
+### Perbaikan
+- **Aksesibilitas form login** — tambah `<label>` + `id` pada input email/password, `aria-hidden` pada ikon Eye/EyeOff, `aria-live` region untuk status loading (`login/page.tsx`)
+- **Aksesibilitas form register** — tambah `<label>` + `id` pada 6 input + `aria-hidden` pada ikon Eye/EyeOff (`register/page.tsx`)
+- **Aksesibilitas dashboard** — tambah `aria-hidden` pada ikon dekoratif, ganti `as string` cast dengan type guard, rename `Icon` → `ActionIcon`, ganti `<p>` → `<span>` dalam `<Link>` (`page.tsx`)
+- **Indentasi login page** — perbaiki indentasi tidak konsisten di section email
+- **Redirect error check** — investigasi `isRedirectError()`, tidak tersedia di Next.js 16.1.1; tetap pakai pola `error.message === "NEXT_REDIRECT"`
+
+### Perubahan Arsitektur
+- Rename `docs/` → `docs-braille/` — update `.gitignore`, `.opencode/commands/daily.md`
+- Install `@vercel/next-browser` 0.7.1 global via pnpm
+
+---
+
+## ✅ Sesi 2 (28 Mei 2026)
 
 **Periode:** 28 Mei 2026 (6 commits: 64e140b..c2a3e60)
 
@@ -49,10 +110,6 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 
 ### Perubahan Arsitektur
 - Server action baru: `app/(dashboard)/learn/_actions/duplicate-module.ts`
-- Aksesibilitas diterapkan di: `layout.tsx`, `DashboardSidebar`, `NavItem`, `ModuleDetailClient`, `PhaseMembaca/Mendengarkan/Berbicara`, `ModulesTable`, `QuizComponent`
-
-### Belum Selesai
-- Migration apply masih via psql langsung, belum `supabase db push`
 
 ---
 
@@ -80,7 +137,6 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 - `user_progress`, `quiz_results`, `class_progress` — progress & quiz
 - `module_audio` — audio modul
 - `teacher_modules` — modul buatan guru (CRUD)
-- `class_progress` — progress per kelas
 
 ---
 
@@ -95,6 +151,9 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 - **Progress:** Ada dua sistem: `user_progress` (per user) dan `class_progress` (per kelas). Dipilih via `ClassPicker`.
 - **Route naming:** Semua rute dashboard pake Bahasa Indonesia (`/materi/`, `/belajar/` via `learn`, `/kuis/` via `quiz`). Sidebar label "Bahan Ajar" mengarah ke `/learn/`.
 - **Target grade:** Kolom `target_grade` di `teacher_modules` — nullable. NULL berarti "Semua Kelas". Filter siswa: tampilkan modul dengan `target_grade IS NULL` atau `target_grade = student.grade_level`.
+- **next-browser:** `@vercel/next-browser` 0.7.1 terinstall global. Command: `next-browser tree`, `tree <id>`, `screenshot`, `snapshot`, `network`, `errors`. Butuh `pnpm dev` berjalan.
+- **Aksesibilitas:** Semua halaman sudah diaudit dan difix (02 Jun 2026). Patuhi prinsip: 1 `<main>` per halaman, `aria-hidden` pada ikon dekoratif, `aria-label` pada elemen tanpa teks, `aria-required` pada input wajib, error pakai `role="alert"`, skip-link di setiap layout.
+- **DashboardHeader role:** Komponen `DashboardHeader` sekarang menerima `profile.role` untuk menampilkan judul "Dashboard Guru" atau "Dashboard Siswa". Dashboard layout harus melempar `role` dari query profile.
 
 ---
 
@@ -108,3 +167,4 @@ File ini diupdate manual oleh `/memory` command di akhir setiap sesi.
 - **Belum ada validasi unique** untuk nama modul per guru di `teacher_modules`
 - **Belum ada sistem caching** — banyak halaman dashboard query langsung ke Supabase tiap render
 - **Migrasi belum via `supabase db push`** — terakhir di-apply manual via psql langsung
+- **Belum commit** perubahan aksesibilitas sesi 4 (02 Jun 2026) — ~18 file modified
