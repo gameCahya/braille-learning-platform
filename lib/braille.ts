@@ -272,6 +272,65 @@ const PUNCTUATION_NAMES: Record<string, string> = {
   "/": "tanda garis miring",
 };
 
+// Reverse map: Braille Unicode → letter
+const BRAILLE_TO_LETTER: Record<string, string> = {};
+for (const [letter, braille] of Object.entries(BRAILLE_ALPHABET)) {
+  BRAILLE_TO_LETTER[braille] = letter;
+}
+
+// Reverse map: Braille Unicode → punctuation char
+const BRAILLE_TO_PUNCTUATION: Record<string, string> = {};
+for (const [punct, braille] of Object.entries(BRAILLE_PUNCTUATION)) {
+  BRAILLE_TO_PUNCTUATION[braille] = punct;
+}
+
+/**
+ * Deskripsi satu karakter Braille Unicode dalam bahasa Indonesia.
+ * Contoh: "⠓" → "H: titik 1, 2, dan 5"
+ */
+export function brailleCharToDescription(char: string): string {
+  // Space
+  if (char === " ") return "spasi";
+
+  // Capital indicator
+  if (char === BRAILLE_INDICATORS.capital) return "indikator huruf kapital, titik 6";
+
+  // Number indicator
+  if (char === BRAILLE_INDICATORS.number) return "indikator angka, titik 3, 4, 5, dan 6";
+
+  // Letter
+  const letter = BRAILLE_TO_LETTER[char];
+  if (letter) {
+    const dots = getBrailleDots(letter);
+    const desc = formatDotDescription(dots);
+    return `${letter.toUpperCase()}: ${desc}`;
+  }
+
+  // Punctuation
+  const punct = BRAILLE_TO_PUNCTUATION[char];
+  if (punct) {
+    const name = PUNCTUATION_NAMES[punct] ?? punct;
+    return name;
+  }
+
+  // Unknown
+  return "karakter Braille tidak dikenal";
+}
+
+/**
+ * Deskripsi lengkap string Braille dalam bahasa Indonesia.
+ * Tiap karakter dipisahkan dengan ". " agar enak dibaca screen reader.
+ * Contoh: "⠓⠊" → "H: titik 1, 2, dan 5. I: titik 2 dan 4."
+ */
+export function brailleStringToDescription(braille: string): string {
+  if (!braille) return "";
+  const parts: string[] = [];
+  for (const char of braille) {
+    parts.push(brailleCharToDescription(char));
+  }
+  return parts.join(". ");
+}
+
 /**
  * Get full Braille alphabet reference
  */

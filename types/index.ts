@@ -24,6 +24,22 @@ export interface TeacherModule extends Omit<TeacherModuleRow, "lessons"> {
 }
 
 // =============================================
+// Teacher Quiz types
+// =============================================
+export type TeacherQuizRow = Tables<"teacher_quizzes">;
+
+export interface TeacherQuizQuestion {
+  id: number;
+  question: string;
+  options: string[];
+  answer: string;
+}
+
+export interface TeacherQuiz extends Omit<TeacherQuizRow, "questions"> {
+  questions: TeacherQuizQuestion[];
+}
+
+// =============================================
 // Static data types — tidak ada di database,
 // dipakai untuk data modul statis di lib/data/
 // =============================================
