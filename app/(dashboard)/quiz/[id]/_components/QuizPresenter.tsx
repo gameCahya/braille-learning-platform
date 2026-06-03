@@ -12,6 +12,7 @@ export function QuizPresenter({ quiz }: { quiz: Quiz }) {
   const question = quiz.questions[current];
   const isFirst = current === 0;
   const isLast = current === quiz.questions.length - 1;
+  const progressPercent = ((current + 1) / quiz.questions.length) * 100;
 
   const next = () => {
     setShowAnswer(false);
@@ -37,17 +38,25 @@ export function QuizPresenter({ quiz }: { quiz: Quiz }) {
         <button
           onClick={reset}
           className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+          aria-label="Mulai ulang quiz dari awal"
         >
-          <RotateCcw className="h-3.5 w-3.5" />
+          <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
           Mulai ulang
         </button>
       </div>
 
       {/* Progress bar */}
-      <div className="w-full bg-muted rounded-full h-2">
+      <div
+        role="progressbar"
+        aria-valuenow={Math.round(progressPercent)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Progress: ${current + 1} dari ${quiz.questions.length} soal`}
+        className="w-full bg-muted rounded-full h-2"
+      >
         <div
           className="bg-primary h-2 rounded-full transition-all duration-300"
-          style={{ width: `${((current + 1) / quiz.questions.length) * 100}%` }}
+          style={{ width: `${progressPercent}%` }}
         />
       </div>
 
@@ -65,12 +74,14 @@ export function QuizPresenter({ quiz }: { quiz: Quiz }) {
             return (
               <div
                 key={option}
+                role="listitem"
                 className={cn(
                   "rounded-xl border-2 px-4 py-3 text-base font-medium transition-all",
                   revealed
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-border bg-muted/50 text-foreground"
                 )}
+                aria-label={revealed ? `Jawaban: ${option}` : option}
               >
                 {option}
               </div>
@@ -86,9 +97,10 @@ export function QuizPresenter({ quiz }: { quiz: Quiz }) {
           <button
             onClick={prev}
             disabled={isFirst}
+            aria-label="Soal sebelumnya"
             className="flex items-center gap-2 bg-muted text-foreground font-bold text-sm py-2.5 px-5 rounded-xl border-b-4 border-border hover:brightness-95 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0 disabled:active:border-b-4"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
             Sebelumnya
           </button>
         </div>
@@ -97,9 +109,10 @@ export function QuizPresenter({ quiz }: { quiz: Quiz }) {
         <div className="tactile-wrapper">
           <button
             onClick={() => setShowAnswer((v) => !v)}
+            aria-label={showAnswer ? "Sembunyikan jawaban" : "Tampilkan jawaban"}
             className="flex items-center gap-2 bg-secondary text-secondary-foreground font-bold text-sm py-2.5 px-5 rounded-xl border-b-4 border-secondary/60 hover:brightness-105 active:border-b-0 active:translate-y-1 transition-all"
           >
-            {showAnswer ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showAnswer ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
             {showAnswer ? "Sembunyikan" : "Jawaban"}
           </button>
         </div>
@@ -109,18 +122,22 @@ export function QuizPresenter({ quiz }: { quiz: Quiz }) {
           <button
             onClick={next}
             disabled={isLast}
+            aria-label="Soal selanjutnya"
             className="flex items-center gap-2 bg-primary text-primary-foreground font-bold text-sm py-2.5 px-5 rounded-xl border-b-4 border-secondary hover:brightness-105 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0 disabled:active:border-b-4"
           >
             Selanjutnya
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </div>
 
       {/* Done state */}
       {isLast && showAnswer && (
-        <div className="text-center py-4 bg-primary/10 border border-primary/20 rounded-xl">
-          <p className="font-semibold text-primary">🎉 Quiz selesai!</p>
+        <div className="text-center py-4 bg-primary/10 border border-primary/20 rounded-xl" role="status">
+          <p className="font-semibold text-primary">
+            <span aria-hidden="true">🎉 </span>
+            Quiz selesai!
+          </p>
           <p className="text-sm text-muted-foreground mt-1">
             Semua soal telah ditampilkan.
           </p>
