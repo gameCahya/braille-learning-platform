@@ -14,6 +14,7 @@ import {
   Music,
   Dumbbell,
   GraduationCap,
+  MessageCircle,
 } from "lucide-react";
 import { NavItem } from "./NavItem";
 import { HelpCircle } from "lucide-react";
@@ -48,6 +49,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
         <NavItem href="/materi" icon={Braces} label="Materi" />
         <NavItem href="/learn" icon={GraduationCap} label="Bahan Ajar" />
         <NavItem href="/practice" icon={Dumbbell} label="Practice" />
+        <NavItem href="/conversation" icon={MessageCircle} label="Conversation" />
         <NavItem href="/entertain" icon={Music} label="Entertain" />
 
         {role === "teacher" && (
