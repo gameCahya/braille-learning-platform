@@ -263,3 +263,28 @@
   white-space: nowrap;
   border-width: 0;
 }
+
+/* =============================================
+   Mode Linear — untuk pengguna screen reader
+   ============================================= */
+@layer base {
+  html.linear-mode {
+    /* Grid jadi single column */
+    & [class*="grid-cols-"] {
+      grid-template-columns: 1fr !important;
+    }
+    /* Spacing lebih lega */
+    & [class*="space-y-4"] > * + * { margin-top: 1.5rem !important; }
+    & [class*="space-y-6"] > * + * { margin-top: 2rem !important; }
+    & [class*="space-y-8"] > * + * { margin-top: 2.5rem !important; }
+    /* Font lebih besar */
+    & .text-xs { font-size: 0.875rem !important; }
+    & .text-sm { font-size: 1rem !important; }
+    /* Padding lebih besar */
+    & .p-3 { padding: 1rem !important; }
+    & .p-4 { padding: 1.25rem !important; }
+    & .px-5 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+    /* Sembunyikan elemen visual murni */
+    & [data-hide-linear] { display: none !important; }
+  }
+}

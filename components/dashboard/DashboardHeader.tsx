@@ -11,8 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Menu, Settings } from "lucide-react";
+import { LogOut, Menu, Settings, List } from "lucide-react";
 import { signOut } from "@/app/(auth)/actions";
+import { useLinearMode } from "@/components/accessibility/LinearModeProvider";
 
 interface DashboardHeaderProps {
   user: {
@@ -28,6 +29,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
   const router = useRouter();
+  const { isLinear, toggle } = useLinearMode();
 
   const initials = profile?.full_name
     ? profile.full_name
@@ -53,8 +55,19 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
       </Button>
 
       {/* Title */}
-      <div className="hidden md:block">
+      <div className="hidden md:flex items-center gap-3">
         <h2 className="text-base font-semibold text-foreground">Dashboard {roleLabel}</h2>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggle}
+          className="gap-1.5 text-xs"
+          aria-pressed={isLinear}
+          aria-label={isLinear ? "Mode linear aktif. Klik untuk matikan." : "Aktifkan mode linear untuk tampilan sederhana"}
+        >
+          <List className="h-4 w-4" aria-hidden="true" />
+          {isLinear ? "Linear ON" : "Linear"}
+        </Button>
       </div>
 
       {/* User menu */}

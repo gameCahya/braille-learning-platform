@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { LinearModeProvider } from "@/components/accessibility/LinearModeProvider";
 
 export default async function DashboardLayout({
   children,
@@ -36,7 +37,8 @@ export default async function DashboardLayout({
     : "teacher";
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <LinearModeProvider>
+      <div className="flex h-screen overflow-hidden">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-background focus:text-foreground focus:rounded-lg focus:border focus:shadow-lg"
@@ -51,5 +53,6 @@ export default async function DashboardLayout({
         </main>
       </div>
     </div>
+    </LinearModeProvider>
   );
 }
