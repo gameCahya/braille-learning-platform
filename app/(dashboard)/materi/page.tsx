@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import type { TeacherModule, TeacherModuleLesson } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
+import TutorialDriver from "@/components/tutorial/TutorialDriver";
+import { materiSteps } from "@/lib/tutorial/materi-steps";
 
 export default async function MateriPage() {
   const supabase = await createClient();
@@ -35,20 +37,26 @@ export default async function MateriPage() {
 
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight">Materi</h1>
-          <p className="text-muted-foreground">
-            Buat dan kelola modul pembelajaran untuk siswa Anda
-          </p>
+        <div id="materi-header" className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Materi</h1>
+            <p className="text-muted-foreground">
+              Buat dan kelola modul pembelajaran untuk siswa Anda
+            </p>
+          </div>
+          <Button id="materi-add-btn" asChild>
+            <Link href="/materi/new">
+              <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
+              Modul Baru
+            </Link>
+          </Button>
         </div>
-        <Button asChild>
-          <Link href="/materi/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Modul Baru
-          </Link>
-        </Button>
 
-        <ModulesTable modules={modules} />
+        <div id="materi-table">
+          <ModulesTable modules={modules} />
+        </div>
+
+        <TutorialDriver steps={materiSteps} storageKey="bralingo-tutorial-materi" />
       </div>
     );
   }
