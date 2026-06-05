@@ -4,6 +4,7 @@ import {
   Users, School, ClipboardList, TrendingUp, ChevronRight, Award,
 } from "lucide-react";
 import Link from "next/link";
+import { ReportExports } from "./_components/ReportExports";
 
 const DIFF_LABEL: Record<string, string> = {
   beginner: "Pemula",
@@ -145,9 +146,12 @@ export default async function ReportsPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-foreground">Progres Siswa</h2>
-            <Link href="/progress" className="text-sm text-primary hover:underline flex items-center gap-1">
-              Lihat detail <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </Link>
+            <div className="flex items-center gap-2">
+              <ReportExports studentProgress={studentProgress} />
+              <Link href="/progress" className="text-sm text-primary hover:underline flex items-center gap-1">
+                Lihat detail <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
 
           {studentProgress.length === 0 ? (
