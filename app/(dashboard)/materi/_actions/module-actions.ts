@@ -39,6 +39,18 @@ export async function createTeacherModule(data: {
     return { success: false, error: validated.error.issues[0]?.message ?? "Data tidak valid" };
   }
 
+  // Cek duplikat judul
+  const { data: duplicate } = await supabase
+    .from("teacher_modules")
+    .select("id")
+    .eq("teacher_id", user.id)
+    .eq("title", validated.data.title)
+    .maybeSingle();
+
+  if (duplicate) {
+    return { success: false, error: `Modul dengan judul "${validated.data.title}" sudah ada. Gunakan judul lain.` };
+  }
+
   const { data: existing } = await supabase
     .from("teacher_modules")
     .select("order_number")
@@ -88,6 +100,19 @@ export async function updateTeacherModule(
   const validated = moduleSchema.safeParse(data);
   if (!validated.success) {
     return { success: false, error: validated.error.issues[0]?.message ?? "Data tidak valid" };
+  }
+
+  // Cek duplikat judul (kecuali modul ini sendiri)
+  const { data: duplicate } = await supabase
+    .from("teacher_modules")
+    .select("id")
+    .eq("teacher_id", user.id)
+    .eq("title", validated.data.title)
+    .neq("id", id)
+    .maybeSingle();
+
+  if (duplicate) {
+    return { success: false, error: `Modul dengan judul "${validated.data.title}" sudah ada. Gunakan judul lain.` };
   }
 
   const { error } = await supabase
