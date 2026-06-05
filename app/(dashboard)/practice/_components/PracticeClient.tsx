@@ -74,7 +74,7 @@ export default function PracticeClient({ gradeLevel, role }: PracticeClientProps
   const [streak, setStreak] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [audioMode, setAudioMode] = useState(false);
+  const [audioMode, setAudioMode] = useState(role === "student");
 
   const currentExercise = exercises[currentIndex];
   const progress = exercises.length > 0 ? ((currentIndex + 1) / exercises.length) * 100 : 0;

@@ -3,30 +3,72 @@ import {
   Braces,
   BookOpen,
   ArrowLeftRight,
+  Dumbbell,
+  Music,
+  MessageCircle,
+  GraduationCap,
+  ClipboardList,
 } from "lucide-react";
 import Link from "next/link";
 import TutorialDriver from "@/components/tutorial/TutorialDriver";
 import { dashboardSteps } from "@/lib/tutorial/steps";
 
-
-const actions = [
+const allActions = [
   {
     href: "/learn",
-    icon: BookOpen,
-    label: "Modul Website",
-    desc: "Modul pembelajaran dari guru",
+    icon: GraduationCap,
+    label: "Bahan Ajar",
+    desc: "Modul pembelajaran Braille per kelas",
+    roles: ["teacher", "student"],
+  },
+  {
+    href: "/materi",
+    icon: Braces,
+    label: "Materi Guru",
+    desc: "Modul buatan guru",
+    roles: ["teacher"],
+  },
+  {
+    href: "/practice",
+    icon: Dumbbell,
+    label: "Latihan",
+    desc: "Latihan interaktif Braille — mode dengar tersedia",
+    roles: ["teacher", "student"],
+  },
+  {
+    href: "/quiz",
+    icon: ClipboardList,
+    label: "Quiz & Test",
+    desc: "Uji pemahaman Braille",
+    roles: ["teacher", "student"],
+  },
+  {
+    href: "/conversation",
+    icon: MessageCircle,
+    label: "Conversation",
+    desc: "Percakapan Bahasa Inggris dengan audio",
+    roles: ["teacher", "student"],
+  },
+  {
+    href: "/entertain",
+    icon: Music,
+    label: "Entertain",
+    desc: "Lagu dan berhitung yang menyenangkan",
+    roles: ["teacher", "student"],
   },
   {
     href: "/braille-reference",
     icon: Braces,
     label: "Panduan Braille",
     desc: "Referensi titik Braille A–Z, angka, dan tanda baca",
+    roles: ["teacher"],
   },
   {
     href: "/converter",
     icon: ArrowLeftRight,
     label: "Konverter",
     desc: "Konversi teks ke Braille dan sebaliknya",
+    roles: ["teacher"],
   },
 ];
 
@@ -36,11 +78,17 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const fullName = user?.user_metadata?.full_name;
-  const firstName =
-    (typeof fullName === "string" ? fullName.split(" ")[0] : undefined) ??
-    user?.email?.split("@")[0] ??
-    "Pengguna";
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, role")
+    .eq("id", user!.id)
+    .single();
+
+  const fullName = profile?.full_name ?? user?.email?.split("@")[0] ?? "Pengguna";
+  const firstName = typeof fullName === "string" ? fullName.split(" ")[0] : fullName;
+  const userRole = profile?.role ?? "student";
+
+  const actions = allActions.filter((a) => a.roles.includes(userRole as string));
 
   return (
     <div className="space-y-8">
@@ -50,7 +98,9 @@ export default async function DashboardPage() {
           Selamat datang, {firstName}!
         </h1>
         <p className="text-muted-foreground mt-1">
-          Pilih menu di bawah untuk mulai belajar.
+          {userRole === "teacher"
+            ? "Pilih menu di bawah untuk mulai mengajar."
+            : "Pilih menu di bawah untuk mulai belajar."}
         </p>
       </div>
 

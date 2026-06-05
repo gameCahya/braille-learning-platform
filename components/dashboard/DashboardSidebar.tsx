@@ -10,11 +10,11 @@ import {
   BookOpen,
   Braces,
   ClipboardList,
-  ArrowLeftRight,
   Music,
   Dumbbell,
   GraduationCap,
   MessageCircle,
+  TrendingUp,
 } from "lucide-react";
 import { NavItem } from "./NavItem";
 import { HelpCircle } from "lucide-react";
@@ -46,19 +46,34 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
       {/* Navigation */}
       <nav id="sidebar-nav" aria-label="Navigasi sidebar" className="flex-1 overflow-y-auto p-3">
         <NavItem href="/" icon={LayoutDashboard} label="Dasbor" />
-        <NavItem href="/materi" icon={Braces} label="Materi" />
-        <NavItem href="/learn" icon={GraduationCap} label="Bahan Ajar" />
-        <NavItem href="/practice" icon={Dumbbell} label="Practice" />
-        <NavItem href="/conversation" icon={MessageCircle} label="Conversation" />
-        <NavItem href="/entertain" icon={Music} label="Entertain" />
 
-        {role === "teacher" && (
+        {role === "teacher" ? (
           <>
+            <NavSection label="Konten Pembelajaran" />
+            <NavItem href="/materi" icon={Braces} label="Materi" />
+            <NavItem href="/learn" icon={GraduationCap} label="Bahan Ajar" />
+            <NavItem href="/practice" icon={Dumbbell} label="Practice" />
+            <NavItem href="/quiz" icon={ClipboardList} label="Quiz & Test" />
+            <NavItem href="/conversation" icon={MessageCircle} label="Conversation" />
+            <NavItem href="/entertain" icon={Music} label="Entertain" />
+
             <NavSection label="Manajemen" />
             <NavItem href="/classrooms" icon={School} label="Kelas" />
             <NavItem href="/students" icon={Users} label="Siswa" />
             <NavItem href="/reports" icon={BarChart3} label="Laporan" />
-            <NavItem href="/quiz" icon={ClipboardList} label="Quiz & Test" />
+          </>
+        ) : (
+          <>
+            <NavSection label="Belajar" />
+            <NavItem href="/learn" icon={GraduationCap} label="Bahan Ajar" />
+            <NavItem href="/materi" icon={Braces} label="Materi" />
+            <NavItem href="/practice" icon={Dumbbell} label="Latihan" />
+            <NavItem href="/quiz" icon={ClipboardList} label="Quiz" />
+            <NavItem href="/conversation" icon={MessageCircle} label="Conversation" />
+            <NavItem href="/entertain" icon={Music} label="Entertain" />
+
+            <NavSection label="Progres" />
+            <NavItem href="/progress" icon={TrendingUp} label="Progres Saya" />
           </>
         )}
       </nav>
