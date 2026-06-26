@@ -29,8 +29,9 @@ File ini diupdate manual di akhir setiap sesi.
 
 ### Catatan Penting
 - **SECRET_SUPABASE_KEY** perlu ditambahkan di `.env.local` — ambil dari Supabase Dashboard → Settings → API (service_role key)
-- Migration perlu di-apply ke database (`supabase db push` atau psql langsung)
+- Migration sudah di-apply via `supabase db query --linked`
 - Trigger `handle_new_user()` akan fire saat `admin.createUser()`, tapi kita pakai `upsert` on conflict untuk amankan profile
+- Untuk operasi profile (insert/update/delete) selalu pakai `createAdminClient()` (service_role) karena RLS mencegah akses antar user
 
 ---
 
