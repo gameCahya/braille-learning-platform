@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const dailyActivitiesTest: PrePostTestData = {
+  moduleId: "daily-activities",
+  moduleTitle: "Daily Activities",
+  material: "Kegiatan sehari-hari dalam bahasa Inggris",
+  gradeLevel: "8",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: 'Kegiatan "eat breakfast" berarti ....',
+      type: "mcq",
+      options: ["Tidur", "Sarapan", "Belajar"],
+      answer: "Sarapan",
+    },
+    {
+      id: 2,
+      question: 'Arti dari "go to school" adalah ....',
+      type: "mcq",
+      options: ["Pergi ke sekolah", "Pergi ke pasar", "Pergi ke rumah"],
+      answer: "Pergi ke sekolah",
+    },
+    {
+      id: 3,
+      question: "Kegiatan yang biasanya dilakukan di sekolah adalah ....",
+      type: "mcq",
+      options: ["Study", "Sleep", "Take a bath"],
+      answer: "Study",
+    },
+    {
+      id: 4,
+      question: "Pada pagi hari sebelum berangkat sekolah, biasanya kita ....",
+      type: "mcq",
+      options: ["Eat breakfast", "Go to bed", "Sleep"],
+      answer: "Eat breakfast",
+    },
+    {
+      id: 5,
+      question: "Setelah selesai belajar di sekolah, kita biasanya ....",
+      type: "mcq",
+      options: ["Go home", "Wake up", "Have breakfast"],
+      answer: "Go home",
+    },
+    {
+      id: 6,
+      question: 'Tuliskan bahasa Inggris dari "belajar"!\nJawab: ____________',
+      type: "essay",
+      answer: ["study", "learn"],
+    },
+    {
+      id: 7,
+      question: 'Jawablah pertanyaan berikut!\n"What do you do in the morning?"\nJawab: ____________',
+      type: "essay",
+      answer: ["i eat breakfast", "i take a bath", "i go to school"],
+    },
+    {
+      id: 8,
+      question: "Tuliskan satu kegiatan yang biasa dilakukan di sekolah dalam bahasa Inggris!\nJawab: ____________",
+      type: "essay",
+      answer: ["study", "learn", "read"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "sleep" adalah ____________.',
+      type: "essay",
+      answer: ["tidur"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"I ______ to school every day."\nJawab: ____________',
+      type: "essay",
+      answer: ["go"],
+    },
+  ],
+};

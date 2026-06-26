@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const shoppingFoodsTest: PrePostTestData = {
+  moduleId: "shopping-foods",
+  moduleTitle: "Shopping & Foods",
+  material: "Belanja dan makanan dalam bahasa Inggris",
+  gradeLevel: "9",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: "Tempat untuk membeli barang adalah ....",
+      type: "mcq",
+      options: ["School", "Market", "Hospital"],
+      answer: "Market",
+    },
+    {
+      id: 2,
+      question: "Contoh makanan adalah ....",
+      type: "mcq",
+      options: ["Rice", "Chair", "Book"],
+      answer: "Rice",
+    },
+    {
+      id: 3,
+      question: "Ungkapan saat membeli barang adalah ....",
+      type: "mcq",
+      options: ["I want to buy this.", "Good morning.", "How are you?"],
+      answer: "I want to buy this.",
+    },
+    {
+      id: 4,
+      question: '"How much is it?" berarti ....',
+      type: "mcq",
+      options: ["Berapa harganya?", "Apa kabar?", "Siapa kamu?"],
+      answer: "Berapa harganya?",
+    },
+    {
+      id: 5,
+      question: 'Jawaban yang tepat untuk "I want to buy bread" adalah ....',
+      type: "mcq",
+      options: ["Ini buku", "Ini roti", "Ini pensil"],
+      answer: "Ini roti",
+    },
+    {
+      id: 6,
+      question: "Tuliskan satu barang yang bisa dibeli di toko!\nJawab: ____________",
+      type: "essay",
+      answer: ["book", "pen", "bag", "apple", "bread"],
+    },
+    {
+      id: 7,
+      question: "Tuliskan satu contoh makanan dalam bahasa Inggris!\nJawab: ____________",
+      type: "essay",
+      answer: ["rice", "bread", "apple", "chicken"],
+    },
+    {
+      id: 8,
+      question: 'Jika kita membeli barang, kita harus ____________.\n(pilih pay / eat / read)',
+      type: "essay",
+      answer: ["pay"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "rice" adalah ____________.',
+      type: "essay",
+      answer: ["nasi", "beras"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"I want to buy ______."\nJawab: ____________',
+      type: "essay",
+      answer: ["bread", "rice", "apple", "book"],
+    },
+  ],
+};

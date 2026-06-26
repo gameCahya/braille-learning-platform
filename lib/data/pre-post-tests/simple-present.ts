@@ -4,6 +4,7 @@ export const simplePresentTest: PrePostTestData = {
   moduleId: "simple-present",
   moduleTitle: "Simple Present Tense (Dasar)",
   material: "Pola kalimat Simple Present Tense dasar",
+  gradeLevel: "7",
   maxScore: 75,
   mcqCount: 5,
   essayCount: 5,

@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const descriptiveTextTest: PrePostTestData = {
+  moduleId: "descriptive-text",
+  moduleTitle: "Descriptive Text",
+  material: "Teks deskriptif (mendeskripsikan orang dan tempat)",
+  gradeLevel: "9",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: 'Teks yang mendeskripsikan seseorang atau sesuatu disebut ....',
+      type: "mcq",
+      options: ["Descriptive text", "Recount text", "Procedure text"],
+      answer: "Descriptive text",
+    },
+    {
+      id: 2,
+      question: 'Bacalah teks berikut!\n"Andi is a tall boy. He has black hair and brown eyes."\nCiri fisik Andi adalah ....',
+      type: "mcq",
+      options: ["Pendek", "Tinggi", "Kurus"],
+      answer: "Tinggi",
+    },
+    {
+      id: 3,
+      question: 'Kata "adjectives" dalam descriptive text berarti ....',
+      type: "mcq",
+      options: ["Kata benda", "Kata sifat", "Kata kerja"],
+      answer: "Kata sifat",
+    },
+    {
+      id: 4,
+      question: 'Arti dari kata "tall" adalah ....',
+      type: "mcq",
+      options: ["Pendek", "Tinggi", "Gemuk"],
+      answer: "Tinggi",
+    },
+    {
+      id: 5,
+      question: 'Descriptive text tentang seseorang berfokus pada ....',
+      type: "mcq",
+      options: ["Ciri fisik dan sifat", "Kegiatan sehari-hari", "Pengalaman masa lalu"],
+      answer: "Ciri fisik dan sifat",
+    },
+    {
+      id: 6,
+      question: 'Apa judul yang tepat untuk teks yang mendeskripsikan tentang kucing?\nJawab: ____________',
+      type: "essay",
+      answer: ["my cat", "the cat", "kucing"],
+    },
+    {
+      id: 7,
+      question: 'Dalam teks "She has long hair", warna rambutnya adalah ____________.',
+      type: "essay",
+      answer: ["long"],
+    },
+    {
+      id: 8,
+      question: 'Tuliskan satu kalimat deskriptif dalam bahasa Inggris!\nJawab: ____________',
+      type: "essay",
+      answer: ["he is tall", "she is beautiful", "i have black hair"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "beautiful" adalah ____________.',
+      type: "essay",
+      answer: ["cantik", "indah"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"She ______ kind and helpful."\nJawab: ____________',
+      type: "essay",
+      answer: ["is"],
+    },
+  ],
+};

@@ -4,6 +4,7 @@ export const schoolThingsTest: PrePostTestData = {
   moduleId: "school-things",
   moduleTitle: "School Things and Classroom Objects",
   material: "Benda-benda sekolah dan kelas dalam bahasa Inggris",
+  gradeLevel: "7",
   maxScore: 75,
   mcqCount: 5,
   essayCount: 5,

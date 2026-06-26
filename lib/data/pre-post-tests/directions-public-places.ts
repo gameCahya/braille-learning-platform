@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const directionsPublicPlacesTest: PrePostTestData = {
+  moduleId: "directions-public-places",
+  moduleTitle: "Asking Directions & Public Places",
+  material: "Menanyakan arah dan tempat umum",
+  gradeLevel: "9",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: "Ungkapan untuk menanyakan arah adalah ....",
+      type: "mcq",
+      options: ["What time is it?", "Where is the school?", "How are you?"],
+      answer: "Where is the school?",
+    },
+    {
+      id: 2,
+      question: 'Jawaban yang tepat untuk "Where is the market?" adalah ....',
+      type: "mcq",
+      options: ["It is near the school.", "I am fine.", "Goodbye."],
+      answer: "It is near the school.",
+    },
+    {
+      id: 3,
+      question: "Tempat untuk membeli obat adalah ....",
+      type: "mcq",
+      options: ["Hospital", "Pharmacy", "Bank"],
+      answer: "Pharmacy",
+    },
+    {
+      id: 4,
+      question: "Jika kita ingin pergi ke sekolah, kita pergi ke ....",
+      type: "mcq",
+      options: ["Hospital", "School", "Market"],
+      answer: "School",
+    },
+    {
+      id: 5,
+      question: 'Arti dari "Turn left" adalah ....',
+      type: "mcq",
+      options: ["Belok kanan", "Lurus", "Belok kiri"],
+      answer: "Belok kiri",
+    },
+    {
+      id: 6,
+      question: "Tuliskan ungkapan menanyakan arah dalam bahasa Inggris!\nJawab: ____________",
+      type: "essay",
+      answer: ["where is", "how can i go to"],
+    },
+    {
+      id: 7,
+      question: 'Jawablah pertanyaan berikut!\n"Where is the library?"\nJawab: ____________',
+      type: "essay",
+      answer: ["it is near the school", "it is next to", "go straight", "turn left"],
+    },
+    {
+      id: 8,
+      question: "Tuliskan satu nama tempat umum dalam bahasa Inggris!\nJawab: ____________",
+      type: "essay",
+      answer: ["school", "hospital", "market", "bank", "pharmacy"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "straight" adalah ____________.',
+      type: "essay",
+      answer: ["lurus"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"Turn ______ at the corner."\nJawab: ____________',
+      type: "essay",
+      answer: ["left"],
+    },
+  ],
+};

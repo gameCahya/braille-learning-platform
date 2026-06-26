@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const procedureTextTest: PrePostTestData = {
+  moduleId: "procedure-text",
+  moduleTitle: "Procedure Text",
+  material: "Teks prosedur (langkah-langkah melakukan sesuatu)",
+  gradeLevel: "9",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: 'Bacalah teks berikut!\nHow to Wash Hands\n1. Turn on the tap water\n2. Put soap on your hands\n3. Rub your hands\n4. Rinse with water\n\nTeks di atas termasuk ....',
+      type: "mcq",
+      options: ["Recount text", "Procedure text", "Descriptive text"],
+      answer: "Procedure text",
+    },
+    {
+      id: 2,
+      question: "Langkah kedua dalam teks di atas adalah ....",
+      type: "mcq",
+      options: ["Rinse with water", "Put soap on your hands", "Turn on the tap water"],
+      answer: "Put soap on your hands",
+    },
+    {
+      id: 3,
+      question: 'Kata "rub" berarti ....',
+      type: "mcq",
+      options: ["Menggosok", "Mencuci", "Memasak"],
+      answer: "Menggosok",
+    },
+    {
+      id: 4,
+      question: "Tujuan procedure text adalah ....",
+      type: "mcq",
+      options: ["Menceritakan pengalaman", "Menjelaskan langkah-langkah", "Mendeskripsikan orang"],
+      answer: "Menjelaskan langkah-langkah",
+    },
+    {
+      id: 5,
+      question: "Urutan yang benar dalam teks prosedur adalah ....",
+      type: "mcq",
+      options: ["Acak", "Berurutan", "Tidak penting"],
+      answer: "Berurutan",
+    },
+    {
+      id: 6,
+      question: "Tuliskan satu contoh teks prosedur sederhana!\nJawab: ____________",
+      type: "essay",
+      answer: ["how to make tea", "how to brush teeth", "how to wash hands"],
+    },
+    {
+      id: 7,
+      question: 'Apa langkah pertama dalam mencuci tangan?\nJawab: ____________',
+      type: "essay",
+      answer: ["turn on the tap water"],
+    },
+    {
+      id: 8,
+      question: "Tuliskan satu action verb dalam bahasa Inggris!\nJawab: ____________",
+      type: "essay",
+      answer: ["wash", "open", "close", "mix", "cut"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "wash" adalah ____________.',
+      type: "essay",
+      answer: ["mencuci"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"______ your hands with soap."\nJawab: ____________',
+      type: "essay",
+      answer: ["wash"],
+    },
+  ],
+};

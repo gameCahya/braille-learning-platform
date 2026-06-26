@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const recountTextTest: PrePostTestData = {
+  moduleId: "recount-text",
+  moduleTitle: "Recount Text",
+  material: "Teks pengalaman masa lalu",
+  gradeLevel: "9",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: 'Bacalah teks berikut!\n"Yesterday, I went to the zoo. I saw many animals. I was very happy."\nTeks di atas termasuk ....',
+      type: "mcq",
+      options: ["Recount text", "Descriptive text", "Procedure text"],
+      answer: "Recount text",
+    },
+    {
+      id: 2,
+      question: 'Kegiatan yang dilakukan adalah ....',
+      type: "mcq",
+      options: ["Pergi ke sekolah", "Pergi ke kebun binatang", "Pergi ke pasar"],
+      answer: "Pergi ke kebun binatang",
+    },
+    {
+      id: 3,
+      question: 'Kata "yesterday" menunjukkan waktu ....',
+      type: "mcq",
+      options: ["Masa depan", "Masa lalu", "Sekarang"],
+      answer: "Masa lalu",
+    },
+    {
+      id: 4,
+      question: 'Perasaan penulis adalah ....',
+      type: "mcq",
+      options: ["Sedih", "Marah", "Senang"],
+      answer: "Senang",
+    },
+    {
+      id: 5,
+      question: 'Kata "went" adalah bentuk lampau dari ....',
+      type: "mcq",
+      options: ["Go", "Goes", "Going"],
+      answer: "Go",
+    },
+    {
+      id: 6,
+      question: 'Tuliskan satu kegiatan yang dilakukan kemarin dalam bahasa Inggris!\nJawab: ____________',
+      type: "essay",
+      answer: ["went to school", "went to the zoo", "ate", "played"],
+    },
+    {
+      id: 7,
+      question: 'Ke mana penulis pergi dalam teks di atas?\nJawab: ____________',
+      type: "essay",
+      answer: ["to the zoo", "zoo"],
+    },
+    {
+      id: 8,
+      question: 'Tuliskan satu kata yang menunjukkan waktu masa lalu!\nJawab: ____________',
+      type: "essay",
+      answer: ["yesterday", "last night", "last week"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "happy" adalah ____________.',
+      type: "essay",
+      answer: ["senang", "bahagia"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"I ______ to the zoo yesterday."\nJawab: ____________',
+      type: "essay",
+      answer: ["went"],
+    },
+  ],
+};

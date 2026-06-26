@@ -4,6 +4,7 @@ export const numbersDaysMonthsTest: PrePostTestData = {
   moduleId: "numbers-days-months",
   moduleTitle: "Numbers, Days, and Months",
   material: "Angka, hari, dan bulan dalam bahasa Inggris",
+  gradeLevel: "7",
   maxScore: 75,
   mcqCount: 5,
   essayCount: 5,

@@ -4,6 +4,7 @@ export const introducingTest: PrePostTestData = {
   moduleId: "introducing",
   moduleTitle: "Introducing Yourself",
   material: "Ungkapan perkenalan diri",
+  gradeLevel: "7",
   maxScore: 75,
   mcqCount: 5,
   essayCount: 5,

@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const functionalTextTest: PrePostTestData = {
+  moduleId: "functional-text",
+  moduleTitle: "Functional Text (Announcement, Invitation & Short Message)",
+  material: "Teks fungsional: pengumuman, undangan, dan pesan singkat",
+  gradeLevel: "9",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: 'Bacalah teks berikut!\n"Attention students! The school will hold a clean-up day on Monday."\nTeks di atas termasuk ....',
+      type: "mcq",
+      options: ["Invitation", "Announcement", "Message"],
+      answer: "Announcement",
+    },
+    {
+      id: 2,
+      question: 'Kegiatan yang akan dilakukan adalah ....',
+      type: "mcq",
+      options: ["Clean-up day", "Sport day", "Study tour"],
+      answer: "Clean-up day",
+    },
+    {
+      id: 3,
+      question: 'Kapan kegiatan dilakukan?\n(berdasarkan teks announcement di atas)',
+      type: "mcq",
+      options: ["Monday", "Friday", "Sunday"],
+      answer: "Monday",
+    },
+    {
+      id: 4,
+      question: 'Bacalah teks berikut!\n"You are invited to my birthday party. Time: 3 PM. Place: My house."\nTeks di atas adalah ....',
+      type: "mcq",
+      options: ["Invitation", "Announcement", "Notice"],
+      answer: "Invitation",
+    },
+    {
+      id: 5,
+      question: 'Acara yang dimaksud dalam undangan di atas adalah ....',
+      type: "mcq",
+      options: ["Birthday party", "School meeting", "Exam"],
+      answer: "Birthday party",
+    },
+    {
+      id: 6,
+      question: "Tuliskan satu contoh jenis functional text!\nJawab: ____________",
+      type: "essay",
+      answer: ["announcement", "invitation", "short message"],
+    },
+    {
+      id: 7,
+      question: 'Apa kegiatan dalam announcement di atas?\nJawab: ____________',
+      type: "essay",
+      answer: ["clean-up day"],
+    },
+    {
+      id: 8,
+      question: 'Tempat undangan pada teks di atas adalah ____________.',
+      type: "essay",
+      answer: ["my house"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "invited" adalah ____________.',
+      type: "essay",
+      answer: ["diundang"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"You are ______ to my party."\nJawab: ____________',
+      type: "essay",
+      answer: ["invited"],
+    },
+  ],
+};

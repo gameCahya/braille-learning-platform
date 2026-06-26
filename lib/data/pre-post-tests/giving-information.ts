@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const givingInformationTest: PrePostTestData = {
+  moduleId: "giving-information",
+  moduleTitle: "Giving Information",
+  material: "Memberikan informasi sederhana (nama, usia, tempat tinggal)",
+  gradeLevel: "8",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: 'Perhatikan kalimat berikut!\n"My name is Rina."\nNama orang tersebut adalah ....',
+      type: "mcq",
+      options: ["Sinta", "Rina", "Ani"],
+      answer: "Rina",
+    },
+    {
+      id: 2,
+      question: 'Perhatikan kalimat berikut!\n"I am thirteen years old."\nBerapa usia orang tersebut?',
+      type: "mcq",
+      options: ["12 tahun", "13 tahun", "14 tahun"],
+      answer: "13 tahun",
+    },
+    {
+      id: 3,
+      question: 'Perhatikan kalimat berikut!\n"I live in Semarang."\nOrang tersebut tinggal di ....',
+      type: "mcq",
+      options: ["Solo", "Yogyakarta", "Semarang"],
+      answer: "Semarang",
+    },
+    {
+      id: 4,
+      question: 'Arti kalimat "I am a student" adalah ....',
+      type: "mcq",
+      options: ["Saya seorang guru", "Saya seorang siswa", "Saya seorang dokter"],
+      answer: "Saya seorang siswa",
+    },
+    {
+      id: 5,
+      question: 'Jika seseorang berkata:\n"My name is Budi."\nRespons yang tepat adalah ....',
+      type: "mcq",
+      options: ["Nice to meet you, Budi.", "Goodbye.", "Good night."],
+      answer: "Nice to meet you, Budi.",
+    },
+    {
+      id: 6,
+      question: 'Lengkapilah kalimat berikut!\n"My name is ______."\n(Jawaban dapat berupa nama siswa)',
+      type: "essay",
+      answer: ["my name is", "nama saya"],
+    },
+    {
+      id: 7,
+      question: 'Jawablah pertanyaan berikut!\n"How old are you?"\nJawab: ____________',
+      type: "essay",
+      answer: ["i am", "years old", "i'm"],
+    },
+    {
+      id: 8,
+      question: 'Lengkapilah kalimat berikut!\n"I live in ______."\nJawab: ____________',
+      type: "essay",
+      answer: ["i live in", "saya tinggal di"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kalimat "I am twelve years old" adalah ____________.',
+      type: "essay",
+      answer: ["saya berusia dua belas tahun", "saya berumur dua belas tahun"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"I am a ______."\n(kata yang tepat untuk siswa)\nJawab: ____________',
+      type: "essay",
+      answer: ["student", "siswa", "pelajar"],
+    },
+  ],
+};

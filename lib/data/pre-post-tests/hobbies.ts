@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const hobbiesTest: PrePostTestData = {
+  moduleId: "hobbies",
+  moduleTitle: "Hobbies",
+  material: "Hobi dan kegemaran dalam bahasa Inggris",
+  gradeLevel: "8",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: "Salah satu contoh hobi adalah ....",
+      type: "mcq",
+      options: ["Reading", "Sleeping room", "Classroom"],
+      answer: "Reading",
+    },
+    {
+      id: 2,
+      question: 'Arti dari "listening to music" adalah ....',
+      type: "mcq",
+      options: ["Bermain bola", "Mendengarkan musik", "Menonton televisi"],
+      answer: "Mendengarkan musik",
+    },
+    {
+      id: 3,
+      question: "Seseorang yang suka membaca buku memiliki hobi ....",
+      type: "mcq",
+      options: ["Reading", "Cooking", "Swimming"],
+      answer: "Reading",
+    },
+    {
+      id: 4,
+      question: "Jika seseorang senang bernyanyi, hobinya adalah ....",
+      type: "mcq",
+      options: ["Singing", "Dancing", "Drawing"],
+      answer: "Singing",
+    },
+    {
+      id: 5,
+      question: 'Jika seseorang bertanya:\n"What is your hobby?"\nJawaban yang tepat adalah ....',
+      type: "mcq",
+      options: ["My hobby is reading.", "I am thirteen years old.", "I live in Solo."],
+      answer: "My hobby is reading.",
+    },
+    {
+      id: 6,
+      question: "Tuliskan satu contoh hobi dalam bahasa Inggris!\nJawab: ____________",
+      type: "essay",
+      answer: ["reading", "singing", "drawing", "swimming", "cooking"],
+    },
+    {
+      id: 7,
+      question: 'Jawablah pertanyaan berikut!\n"What is your hobby?"\nJawab: ____________',
+      type: "essay",
+      answer: ["my hobby is", "i like", "i love"],
+    },
+    {
+      id: 8,
+      question: 'Bahasa Inggris dari "bermain sepak bola" adalah ____________.',
+      type: "essay",
+      answer: ["playing football", "play football"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "drawing" adalah ____________.',
+      type: "essay",
+      answer: ["menggambar"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"My hobby is ______."\nJawab: ____________',
+      type: "essay",
+      answer: ["reading", "singing", "drawing", "swimming", "cooking"],
+    },
+  ],
+};

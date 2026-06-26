@@ -4,6 +4,7 @@ export const familyTest: PrePostTestData = {
   moduleId: "family",
   moduleTitle: "Family Members",
   material: "Anggota keluarga dalam bahasa Inggris",
+  gradeLevel: "7",
   maxScore: 75,
   mcqCount: 5,
   essayCount: 5,

@@ -229,6 +229,8 @@ export default function PrePostTestListPage() {
 
   // Results keyed by module_id
   const [results, setResults] = useState<PrePostResult[]>([]);
+  const [gradeLevel, setGradeLevel] = useState<string | null>(null);
+  const [gradeLoaded, setGradeLoaded] = useState(false);
 
   // ── Fetch user + students ──
   useEffect(() => {
@@ -243,12 +245,15 @@ export default function PrePostTestListPage() {
 
       supabase
         .from("profiles")
-        .select("role")
+        .select("role, grade_level")
         .eq("id", authUser.id)
         .single()
         .then(({ data: profile }) => {
           const role = profile?.role ?? "teacher";
-          setUser({ id: authUser.id, role });
+          const grade = profile?.grade_level ?? null;
+          setUser({ id: authUser.id, role, grade_level: grade } as any);
+          setGradeLevel(grade);
+          setGradeLoaded(true);
 
           if (role === "teacher") {
             // Guru: ambil daftar siswa
@@ -309,8 +314,12 @@ export default function PrePostTestListPage() {
     []
   );
 
-  // ── Derive module statuses ──
-  const moduleStatuses: ModuleStatus[] = prePostTests.map(
+  // ── Derive module statuses with grade filter ──
+  const filteredTests = gradeLoaded && gradeLevel
+    ? prePostTests.filter((t) => !t.gradeLevel || t.gradeLevel === gradeLevel)
+    : prePostTests;
+
+  const moduleStatuses: ModuleStatus[] = filteredTests.map(
     (test: PrePostTestData) => ({
       moduleId: test.moduleId,
       moduleTitle: test.moduleTitle,
@@ -393,8 +402,8 @@ export default function PrePostTestListPage() {
         )}
       </div>
 
-      {/* Loading state */}
-      {loading && (
+      {/* Loading state — tunggu sampai grade level juga terload */}
+      {(!gradeLoaded || loading) && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 9 }).map((_, i) => (
             <SkeletonCard key={i} />
@@ -403,7 +412,7 @@ export default function PrePostTestListPage() {
       )}
 
       {/* No student selected (teacher hasn't picked one) */}
-      {!loading && user?.role === "teacher" && !selectedStudentId && (
+      {gradeLoaded && !loading && user?.role === "teacher" && !selectedStudentId && (
         <Card>
           <CardContent className="flex flex-col items-center py-16 gap-3">
             <Users className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
@@ -417,8 +426,23 @@ export default function PrePostTestListPage() {
         </Card>
       )}
 
+      {/* Guru sudah pilih siswa, atau siswa — tapi grade belum diketahui */}
+      {gradeLoaded && !gradeLevel && user?.role !== "teacher" && (
+        <Card>
+          <CardContent className="flex flex-col items-center py-16 gap-3">
+            <AlertCircle className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
+            <p className="text-lg font-medium text-foreground">
+              Grade level tidak tersedia
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Hubungi guru untuk mengatur kelas kamu.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* No results / student hasn't done any tests */}
-      {!loading && selectedStudentId && results.length === 0 && (
+      {gradeLoaded && !loading && selectedStudentId && results.length === 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {moduleStatuses.map((status) => (
             <ModuleCard key={status.moduleId} status={status} />
@@ -427,7 +451,7 @@ export default function PrePostTestListPage() {
       )}
 
       {/* Results grid */}
-      {!loading && selectedStudentId && results.length > 0 && (
+      {gradeLoaded && !loading && selectedStudentId && results.length > 0 && (
         <>
           {/* Summary stats */}
           <section aria-label="Ringkasan pengerjaan test">

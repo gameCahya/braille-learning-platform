@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const askingGivingDirectionsTest: PrePostTestData = {
+  moduleId: "asking-giving-directions",
+  moduleTitle: "Asking and Giving Directions",
+  material: "Menanyakan dan memberi petunjuk arah",
+  gradeLevel: "8",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: "Ungkapan yang digunakan untuk menanyakan arah adalah ....",
+      type: "mcq",
+      options: ["Where is the library?", "I am a student.", "Good morning."],
+      answer: "Where is the library?",
+    },
+    {
+      id: 2,
+      question: 'Arti dari "Turn left" adalah ....',
+      type: "mcq",
+      options: ["Belok kanan", "Belok kiri", "Jalan lurus"],
+      answer: "Belok kiri",
+    },
+    {
+      id: 3,
+      question: 'Kosakata bahasa Inggris untuk "kanan" adalah ....',
+      type: "mcq",
+      options: ["Left", "Straight", "Right"],
+      answer: "Right",
+    },
+    {
+      id: 4,
+      question: "Jika seseorang ingin menuju perpustakaan yang berada di depan, petunjuk yang tepat adalah ....",
+      type: "mcq",
+      options: ["Turn left.", "Turn right.", "Go straight."],
+      answer: "Go straight.",
+    },
+    {
+      id: 5,
+      question: 'Seseorang bertanya:\n"Where is the classroom?"\nJawaban yang tepat adalah ....',
+      type: "mcq",
+      options: ["Go straight.", "I am fine.", "My name is Budi."],
+      answer: "Go straight.",
+    },
+    {
+      id: 6,
+      question: 'Tuliskan bahasa Inggris dari "belok kiri"!\nJawab: ____________',
+      type: "essay",
+      answer: ["turn left"],
+    },
+    {
+      id: 7,
+      question: 'Jawablah pertanyaan berikut!\n"Where is the library?"\nJawab: ____________',
+      type: "essay",
+      answer: ["go straight", "turn left", "turn right"],
+    },
+    {
+      id: 8,
+      question: "Tuliskan satu ungkapan bahasa Inggris untuk memberi petunjuk arah!\nJawab: ____________",
+      type: "essay",
+      answer: ["go straight", "turn left", "turn right"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "straight" adalah ____________.',
+      type: "essay",
+      answer: ["lurus"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"Turn ______."\n(Kata yang berarti "kanan")\nJawab: ____________',
+      type: "essay",
+      answer: ["right"],
+    },
+  ],
+};

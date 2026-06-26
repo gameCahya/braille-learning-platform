@@ -4,6 +4,7 @@ export const tellingTimeTest: PrePostTestData = {
   moduleId: "telling-time",
   moduleTitle: "Telling Time",
   material: "Ungkapan waktu dalam bahasa Inggris",
+  gradeLevel: "7",
   maxScore: 75,
   mcqCount: 5,
   essayCount: 5,

@@ -1,0 +1,80 @@
+import type { PrePostTestData } from "@/types";
+
+export const tensesTest: PrePostTestData = {
+  moduleId: "tenses",
+  moduleTitle: "Simple Present, Past & Future",
+  material: "Penguatan tenses dasar (present, past, future)",
+  gradeLevel: "9",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: 'Kalimat Simple Present adalah ....',
+      type: "mcq",
+      options: ["I eat rice every day.", "I ate rice yesterday.", "I will eat rice tomorrow."],
+      answer: "I eat rice every day.",
+    },
+    {
+      id: 2,
+      question: 'Kalimat Simple Past adalah ....',
+      type: "mcq",
+      options: ["I go to school.", "I went to school yesterday.", "I will go to school."],
+      answer: "I went to school yesterday.",
+    },
+    {
+      id: 3,
+      question: 'Kalimat Simple Future adalah ....',
+      type: "mcq",
+      options: ["I will visit my grandmother.", "I visited my grandmother.", "I visit my grandmother."],
+      answer: "I will visit my grandmother.",
+    },
+    {
+      id: 4,
+      question: 'Kata yang menunjukkan masa depan adalah ....',
+      type: "mcq",
+      options: ["Yesterday", "Tomorrow", "Now"],
+      answer: "Tomorrow",
+    },
+    {
+      id: 5,
+      question: 'Bentuk kata kerja dari "go" pada past tense adalah ....',
+      type: "mcq",
+      options: ["Goed", "Went", "Going"],
+      answer: "Went",
+    },
+    {
+      id: 6,
+      question: 'Tuliskan satu kalimat Simple Present!\nJawab: ____________',
+      type: "essay",
+      answer: ["i eat rice every day", "i go to school every day"],
+    },
+    {
+      id: 7,
+      question: 'Tuliskan satu kegiatan masa lalu dalam bahasa Inggris!\nJawab: ____________',
+      type: "essay",
+      answer: ["i went to school", "i played", "i ate"],
+    },
+    {
+      id: 8,
+      question: 'Tuliskan satu rencana masa depan dalam bahasa Inggris!\nJawab: ____________',
+      type: "essay",
+      answer: ["i will go", "i will visit", "i will play"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "yesterday" adalah ____________.',
+      type: "essay",
+      answer: ["kemarin"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kalimat berikut!\n"I ______ to school every day."\nJawab: ____________',
+      type: "essay",
+      answer: ["go"],
+    },
+  ],
+};

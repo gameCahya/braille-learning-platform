@@ -4,6 +4,7 @@ export const greetingsTest: PrePostTestData = {
   moduleId: "greetings",
   moduleTitle: "Greetings and Leave Taking",
   material: "Ungkapan salam dan perpisahan",
+  gradeLevel: "7",
   maxScore: 75,
   mcqCount: 5,
   essayCount: 5,

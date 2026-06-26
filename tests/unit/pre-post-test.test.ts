@@ -504,3 +504,119 @@ describe("Scoring edge cases — mixed exact and partial", () => {
     expect(result.score).toBe(10);
   });
 });
+
+// ================================================================
+// 9. Pre/Post Test data integrity — gradeLevel & modul baru
+// ================================================================
+describe("prePostTests gradeLevel validation", () => {
+  it("setiap modul memiliki gradeLevel yang valid", () => {
+    for (const test of prePostTests) {
+      expect(test.gradeLevel).toBeDefined();
+      expect(["7", "8", "9"]).toContain(test.gradeLevel);
+    }
+  });
+
+  it("jumlah modul per grade sesuai ekspektasi", () => {
+    const grade7 = prePostTests.filter((t) => t.gradeLevel === "7");
+    const grade8 = prePostTests.filter((t) => t.gradeLevel === "8");
+    const grade9 = prePostTests.filter((t) => t.gradeLevel === "9");
+    expect(grade7).toHaveLength(9);
+    expect(grade8).toHaveLength(4);
+    expect(grade9).toHaveLength(7);
+    expect(prePostTests).toHaveLength(20);
+  });
+});
+
+describe("Modul Kelas VIII data integrity", () => {
+  function verifyModule(
+    test: (typeof prePostTests)[number],
+    expectedModuleId: string,
+    expectedGrade: "7" | "8" | "9"
+  ) {
+    it(`${expectedModuleId}: moduleId sesuai`, () => {
+      expect(test.moduleId).toBe(expectedModuleId);
+    });
+    it(`${expectedModuleId}: gradeLevel ${expectedGrade}`, () => {
+      expect(test.gradeLevel).toBe(expectedGrade);
+    });
+    it(`${expectedModuleId}: 5 MCQ`, () => {
+      expect(test.questions.filter((q) => q.type === "mcq")).toHaveLength(5);
+    });
+    it(`${expectedModuleId}: 5 Essay`, () => {
+      expect(test.questions.filter((q) => q.type === "essay")).toHaveLength(5);
+    });
+    it(`${expectedModuleId}: setiap MCQ punya 3 options`, () => {
+      for (const q of test.questions.filter((q) => q.type === "mcq")) {
+        expect(q.options).toHaveLength(3);
+      }
+    });
+    it(`${expectedModuleId}: setiap essay punya array answer`, () => {
+      for (const q of test.questions.filter((q) => q.type === "essay")) {
+        expect(Array.isArray(q.answer)).toBe(true);
+        expect((q.answer as string[]).length).toBeGreaterThan(0);
+      }
+    });
+  }
+
+  const m8 = prePostTests.filter((t) => t.gradeLevel === "8");
+  const modul8 = new Map(m8.map((t) => [t.moduleId, t]));
+
+  describe("giving-information", () =>
+    verifyModule(modul8.get("giving-information")!, "giving-information", "8"));
+  describe("daily-activities", () =>
+    verifyModule(modul8.get("daily-activities")!, "daily-activities", "8"));
+  describe("hobbies", () =>
+    verifyModule(modul8.get("hobbies")!, "hobbies", "8"));
+  describe("asking-giving-directions", () =>
+    verifyModule(modul8.get("asking-giving-directions")!, "asking-giving-directions", "8"));
+});
+
+describe("Modul Kelas IX data integrity", () => {
+  function verifyModule(
+    test: (typeof prePostTests)[number],
+    expectedModuleId: string,
+    expectedGrade: "7" | "8" | "9"
+  ) {
+    it(`${expectedModuleId}: moduleId sesuai`, () => {
+      expect(test.moduleId).toBe(expectedModuleId);
+    });
+    it(`${expectedModuleId}: gradeLevel ${expectedGrade}`, () => {
+      expect(test.gradeLevel).toBe(expectedGrade);
+    });
+    it(`${expectedModuleId}: 5 MCQ`, () => {
+      expect(test.questions.filter((q) => q.type === "mcq")).toHaveLength(5);
+    });
+    it(`${expectedModuleId}: 5 Essay`, () => {
+      expect(test.questions.filter((q) => q.type === "essay")).toHaveLength(5);
+    });
+    it(`${expectedModuleId}: setiap MCQ punya 3 options`, () => {
+      for (const q of test.questions.filter((q) => q.type === "mcq")) {
+        expect(q.options).toHaveLength(3);
+      }
+    });
+    it(`${expectedModuleId}: setiap essay punya array answer`, () => {
+      for (const q of test.questions.filter((q) => q.type === "essay")) {
+        expect(Array.isArray(q.answer)).toBe(true);
+        expect((q.answer as string[]).length).toBeGreaterThan(0);
+      }
+    });
+  }
+
+  const m9 = prePostTests.filter((t) => t.gradeLevel === "9");
+  const modul9 = new Map(m9.map((t) => [t.moduleId, t]));
+
+  describe("descriptive-text", () =>
+    verifyModule(modul9.get("descriptive-text")!, "descriptive-text", "9"));
+  describe("functional-text", () =>
+    verifyModule(modul9.get("functional-text")!, "functional-text", "9"));
+  describe("recount-text", () =>
+    verifyModule(modul9.get("recount-text")!, "recount-text", "9"));
+  describe("tenses", () =>
+    verifyModule(modul9.get("tenses")!, "tenses", "9"));
+  describe("directions-public-places", () =>
+    verifyModule(modul9.get("directions-public-places")!, "directions-public-places", "9"));
+  describe("shopping-foods", () =>
+    verifyModule(modul9.get("shopping-foods")!, "shopping-foods", "9"));
+  describe("procedure-text", () =>
+    verifyModule(modul9.get("procedure-text")!, "procedure-text", "9"));
+});

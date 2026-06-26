@@ -4,6 +4,7 @@ export const colorsAnimalsFruitsTest: PrePostTestData = {
   moduleId: "colors-animals-fruits",
   moduleTitle: "Colors, Animals, and Fruits",
   material: "Warna, hewan, dan buah dalam bahasa Inggris",
+  gradeLevel: "7",
   maxScore: 75,
   mcqCount: 5,
   essayCount: 5,

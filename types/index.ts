@@ -141,6 +141,7 @@ export interface PrePostTestData {
   moduleId: string;
   moduleTitle: string;
   material: string;
+  gradeLevel?: "7" | "8" | "9";
   questions: PrePostQuestion[];
   maxScore: number;     // 75
   mcqCount: number;     // 5
