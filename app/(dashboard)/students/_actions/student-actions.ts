@@ -135,8 +135,8 @@ export async function createStudentWithAuth(formData: FormData) {
 
     const authUserId = authData.user.id;
 
-    // Step 2: Insert profile (upsert — aman jika trigger juga fire)
-    const { error: profileError } = await supabase.from("profiles").upsert({
+    // Step 2: Insert profile (pakai adminClient — bypass RLS, trigger juga sudah fire)
+    const { error: profileError } = await adminClient.from("profiles").upsert({
       id: authUserId,
       email,
       full_name,
@@ -151,7 +151,7 @@ export async function createStudentWithAuth(formData: FormData) {
       return { success: false, error: "Gagal mengatur profil siswa." };
     }
 
-    // Step 3: Insert students
+    // Step 3: Insert students (pakai supabase biasa — teacher punya akses ke students miliknya)
     const { error: studentError } = await supabase.from("students").insert({
       teacher_id: user.id,
       full_name,
@@ -163,7 +163,7 @@ export async function createStudentWithAuth(formData: FormData) {
     });
 
     if (studentError) {
-      await supabase.from("profiles").delete().eq("id", authUserId);
+      await adminClient.from("profiles").delete().eq("id", authUserId);
       await adminClient.auth.admin.deleteUser(authUserId).catch(console.error);
       return { success: false, error: "Gagal menambah data siswa." };
     }
@@ -210,8 +210,8 @@ export async function createAuthForExistingStudent(
     }
     const authUserId = authData.user!.id;
 
-    // Upsert profile
-    const { error: profileError } = await supabase.from("profiles").upsert({
+    // Upsert profile (pakai adminClient — bypass RLS)
+    const { error: profileError } = await adminClient.from("profiles").upsert({
       id: authUserId, email, full_name: student.full_name,
       role: "student", status: "approved",
     }, { onConflict: "id" });
@@ -228,7 +228,7 @@ export async function createAuthForExistingStudent(
       .eq("id", studentId);
 
     if (updateError) {
-      await supabase.from("profiles").delete().eq("id", authUserId);
+      await adminClient.from("profiles").delete().eq("id", authUserId);
       await adminClient.auth.admin.deleteUser(authUserId).catch(console.error);
       return { success: false, error: "Gagal memperbarui data siswa." };
     }
@@ -260,8 +260,8 @@ export async function deleteStudent(id: string) {
     const adminClient = createAdminClient();
 
     try {
-      // Hapus profile dulu
-      const { error: profileDeleteError } = await supabase
+      // Hapus profile dulu (pakai adminClient — bypass RLS)
+      const { error: profileDeleteError } = await adminClient
         .from("profiles")
         .delete()
         .eq("id", student.auth_user_id);
