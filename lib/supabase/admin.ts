@@ -6,10 +6,10 @@ import type { Database } from '@/types/supabase'
 
 export function createAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const key = process.env.SECRET_SUPABASE_KEY
 
   if (!url || !key) {
-    throw new Error('Supabase admin credentials not configured. Set SUPABASE_SERVICE_ROLE_KEY in .env.local')
+    throw new Error('Supabase admin credentials not configured. Set SECRET_SUPABASE_KEY in .env.local')
   }
 
   return createClient<Database>(url, key, {

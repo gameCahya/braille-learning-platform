@@ -28,7 +28,7 @@ File ini diupdate manual di akhir setiap sesi.
 - Unit test: 15 test untuk validasi schema conditional
 
 ### Catatan Penting
-- **SUPABASE_SERVICE_ROLE_KEY** perlu ditambahkan di `.env.local` — ambil dari Supabase Dashboard → Settings → API
+- **SECRET_SUPABASE_KEY** perlu ditambahkan di `.env.local` — ambil dari Supabase Dashboard → Settings → API (service_role key)
 - Migration perlu di-apply ke database (`supabase db push` atau psql langsung)
 - Trigger `handle_new_user()` akan fire saat `admin.createUser()`, tapi kita pakai `upsert` on conflict untuk amankan profile
 
