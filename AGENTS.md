@@ -6,9 +6,37 @@ File ini diupdate manual di akhir setiap sesi.
 
 ---
 
-## ✅ Sesi Terakhir (26 Jun 2026 — Sesi 5)
+## ✅ Sesi Terakhir (26 Jun 2026 — Sesi 6)
 
-**Periode:** 26 Jun 2026 (1 commit: 6ca6aa7; 33 file)
+**Periode:** 26 Jun 2026 (1 commit: e073a37; 29 file)
+
+### Fitur Baru
+- **Guru buat akun siswa** — guru bisa membuat akun login untuk siswa (email + password) dari form tambah siswa
+- **Auto-approve** — student buatan guru langsung `status='approved'` (guru sudah terverifikasi admin)
+- **Akun untuk siswa existing** — dialog "Buat Akun" di tabel siswa untuk yang belum punya login
+- **Kolom status akun** — badge "Ada"/"Tidak" di tabel siswa + tombol UserPlus
+- **Conditional form** — checkbox "Buatkan akun login" + field email/password/confirm (muncul jika dicentang)
+- **Warning edit** — jika siswa sudah punya akun, email tidak bisa diubah (read-only + banner warning)
+- **Delete aman** — hapus siswa dengan akun juga hapus profile + auth user (manual, no CASCADE)
+
+### Perubahan Arsitektur
+- Migration baru: `supabase/migrations/20260626000001_add_student_login.sql` (has_login, auth_user_id)
+- Client baru: `lib/supabase/admin.ts` — service_role client untuk admin auth API
+- Component baru: `components/ui/checkbox.tsx` — shadcn/ui Checkbox
+- Type update: `types/supabase.ts` — tambah has_login, auth_user_id di students Row/Insert/Update
+- 3 fungsi server action baru: `createStudentWithAuth`, `createAuthForExistingStudent`, update `deleteStudent`
+- Unit test: 15 test untuk validasi schema conditional
+
+### Catatan Penting
+- **SUPABASE_SERVICE_ROLE_KEY** perlu ditambahkan di `.env.local` — ambil dari Supabase Dashboard → Settings → API
+- Migration perlu di-apply ke database (`supabase db push` atau psql langsung)
+- Trigger `handle_new_user()` akan fire saat `admin.createUser()`, tapi kita pakai `upsert` on conflict untuk amankan profile
+
+---
+
+## ✅ Sesi 5 (26 Jun 2026 — Sesi 5)
+
+**Periode:** 26 Jun 2026 (2 commits: 6ca6aa7, 756f2d3; 34 file)
 
 ### Fitur Baru
 - **Pre/Post Test System** — sistem pre-test dan post-test untuk 9 modul Kelas VII
