@@ -163,9 +163,10 @@ export async function createStudentWithAuth(formData: FormData) {
     });
 
     if (studentError) {
+      console.error("Insert student error:", studentError);
       await adminClient.from("profiles").delete().eq("id", authUserId);
       await adminClient.auth.admin.deleteUser(authUserId).catch(console.error);
-      return { success: false, error: "Gagal menambah data siswa." };
+      return { success: false, error: `Gagal menambah data siswa: ${studentError.message}` };
     }
 
     revalidatePath("/students");
