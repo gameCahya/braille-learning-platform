@@ -6,7 +6,43 @@ File ini diupdate manual di akhir setiap sesi.
 
 ---
 
-## ✅ Sesi Terakhir (02 Jun 2026 — Sesi 4)
+## ✅ Sesi Terakhir (26 Jun 2026 — Sesi 5)
+
+**Periode:** 26 Jun 2026 (1 commit: 6ca6aa7; 33 file)
+
+### Fitur Baru
+- **Pre/Post Test System** — sistem pre-test dan post-test untuk 9 modul Kelas VII
+- **Test runner** — MCQ clickable cards + essay textarea dengan navigasi prev/next
+- **Scoring otomatis** — MCQ exact match 5pts, essay exact 10 / partial 5 / salah 0
+- **Halaman hasil** — perbandingan pre vs post dengan grafik (recharts) dan export CSV
+- **Review essay** — halaman guru untuk review jawaban essay (Benar/Cukup/Salah)
+- **Laporan kelas** — tab Pre/Post Test di halaman /reports dengan statistik kelas
+- **Unit testing** — setup Vitest + 121 test untuk scoring, kategori, validasi data
+- **Sidebar** — link "Pre/Post Test" untuk guru dan siswa
+
+### Perubahan Arsitektur
+- Migration baru: `supabase/migrations/20260626000000_add_pre_post_results.sql`
+- Tipe baru di `types/index.ts`: `PrePostTestData`, `PrePostQuestion`, `PrePostAnswer`, `PrePostEssayResult`
+- Data soal statis: `lib/data/pre-post-tests/` — 9 file modul + index.ts + scoring.ts
+- Route baru: `/prepost-test/`, `/prepost-test/[moduleId]/[testType]`, `/prepost-test/[moduleId]/results`, `/prepost-test/review`
+- Setup testing: `vitest.config.ts`, `vitest.setup.ts`, `tests/unit/*.test.ts`
+
+### Perbaikan
+- Tidak ada perbaikan — sesi full fitur baru
+
+---
+
+## ⏳ Pending Issues (dari sesi sebelumnya)
+
+- Belum ada automated E2E tests (Playwright)
+- Belum ada fitur export raport PDF/Excel (CSV untuk pre/post test sudah ada)
+- Belum ada sistem caching
+- Migrasi belum via `supabase db push`
+- Tutorial Driver.js belum mencakup halaman `/materi/` (sudah ada materi-steps.ts)
+
+---
+
+## ✅ Sesi 4 (02 Jun 2026)
 
 **Periode:** 02 Jun 2026 (belum commit; ~18 file modified)
 
