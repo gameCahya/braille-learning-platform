@@ -365,6 +365,8 @@ export type Database = {
           notes: string | null
           teacher_id: string
           updated_at: string | null
+          has_login: boolean
+          auth_user_id: string | null
         }
         Insert: {
           classroom_id?: string | null
@@ -375,6 +377,8 @@ export type Database = {
           notes?: string | null
           teacher_id: string
           updated_at?: string | null
+          has_login?: boolean
+          auth_user_id?: string | null
         }
         Update: {
           classroom_id?: string | null
@@ -385,6 +389,8 @@ export type Database = {
           notes?: string | null
           teacher_id?: string
           updated_at?: string | null
+          has_login?: boolean
+          auth_user_id?: string | null
         }
         Relationships: [
           {

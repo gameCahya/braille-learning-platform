@@ -25,7 +25,7 @@ export default async function EditStudentPage({
   // Fetch student
   const { data: student } = await supabase
     .from("students")
-    .select("id, full_name, email, classroom_id, notes")
+    .select("id, full_name, email, classroom_id, notes, has_login")
     .eq("id", id)
     .eq("teacher_id", user.id)
     .single();
@@ -62,6 +62,7 @@ export default async function EditStudentPage({
           email: student.email,
           classroom_id: student.classroom_id,
           notes: student.notes,
+          has_login: student.has_login ?? false,
         }}
         classrooms={classrooms || []}
       />

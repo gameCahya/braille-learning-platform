@@ -28,6 +28,8 @@ export default async function StudentsPage() {
       full_name,
       email,
       classroom_id,
+      has_login,
+      auth_user_id,
       created_at,
       classrooms ( name )
     `)
