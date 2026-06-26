@@ -6,7 +6,51 @@ File ini diupdate manual di akhir setiap sesi.
 
 ---
 
-## ✅ Sesi Terakhir (26 Jun 2026 — Sesi 6)
+## ✅ Sesi Terakhir (26 Jun 2026 — Sesi 7)
+
+**Periode:** 26 Jun 2026 (1 commit: 94b27ed; 24 file)
+
+### Fitur Baru
+- **Pre/Post Test Kelas VIII & IX** — menambahkan 11 modul baru ke sistem pre/post test yang sudah ada
+- **Filter grade level** — halaman `/prepost-test` hanya menampilkan modul sesuai `grade_level` siswa
+- **Loading state guard** — skeleton loading tampil sampai grade level diketahui (cegah flash semua modul)
+- **Grade fallback** — siswa tanpa grade_level melihat pesan "Grade level tidak tersedia"
+
+### Modul Baru
+**Kelas VIII (4 modul):**
+| Module ID | Title |
+|-----------|-------|
+| giving-information | Giving Information |
+| daily-activities | Daily Activities |
+| hobbies | Hobbies |
+| asking-giving-directions | Asking and Giving Directions |
+
+**Kelas IX (7 modul):**
+| Module ID | Title |
+|-----------|-------|
+| descriptive-text | Descriptive Text |
+| functional-text | Functional Text |
+| recount-text | Recount Text |
+| tenses | Simple Present, Past & Future |
+| directions-public-places | Asking Directions & Public Places |
+| shopping-foods | Shopping & Foods |
+| procedure-text | Procedure Text |
+
+### Perubahan Arsitektur
+- Tipe baru: `PrePostTestData.gradeLevel?: "7" | "8" | "9"` di `types/index.ts`
+- 11 file data baru di `lib/data/pre-post-tests/` (masing-masing 5 MCQ + 5 Essay, maxScore=75)
+- 9 file existing ditambahi `gradeLevel: "7"`
+- Filter grade di `app/(dashboard)/prepost-test/page.tsx` — state `gradeLoaded` + `gradeLevel`
+- Test: 354 passing (233 baru untuk validasi data integrity)
+
+### Catatan Penting
+- Data soal dari dokumen `instrument pre dan post test kelas VIII dan IX smp lb.docx`
+- Setiap modul: 5 pilihan ganda (5pts each) + 5 isian singkat (exact 10, partial 5, salah 0)
+- Semua jawaban essay di-lowercase dan multi-keyword untuk akomodasi variasi jawaban
+
+---
+
+## ✅ Sesi 6 (26 Jun 2026 — Sesi 6 sebelumnya)
 
 **Periode:** 26 Jun 2026 (1 commit: e073a37; 29 file)
 
