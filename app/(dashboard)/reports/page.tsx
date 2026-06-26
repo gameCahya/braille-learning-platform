@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { quizzes } from "@/lib/data/quiz";
+import { prePostTests } from "@/lib/data/pre-post-tests";
 import {
   Users, School, ClipboardList, TrendingUp, ChevronRight, Award,
 } from "lucide-react";
 import Link from "next/link";
 import { ReportExports } from "./_components/ReportExports";
+import { PrePostTestSection } from "./_components/PrePostTestSection";
 
 const DIFF_LABEL: Record<string, string> = {
   beginner: "Pemula",
@@ -35,12 +37,15 @@ export default async function ReportsPage() {
     total: number;
     avg_score: number;
   }> = [];
+  let clsData: Array<{ id: string; name: string; students: Array<{ id: string; full_name: string }> }> | null = null;
 
   if (isTeacher) {
-    const { data: clsData } = await supabase
+    const { data: fetchedCls } = await supabase
       .from("classrooms")
       .select("id, name, students(id, full_name)")
       .eq("teacher_id", user.id);
+
+    clsData = fetchedCls;
 
     classrooms = (clsData ?? []).map((cls) => ({
       id: cls.id,
@@ -107,6 +112,14 @@ export default async function ReportsPage() {
       .select("*", { count: "exact", head: true })
       .eq("teacher_id", user.id);
     teacherQuizCount = count ?? 0;
+  }
+
+  // Siapkan data siswa untuk PrePostTestSection
+  const allStudents: Array<{ id: string; full_name: string }> = [];
+  for (const cls of clsData ?? []) {
+    for (const s of cls.students ?? []) {
+      allStudents.push({ id: s.id, full_name: s.full_name });
+    }
   }
 
   const totalQuizzes = quizzes.length + teacherQuizCount;
@@ -269,6 +282,15 @@ export default async function ReportsPage() {
           ))}
         </div>
       </div>
+
+      {/* ============ GURU: Pre/Post Test ============ */}
+      {isTeacher && (
+        <PrePostTestSection
+          prePostTests={prePostTests}
+          initialStudents={allStudents}
+          teacherId={user.id}
+        />
+      )}
     </div>
   );
 }

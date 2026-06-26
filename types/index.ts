@@ -107,3 +107,44 @@ export interface ApiResponse<T> {
   error?: string;
   message?: string;
 }
+
+// =============================================
+// Pre/Post Test types
+// =============================================
+
+export interface PrePostAnswer {
+  questionId: number;
+  question: string;
+  questionType: "mcq" | "essay";
+  userAnswer: string | null;
+  correctAnswer: string | string[];
+  isCorrect: boolean | null;  // null untuk essay yang belum direview
+}
+
+export interface PrePostEssayResult {
+  questionId: number;
+  question: string;
+  userAnswer: string;
+  acceptedAnswers: string[];
+  score: 0 | 5 | 10;
+}
+
+export interface PrePostQuestion {
+  id: number;
+  question: string;
+  type: "mcq" | "essay";
+  options?: string[];
+  answer: string | string[]; // string untuk mcq, string[] untuk essay (lowercase+trim)
+}
+
+export interface PrePostTestData {
+  moduleId: string;
+  moduleTitle: string;
+  material: string;
+  questions: PrePostQuestion[];
+  maxScore: number;     // 75
+  mcqCount: number;     // 5
+  essayCount: number;   // 5
+  mcqMaxScore: number;  // 25
+  essayMaxScore: number; // 50
+}

@@ -1,0 +1,79 @@
+import type { PrePostTestData } from "@/types";
+
+export const tellingTimeTest: PrePostTestData = {
+  moduleId: "telling-time",
+  moduleTitle: "Telling Time",
+  material: "Ungkapan waktu dalam bahasa Inggris",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: '"Seven o\'clock" berarti ....',
+      type: "mcq",
+      options: ["Jam enam", "Jam tujuh", "Jam delapan"],
+      answer: "Jam tujuh",
+    },
+    {
+      id: 2,
+      question: 'Arti dari "half past three" adalah ....',
+      type: "mcq",
+      options: ["Jam 03.30", "Jam 03.00", "Jam 04.30"],
+      answer: "Jam 03.30",
+    },
+    {
+      id: 3,
+      question: '"Quarter past nine" menunjukkan waktu ....',
+      type: "mcq",
+      options: ["09.15", "09.45", "08.15"],
+      answer: "09.15",
+    },
+    {
+      id: 4,
+      question: 'Arti kata "clock" adalah ....',
+      type: "mcq",
+      options: ["Hari", "Bulan", "Jam"],
+      answer: "Jam",
+    },
+    {
+      id: 5,
+      question: "Students usually go to school at ....",
+      type: "mcq",
+      options: ["morning", "midnight", "night"],
+      answer: "morning",
+    },
+    {
+      id: 6,
+      question: 'Arti dari "ten o\'clock" adalah ____________.',
+      type: "essay",
+      answer: ["jam sepuluh"],
+    },
+    {
+      id: 7,
+      question: '"Half past seven" menunjukkan pukul ____________.',
+      type: "essay",
+      answer: ["07.30"],
+    },
+    {
+      id: 8,
+      question: 'Arti kata "morning" adalah ____________.',
+      type: "essay",
+      answer: ["pagi"],
+    },
+    {
+      id: 9,
+      question: "We usually have breakfast in the ____________.",
+      type: "essay",
+      answer: ["morning"],
+    },
+    {
+      id: 10,
+      question: '"Quarter past five" menunjukkan pukul ____________.',
+      type: "essay",
+      answer: ["05.15"],
+    },
+  ],
+};

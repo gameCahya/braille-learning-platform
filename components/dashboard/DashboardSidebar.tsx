@@ -10,6 +10,7 @@ import {
   BookOpen,
   Braces,
   ClipboardList,
+  ClipboardCheck,
   Music,
   Dumbbell,
   GraduationCap,
@@ -54,6 +55,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
             <NavItem href="/learn" icon={GraduationCap} label="Bahan Ajar" />
             <NavItem href="/practice" icon={Dumbbell} label="Practice" />
             <NavItem href="/quiz" icon={ClipboardList} label="Quiz & Test" />
+            <NavItem href="/prepost-test" icon={ClipboardCheck} label="Pre/Post Test" />
             <NavItem href="/conversation" icon={MessageCircle} label="Conversation" />
             <NavItem href="/entertain" icon={Music} label="Entertain" />
 
@@ -69,6 +71,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
             <NavItem href="/materi" icon={Braces} label="Materi" />
             <NavItem href="/practice" icon={Dumbbell} label="Latihan" />
             <NavItem href="/quiz" icon={ClipboardList} label="Quiz" />
+            <NavItem href="/prepost-test" icon={ClipboardCheck} label="Pre/Post Test" />
             <NavItem href="/conversation" icon={MessageCircle} label="Conversation" />
             <NavItem href="/entertain" icon={Music} label="Entertain" />
 

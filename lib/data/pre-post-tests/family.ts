@@ -1,0 +1,79 @@
+import type { PrePostTestData } from "@/types";
+
+export const familyTest: PrePostTestData = {
+  moduleId: "family",
+  moduleTitle: "Family Members",
+  material: "Anggota keluarga dalam bahasa Inggris",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: "My father's father is my ....",
+      type: "mcq",
+      options: ["uncle", "grandfather", "brother"],
+      answer: "grandfather",
+    },
+    {
+      id: 2,
+      question: "My mother's daughter is my ....",
+      type: "mcq",
+      options: ["aunt", "cousin", "sister"],
+      answer: "sister",
+    },
+    {
+      id: 3,
+      question: "My father's sister is my ....",
+      type: "mcq",
+      options: ["aunt", "grandmother", "mother"],
+      answer: "aunt",
+    },
+    {
+      id: 4,
+      question: 'Arti dari kata "brother" adalah ....',
+      type: "mcq",
+      options: ["saudara perempuan", "paman", "saudara laki-laki"],
+      answer: "saudara laki-laki",
+    },
+    {
+      id: 5,
+      question: "If my uncle has a son, he is my ....",
+      type: "mcq",
+      options: ["cousin", "brother", "father"],
+      answer: "cousin",
+    },
+    {
+      id: 6,
+      question: 'Tuliskan bahasa Inggris dari "ibu"!',
+      type: "essay",
+      answer: ["mother"],
+    },
+    {
+      id: 7,
+      question: "My mother's mother is my ____________.",
+      type: "essay",
+      answer: ["grandmother"],
+    },
+    {
+      id: 8,
+      question: 'Tuliskan bahasa Inggris dari "paman"!',
+      type: "essay",
+      answer: ["uncle"],
+    },
+    {
+      id: 9,
+      question: 'Arti dari kata "grandmother" adalah ____________.',
+      type: "essay",
+      answer: ["nenek"],
+    },
+    {
+      id: 10,
+      question: 'Lengkapilah kata berikut: "broth___"',
+      type: "essay",
+      answer: ["er"],
+    },
+  ],
+};

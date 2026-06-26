@@ -1,0 +1,79 @@
+import type { PrePostTestData } from "@/types";
+
+export const schoolThingsTest: PrePostTestData = {
+  moduleId: "school-things",
+  moduleTitle: "School Things and Classroom Objects",
+  material: "Benda-benda sekolah dan kelas dalam bahasa Inggris",
+  maxScore: 75,
+  mcqCount: 5,
+  essayCount: 5,
+  mcqMaxScore: 25,
+  essayMaxScore: 50,
+  questions: [
+    {
+      id: 1,
+      question: 'Which word means "buku"?',
+      type: "mcq",
+      options: ["Pencil", "Book", "Eraser"],
+      answer: "Book",
+    },
+    {
+      id: 2,
+      question: 'Arti dari "chair" adalah ....',
+      type: "mcq",
+      options: ["meja", "tas", "kursi"],
+      answer: "kursi",
+    },
+    {
+      id: 3,
+      question: "Which object is used for writing?",
+      type: "mcq",
+      options: ["Pencil", "Ruler", "Bag"],
+      answer: "Pencil",
+    },
+    {
+      id: 4,
+      question: "Which object is usually found in a classroom?",
+      type: "mcq",
+      options: ["Whiteboard", "Bed", "Stove"],
+      answer: "Whiteboard",
+    },
+    {
+      id: 5,
+      question: "A student wants to erase writing. The student needs a/an ....",
+      type: "mcq",
+      options: ["book", "eraser", "chair"],
+      answer: "eraser",
+    },
+    {
+      id: 6,
+      question: 'Arti dari kata "pencil" adalah ____________.',
+      type: "essay",
+      answer: ["pensil"],
+    },
+    {
+      id: 7,
+      question: "Benda yang digunakan untuk mengukur panjang adalah ____________.",
+      type: "essay",
+      answer: ["penggaris", "ruler"],
+    },
+    {
+      id: 8,
+      question: 'Arti dari kata "desk" adalah ____________.',
+      type: "essay",
+      answer: ["meja"],
+    },
+    {
+      id: 9,
+      question: "Seorang siswa menyimpan buku dan alat tulis di dalam ____________.",
+      type: "essay",
+      answer: ["tas"],
+    },
+    {
+      id: 10,
+      question: 'Kata "whiteboard" merujuk pada benda yang digunakan untuk ____________.',
+      type: "essay",
+      answer: ["menulis", "tempat menulis di kelas"],
+    },
+  ],
+};
